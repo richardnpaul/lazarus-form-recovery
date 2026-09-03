@@ -21,31 +21,33 @@ export class FormTracker {
   private onFocus = this.handleFocus.bind(this);
   private onSubmit = this.handleSubmit.bind(this);
   private onReset = this.handleReset.bind(this);
-  private onContextMenu = this.handleContextMenu.bind(this);
+  private onContextMenu = ((e: Event) => this.handleContextMenu(e as MouseEvent)) as EventListener;
   private onRuntimeMessageBound = this.handleRuntimeMessage.bind(this);
+
+  constructor(private root: Document | HTMLElement = document) {}
 
   public start() {
     // Use capture phase for DOM events
-    document.addEventListener('input', this.onInput, true);
-    document.addEventListener('compositionend', this.onCompositionEnd, true);
-    document.addEventListener('change', this.onChange, true);
-    document.addEventListener('focus', this.onFocus, true);
-    document.addEventListener('submit', this.onSubmit, true);
-    document.addEventListener('reset', this.onReset, true);
-    document.addEventListener('contextmenu', this.onContextMenu, true);
+    this.root.addEventListener('input', this.onInput, true);
+    this.root.addEventListener('compositionend', this.onCompositionEnd, true);
+    this.root.addEventListener('change', this.onChange, true);
+    this.root.addEventListener('focus', this.onFocus, true);
+    this.root.addEventListener('submit', this.onSubmit, true);
+    this.root.addEventListener('reset', this.onReset, true);
+    this.root.addEventListener('contextmenu', this.onContextMenu, true);
 
     // Listen for background actions (e.g. from context menus)
     chrome.runtime.onMessage?.addListener(this.onRuntimeMessageBound);
   }
 
   public stop() {
-    document.removeEventListener('input', this.onInput, true);
-    document.removeEventListener('compositionend', this.onCompositionEnd, true);
-    document.removeEventListener('change', this.onChange, true);
-    document.removeEventListener('focus', this.onFocus, true);
-    document.removeEventListener('submit', this.onSubmit, true);
-    document.removeEventListener('reset', this.onReset, true);
-    document.removeEventListener('contextmenu', this.onContextMenu, true);
+    this.root.removeEventListener('input', this.onInput, true);
+    this.root.removeEventListener('compositionend', this.onCompositionEnd, true);
+    this.root.removeEventListener('change', this.onChange, true);
+    this.root.removeEventListener('focus', this.onFocus, true);
+    this.root.removeEventListener('submit', this.onSubmit, true);
+    this.root.removeEventListener('reset', this.onReset, true);
+    this.root.removeEventListener('contextmenu', this.onContextMenu, true);
 
     chrome.runtime.onMessage?.removeListener(this.onRuntimeMessageBound);
 

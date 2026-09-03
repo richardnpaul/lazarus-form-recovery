@@ -40,17 +40,15 @@ export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
         .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
         .sortBy('lastModified');
     } catch {
       forms = await db.forms
         .where('domainId')
         .equals(domainId)
         .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
         .sortBy('lastModified');
     }
-    return forms as StoredFormRecord[];
+    return (forms as StoredFormRecord[]).reverse();
   }
 
   public async getLatestRevisionsForDomain(domainId: string, limit = 5): Promise<StoredFormRecord[]> {
@@ -60,17 +58,15 @@ export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
         .filter(f => f.status === 0)
-        .reverse()
         .sortBy('lastModified');
     } catch {
       forms = await db.forms
         .where('domainId')
         .equals(domainId)
         .filter(f => f.status === 0)
-        .reverse()
         .sortBy('lastModified');
     }
-    return forms.slice(0, limit) as StoredFormRecord[];
+    return forms.reverse().slice(0, limit) as StoredFormRecord[];
   }
 
   public async getAllHistory(limit = 50): Promise<FormWithFields[]> {

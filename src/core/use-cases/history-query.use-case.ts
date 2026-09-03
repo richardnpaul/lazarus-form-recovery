@@ -31,6 +31,12 @@ export class HistoryQueryUseCase implements IHistoryQueryUseCase {
       });
     }
 
+    results.sort(
+      (a, b) =>
+        (b.form.revisionNumber || 0) - (a.form.revisionNumber || 0) ||
+        (b.form.lastModified || 0) - (a.form.lastModified || 0)
+    );
+
     return results;
   }
 
