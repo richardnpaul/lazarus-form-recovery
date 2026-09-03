@@ -16,7 +16,9 @@ describe('VaultManager Unit Tests', () => {
     expect(vault.isUnlocked()).toBe(false);
 
     // Unlocking without master password configured throws
-    await expect(vault.unlock('AnyPassword')).rejects.toThrow('No Master Password has been configured.');
+    await expect(vault.unlock('AnyPassword')).rejects.toThrow(
+      'No Master Password has been configured.'
+    );
 
     // Status
     const status = await vault.getStatus();

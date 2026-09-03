@@ -119,7 +119,9 @@ describe('Options Page Controller (src/options/options.ts)', () => {
     prefFilterCards.checked = false;
     prefFilterCards.dispatchEvent(new Event('change'));
 
-    const prefRetentionSlider = document.getElementById('pref-retention-slider') as HTMLInputElement;
+    const prefRetentionSlider = document.getElementById(
+      'pref-retention-slider'
+    ) as HTMLInputElement;
     prefRetentionSlider.value = '30';
     prefRetentionSlider.dispatchEvent(new Event('input'));
 
@@ -135,7 +137,9 @@ describe('Options Page Controller (src/options/options.ts)', () => {
 
     // Test password strength meter
     const inputMasterPass = document.getElementById('input-master-pass') as HTMLInputElement;
-    const inputMasterPassConfirm = document.getElementById('input-master-pass-confirm') as HTMLInputElement;
+    const inputMasterPassConfirm = document.getElementById(
+      'input-master-pass-confirm'
+    ) as HTMLInputElement;
 
     inputMasterPass.value = '123';
     inputMasterPass.dispatchEvent(new Event('input'));
@@ -170,7 +174,9 @@ describe('Options Page Controller (src/options/options.ts)', () => {
     btnSavePass.click();
 
     // Cancel modal
-    const btnCancelModal = document.getElementById('btn-cancel-password-modal') as HTMLButtonElement;
+    const btnCancelModal = document.getElementById(
+      'btn-cancel-password-modal'
+    ) as HTMLButtonElement;
     btnCancelModal.click();
 
     // 4. Domains Tab: Add domain & Unblock

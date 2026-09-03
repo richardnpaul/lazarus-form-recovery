@@ -19,7 +19,13 @@ export class FieldExtractor {
       if (type === 'password') {
         return savePasswords;
       }
-      if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'image' || type === 'reset') {
+      if (
+        type === 'hidden' ||
+        type === 'submit' ||
+        type === 'button' ||
+        type === 'image' ||
+        type === 'reset'
+      ) {
         return false;
       }
       return true;
@@ -39,7 +45,10 @@ export class FieldExtractor {
   /**
    * Extracts a FieldSnapshot from a single DOM element.
    */
-  public static extractField(element: HTMLElement, options: ExtractorOptions = {}): FieldSnapshot | null {
+  public static extractField(
+    element: HTMLElement,
+    options: ExtractorOptions = {}
+  ): FieldSnapshot | null {
     if (!this.isTrackable(element, options.savePasswords)) {
       return null;
     }
@@ -54,9 +63,9 @@ export class FieldExtractor {
       type = (input.type || 'text').toLowerCase();
 
       if (type === 'checkbox') {
-        value = input.checked ? (input.value || 'on') : '';
+        value = input.checked ? input.value || 'on' : '';
       } else if (type === 'radio') {
-        value = input.checked ? (input.value || 'on') : '';
+        value = input.checked ? input.value || 'on' : '';
       } else {
         value = input.value || '';
       }
@@ -66,7 +75,7 @@ export class FieldExtractor {
     } else if (tag === 'SELECT') {
       const select = element as HTMLSelectElement;
       if (select.multiple) {
-        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
+        const selected = Array.from(select.selectedOptions).map((opt) => opt.value);
         value = selected.join(',');
       } else {
         value = select.value || '';
@@ -100,9 +109,14 @@ export class FieldExtractor {
   /**
    * Extracts all trackable fields from a form container or virtual form container.
    */
-  public static extractAllFields(container: HTMLElement, options: ExtractorOptions = {}): FieldSnapshot[] {
+  public static extractAllFields(
+    container: HTMLElement,
+    options: ExtractorOptions = {}
+  ): FieldSnapshot[] {
     const fields: FieldSnapshot[] = [];
-    const elements = container.querySelectorAll('input, textarea, select, [contenteditable="true"], .ql-editor, .ProseMirror, [data-lexical-editor="true"]');
+    const elements = container.querySelectorAll(
+      'input, textarea, select, [contenteditable="true"], .ql-editor, .ProseMirror, [data-lexical-editor="true"]'
+    );
 
     elements.forEach((el) => {
       if (el instanceof HTMLElement) {
@@ -133,7 +147,12 @@ export class FieldExtractor {
       fields = this.extractAllFields(formElement, options);
     } else {
       // Orphaned input: check parent container or use target
-      const container = target.closest('section, main, article, .form-container, div[role="form"]') as HTMLElement || target.parentElement || target;
+      const container =
+        (target.closest(
+          'section, main, article, .form-container, div[role="form"]'
+        ) as HTMLElement) ||
+        target.parentElement ||
+        target;
       formInstanceId = container.id || `fake_form_${getElementSelector(container)}`;
       fields = this.extractAllFields(container, options);
       if (fields.length === 0) {

@@ -26,10 +26,7 @@ const firefoxManifestCompat = (): Plugin => ({
 });
 
 export default defineConfig({
-  plugins: [
-    crx({ manifest }),
-    firefoxManifestCompat(),
-  ],
+  plugins: [crx({ manifest }), firefoxManifestCompat()],
   build: {
     target: 'esnext',
     rollupOptions: {

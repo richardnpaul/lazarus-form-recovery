@@ -1,64 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lazarus Form Recovery</title>
-  <link rel="stylesheet" href="./popup.css">
-</head>
-<body>
-  <!-- Header -->
-  <header class="popup-header">
-    <div class="brand-container">
-      <div class="brand-logo">L</div>
-      <div class="brand-title">Lazarus</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lazarus Form Recovery</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="popup-header">
+      <div class="brand-container">
+        <div class="brand-logo">L</div>
+        <div class="brand-title">Lazarus</div>
+      </div>
+      <div class="site-chip">
+        <span id="status-beacon" class="status-beacon" title="Active Recording"></span>
+        <span id="active-domain-text">current site</span>
+      </div>
+    </header>
+
+    <!-- Domain Status Banner -->
+    <section class="domain-banner">
+      <div class="domain-info">
+        <span class="domain-name" id="domain-display">Checking site...</span>
+        <span class="domain-stats" id="domain-stats">Tracking enabled</span>
+      </div>
+      <label class="switch" title="Toggle Lazarus on this domain">
+        <input type="checkbox" id="domain-toggle" checked />
+        <span class="slider"></span>
+      </label>
+    </section>
+
+    <!-- Tab Switcher -->
+    <nav class="tab-switcher">
+      <button class="tab-btn is-active" id="tab-current">Current Tab</button>
+      <button class="tab-btn" id="tab-search">Global Search</button>
+    </nav>
+
+    <!-- Search Bar (shown when Global Search selected) -->
+    <div class="search-container" id="search-container">
+      <input
+        type="search"
+        class="search-input"
+        id="search-input"
+        placeholder="Filter by keyword, title, or text..."
+      />
     </div>
-    <div class="site-chip">
-      <span id="status-beacon" class="status-beacon" title="Active Recording"></span>
-      <span id="active-domain-text">current site</span>
-    </div>
-  </header>
 
-  <!-- Domain Status Banner -->
-  <section class="domain-banner">
-    <div class="domain-info">
-      <span class="domain-name" id="domain-display">Checking site...</span>
-      <span class="domain-stats" id="domain-stats">Tracking enabled</span>
-    </div>
-    <label class="switch" title="Toggle Lazarus on this domain">
-      <input type="checkbox" id="domain-toggle" checked>
-      <span class="slider"></span>
-    </label>
-  </section>
+    <!-- Content Feed -->
+    <main class="content-area" id="feed-container">
+      <div class="empty-state">Loading saved drafts...</div>
+    </main>
 
-  <!-- Tab Switcher -->
-  <nav class="tab-switcher">
-    <button class="tab-btn is-active" id="tab-current">Current Tab</button>
-    <button class="tab-btn" id="tab-search">Global Search</button>
-  </nav>
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <button class="vault-status-btn" id="vault-btn" title="Click to lock/unlock vault">
+        <span id="vault-icon">🔓</span>
+        <span id="vault-label">Vault: Off</span>
+      </button>
+      <div class="footer-nav">
+        <a class="footer-link" id="open-sidepanel-link">Side Panel ↗</a>
+        <a class="footer-link" id="open-options-link">⚙️ Options</a>
+      </div>
+    </footer>
 
-  <!-- Search Bar (shown when Global Search selected) -->
-  <div class="search-container" id="search-container">
-    <input type="search" class="search-input" id="search-input" placeholder="Filter by keyword, title, or text...">
-  </div>
-
-  <!-- Content Feed -->
-  <main class="content-area" id="feed-container">
-    <div class="empty-state">Loading saved drafts...</div>
-  </main>
-
-  <!-- Footer -->
-  <footer class="popup-footer">
-    <button class="vault-status-btn" id="vault-btn" title="Click to lock/unlock vault">
-      <span id="vault-icon">🔓</span>
-      <span id="vault-label">Vault: Off</span>
-    </button>
-    <div class="footer-nav">
-      <a class="footer-link" id="open-sidepanel-link">Side Panel ↗</a>
-      <a class="footer-link" id="open-options-link">⚙️ Options</a>
-    </div>
-  </footer>
-
-  <script type="module" src="./popup.ts"></script>
-</body>
+    <script type="module" src="./popup.ts"></script>
+  </body>
 </html>

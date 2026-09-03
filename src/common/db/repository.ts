@@ -28,9 +28,8 @@ export function matchesDomainPattern(hostname: string, pattern: string): boolean
   if (normHost === normPattern) return true;
 
   // Convert wildcard pattern to regex
-  const regexPattern = '^' + normPattern
-    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/\*/g, '.*') + '$';
+  const regexPattern =
+    '^' + normPattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$';
 
   return new RegExp(regexPattern).test(normHost);
 }
@@ -102,7 +101,7 @@ export class LazarusRepository {
    */
   public async enableDomain(domain: string): Promise<void> {
     const settings = await this.getSettings();
-    const updated = settings.disabledDomains.filter(d => d !== domain);
+    const updated = settings.disabledDomains.filter((d) => d !== domain);
     await this.updateSettings({ disabledDomains: updated });
   }
 
@@ -127,20 +126,23 @@ export class LazarusRepository {
       existingRevisions = await db.forms
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
+        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
         .reverse()
         .sortBy('lastModified');
     } catch {
       existingRevisions = await db.forms
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
+        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
         .reverse()
         .sortBy('lastModified');
     }
 
     const latestRevision = existingRevisions[0];
-    const maxRevisionNumber = existingRevisions.reduce((max, r) => Math.max(max, r.revisionNumber || 1), 0);
+    const maxRevisionNumber = existingRevisions.reduce(
+      (max, r) => Math.max(max, r.revisionNumber || 1),
+      0
+    );
 
     // Milestones: 5 minutes of active editing within a revision, or 15 minutes of idle
     const MILESTONE_DURATION_MS = 5 * 60 * 1000;
@@ -155,8 +157,10 @@ export class LazarusRepository {
       }
     }
 
-    const isRevisionMilestoneReached = (now - revisionCreationTime >= MILESTONE_DURATION_MS);
-    const isIdleTimeout = latestRevision ? (now - latestRevision.lastModified >= SESSION_IDLE_TIMEOUT_MS) : true;
+    const isRevisionMilestoneReached = now - revisionCreationTime >= MILESTONE_DURATION_MS;
+    const isIdleTimeout = latestRevision
+      ? now - latestRevision.lastModified >= SESSION_IDLE_TIMEOUT_MS
+      : true;
 
     const shouldSpawnNewRevision =
       forceNewRevision ||
@@ -254,7 +258,11 @@ export class LazarusRepository {
    * Retrieves recoverable text drafts for a specific field across all historical revisions,
    * returning unique values sorted by lastModified DESC.
    */
-  public async getRecoverableText(domain: string, fieldName: string, fieldType: string): Promise<any[]> {
+  public async getRecoverableText(
+    domain: string,
+    fieldName: string,
+    fieldType: string
+  ): Promise<any[]> {
     const domainId = normalizeDomainId(domain);
 
     // 1. Exact match by [domainId+name+type]
@@ -263,14 +271,20 @@ export class LazarusRepository {
       fields = await db.fields
         .where('[domainId+name+type]')
         .equals([domainId, fieldName, fieldType])
-        .filter(f => f.status === 0 && f.value.trim().length > 0)
+        .filter((f) => f.status === 0 && f.value.trim().length > 0)
         .reverse()
         .sortBy('lastModified');
     } catch {
       fields = await db.fields
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.status === 0 && f.name === fieldName && f.type === fieldType && f.value.trim().length > 0)
+        .filter(
+          (f) =>
+            f.status === 0 &&
+            f.name === fieldName &&
+            f.type === fieldType &&
+            f.value.trim().length > 0
+        )
         .reverse()
         .sortBy('lastModified');
     }
@@ -280,7 +294,7 @@ export class LazarusRepository {
       fields = await db.fields
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.status === 0 && f.name === fieldName && f.value.trim().length > 0)
+        .filter((f) => f.status === 0 && f.name === fieldName && f.value.trim().length > 0)
         .reverse()
         .sortBy('lastModified');
     }
@@ -290,13 +304,13 @@ export class LazarusRepository {
       fields = await db.fields
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.status === 0 && f.value.trim().length > 0)
+        .filter((f) => f.status === 0 && f.value.trim().length > 0)
         .reverse()
         .sortBy('lastModified');
     }
 
     const decryptedList = await Promise.all(
-      fields.map(async f => {
+      fields.map(async (f) => {
         let val = f.value;
         try {
           val = await vault.decrypt(f.value, f.encryption);
@@ -340,19 +354,19 @@ export class LazarusRepository {
       forms = await db.forms
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
+        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
         .reverse()
         .sortBy('lastModified');
     } catch {
       forms = await db.forms
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.formInstanceId === formInstanceId && f.status === 0)
+        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
         .reverse()
         .sortBy('lastModified');
     }
 
-    return await Promise.all(forms.map(f => this.formatFormOutput(f)));
+    return await Promise.all(forms.map((f) => this.formatFormOutput(f)));
   }
 
   /**
@@ -365,19 +379,19 @@ export class LazarusRepository {
       forms = await db.forms
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter(f => f.status === 0)
+        .filter((f) => f.status === 0)
         .reverse()
         .sortBy('lastModified');
     } catch {
       forms = await db.forms
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.status === 0)
+        .filter((f) => f.status === 0)
         .reverse()
         .sortBy('lastModified');
     }
 
-    return await Promise.all(forms.slice(0, limit).map(f => this.formatFormOutput(f)));
+    return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }
 
   /**
@@ -388,11 +402,11 @@ export class LazarusRepository {
     const rawFields = await db.fields
       .where('formId')
       .equals(formId)
-      .filter(f => f.status === 0)
+      .filter((f) => f.status === 0)
       .toArray();
 
     const fields = await Promise.all(
-      rawFields.map(async f => {
+      rawFields.map(async (f) => {
         let val = f.value;
         try {
           val = await vault.decrypt(f.value, f.encryption);
@@ -425,13 +439,9 @@ export class LazarusRepository {
     const lowerQuery = query.toLowerCase().trim();
 
     if (!lowerQuery) {
-      const forms = await db.forms
-        .where('status')
-        .equals(0)
-        .reverse()
-        .sortBy('lastModified');
+      const forms = await db.forms.where('status').equals(0).reverse().sortBy('lastModified');
 
-      return await Promise.all(forms.slice(0, limit).map(f => this.formatFormOutput(f)));
+      return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
     }
 
     // 1. Search in Forms by title or url
@@ -439,7 +449,10 @@ export class LazarusRepository {
     const matchingFormIds = new Set<string>();
 
     for (const form of allForms) {
-      if (form.title?.toLowerCase().includes(lowerQuery) || form.domainId?.toLowerCase().includes(lowerQuery)) {
+      if (
+        form.title?.toLowerCase().includes(lowerQuery) ||
+        form.domainId?.toLowerCase().includes(lowerQuery)
+      ) {
         matchingFormIds.add(form.id);
       }
     }
@@ -455,24 +468,20 @@ export class LazarusRepository {
     }
 
     const matchedForms = allForms
-      .filter(f => matchingFormIds.has(f.id))
+      .filter((f) => matchingFormIds.has(f.id))
       .sort((a, b) => b.lastModified - a.lastModified)
       .slice(0, limit);
 
-    return await Promise.all(matchedForms.map(f => this.formatFormOutput(f)));
+    return await Promise.all(matchedForms.map((f) => this.formatFormOutput(f)));
   }
 
   /**
    * Retrieves all forms across domains.
    */
   public async getAllHistory(limit = 50): Promise<any[]> {
-    const forms = await db.forms
-      .where('status')
-      .equals(0)
-      .reverse()
-      .sortBy('lastModified');
+    const forms = await db.forms.where('status').equals(0).reverse().sortBy('lastModified');
 
-    return await Promise.all(forms.slice(0, limit).map(f => this.formatFormOutput(f)));
+    return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }
 
   /**
@@ -485,19 +494,19 @@ export class LazarusRepository {
       forms = await db.forms
         .where('[domainId+lastModified]')
         .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter(f => f.status === 0)
+        .filter((f) => f.status === 0)
         .reverse()
         .sortBy('lastModified');
     } catch {
       forms = await db.forms
         .where('domainId')
         .equals(domainId)
-        .filter(f => f.status === 0)
+        .filter((f) => f.status === 0)
         .reverse()
         .sortBy('lastModified');
     }
 
-    return await Promise.all(forms.slice(0, limit).map(f => this.formatFormOutput(f)));
+    return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }
 
   /**
@@ -514,12 +523,9 @@ export class LazarusRepository {
   public async cleanupExpiredForms(): Promise<number> {
     const settings = await this.getSettings();
     const intervalDays = settings.expireFormsInterval || 10;
-    const cutoff = Date.now() - (intervalDays * 24 * 60 * 60 * 1000);
+    const cutoff = Date.now() - intervalDays * 24 * 60 * 60 * 1000;
 
-    const expiredForms = await db.forms
-      .where('lastModified')
-      .below(cutoff)
-      .toArray();
+    const expiredForms = await db.forms.where('lastModified').below(cutoff).toArray();
 
     let deletedCount = 0;
     for (const form of expiredForms) {
@@ -575,11 +581,11 @@ export class LazarusRepository {
     const rawFields = await db.fields
       .where('formId')
       .equals(form.id)
-      .filter(f => f.status === 0)
+      .filter((f) => f.status === 0)
       .toArray();
 
     const fields = await Promise.all(
-      rawFields.map(async f => {
+      rawFields.map(async (f) => {
         let val = f.value;
         try {
           val = await vault.decrypt(f.value, f.encryption);

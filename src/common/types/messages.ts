@@ -19,7 +19,10 @@ export interface FieldSnapshot {
 export type RuntimeMessage =
   | { type: 'SAVE_AUTOSAVE'; payload: { form: FormSnapshot } }
   | { type: 'SUBMIT_FORM'; payload: { form: FormSnapshot } }
-  | { type: 'GET_RECOVERABLE_TEXT'; payload: { domain: string; fieldName: string; fieldType: string } }
+  | {
+      type: 'GET_RECOVERABLE_TEXT';
+      payload: { domain: string; fieldName: string; fieldType: string };
+    }
   | { type: 'GET_RECOVERABLE_FORM'; payload: { formId: string } }
   | { type: 'CHECK_VAULT_STATUS' }
   | { type: 'UNLOCK_VAULT'; payload: { password: string } }
@@ -39,7 +42,10 @@ export type RuntimeMessage =
   | { type: 'EXPORT_DATA' }
   | { type: 'GET_FORM_REVISIONS'; payload: { domain: string; formInstanceId: string } }
   | { type: 'FORCE_SAVE_SNAPSHOT'; payload: { form: FormSnapshot } }
-  | { type: 'UPDATE_CONTEXT_MENU'; payload: { domain: string; formInstanceId?: string; fieldName?: string; fieldType?: string } }
+  | {
+      type: 'UPDATE_CONTEXT_MENU';
+      payload: { domain: string; formInstanceId?: string; fieldName?: string; fieldType?: string };
+    }
   | { type: 'RESTORE_FORM_TO_ACTIVE_TAB'; payload: { formId: string } };
 
 export interface RuntimeResponse<T = any> {

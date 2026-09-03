@@ -61,13 +61,13 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
       expect(snapshot.formInstanceId).toBe('registration-form');
       expect(snapshot.fields.length).toBe(3);
 
-      const uField = snapshot.fields.find(f => f.name === 'username');
+      const uField = snapshot.fields.find((f) => f.name === 'username');
       expect(uField?.value).toBe('phoenix_user');
 
-      const bField = snapshot.fields.find(f => f.name === 'bio');
+      const bField = snapshot.fields.find((f) => f.name === 'bio');
       expect(bField?.value).toBe('Software engineer & extension builder');
 
-      const rField = snapshot.fields.find(f => f.name === 'role');
+      const rField = snapshot.fields.find((f) => f.name === 'role');
       expect(rField?.value).toBe('dev');
     });
 
@@ -92,8 +92,8 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
       document.body.appendChild(form);
 
       const snapshot = FieldExtractor.buildFormSnapshot(cb);
-      expect(snapshot.fields.find(f => f.name === 'subscribe')?.value).toBe('newsletter');
-      expect(snapshot.fields.find(f => f.name === 'plan')?.value).toBe('pro');
+      expect(snapshot.fields.find((f) => f.name === 'subscribe')?.value).toBe('newsletter');
+      expect(snapshot.fields.find((f) => f.name === 'plan')?.value).toBe('pro');
     });
 
     it('should ignore password fields by default', () => {
@@ -143,7 +143,7 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
 
     it('should handle multi-select and ignore non-trackable button input types', () => {
       // Button types
-      ['hidden', 'submit', 'button', 'reset', 'image'].forEach(t => {
+      ['hidden', 'submit', 'button', 'reset', 'image'].forEach((t) => {
         const btn = document.createElement('input');
         btn.type = t;
         expect(FieldExtractor.isTrackable(btn)).toBe(false);

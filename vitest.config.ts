@@ -17,11 +17,7 @@ export default defineConfig({
         'src/sidepanel/**/*.ts',
         'src/options/**/*.ts',
       ],
-      exclude: [
-        'src/vite-env.d.ts',
-        'src/background/index.ts',
-        'src/content/index.ts',
-      ],
+      exclude: ['src/vite-env.d.ts', 'src/background/index.ts', 'src/content/index.ts'],
     },
   },
 });

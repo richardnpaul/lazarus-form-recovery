@@ -1,4 +1,3 @@
-
 export interface StoredFormRecord {
   id: string;
   domainId: string;
@@ -42,7 +41,11 @@ export interface IFormRepositoryPort {
   getAllHistory(limit?: number): Promise<FormWithFields[]>;
   getDomainHistory(domain: string, limit?: number): Promise<FormWithFields[]>;
   searchHistory(query: string, limit?: number): Promise<FormWithFields[]>;
-  getRecoverableText(domain: string, fieldName: string, fieldType: string): Promise<StoredFieldRecord[]>;
+  getRecoverableText(
+    domain: string,
+    fieldName: string,
+    fieldType: string
+  ): Promise<StoredFieldRecord[]>;
   softDeleteForm(formId: string): Promise<void>;
   softDeleteRevision(formId: string): Promise<void>;
   clearAllHistory(): Promise<void>;

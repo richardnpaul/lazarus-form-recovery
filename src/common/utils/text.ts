@@ -28,7 +28,10 @@ export function computeWordCount(text: string): number {
  */
 export function sanitizePreview(text: string, maxLength = 80): string {
   if (!text) return '';
-  const clean = text.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+  const clean = text
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   if (clean.length <= maxLength) return clean;
   return clean.slice(0, maxLength) + '...';
 }

@@ -11,7 +11,9 @@ globalThis.ResizeObserver = class ResizeObserver {
 } as any;
 
 // Mock Chrome extension APIs for headless unit testing
-const messageListeners: Array<(message: any, sender: any, sendResponse: (res?: any) => void) => void> = [];
+const messageListeners: Array<
+  (message: any, sender: any, sendResponse: (res?: any) => void) => void
+> = [];
 const contextMenuClickListeners: Array<(info: any, tab: any) => void> = [];
 
 const mockStorage: Record<string, any> = {};

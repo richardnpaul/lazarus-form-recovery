@@ -11,7 +11,11 @@ export interface SaveFormResult {
 }
 
 export interface ISaveFormDraftUseCase {
-  execute(formSnapshot: FormSnapshotData, tabId?: number, forceNewRevision?: boolean): Promise<SaveFormResult>;
+  execute(
+    formSnapshot: FormSnapshotData,
+    tabId?: number,
+    forceNewRevision?: boolean
+  ): Promise<SaveFormResult>;
 }
 
 export interface ISubmitFormUseCase {

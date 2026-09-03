@@ -9,18 +9,22 @@
     "build:chrome": "BROWSER=chrome tsc && BROWSER=chrome vite build --outDir dist-chrome",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\""
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.7.1",
     "@types/chrome": "^0.2.8",
     "@types/node": "^26.4.1",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.0",
     "fake-indexeddb": "^6.2.5",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "dependencies": {
     "dexie": "^4.4.5"

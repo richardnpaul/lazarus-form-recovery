@@ -15,7 +15,10 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     await db.settings.clear();
 
     // 2. Set up DOM containing both the Web Page Form and the Sidepanel
-    const sidepanelHtml = fs.readFileSync(path.resolve(__dirname, '../../src/sidepanel/sidepanel.html'), 'utf-8');
+    const sidepanelHtml = fs.readFileSync(
+      path.resolve(__dirname, '../../src/sidepanel/sidepanel.html'),
+      'utf-8'
+    );
     const match = sidepanelHtml.match(/<body[^>]*>([\s\S]*)<\/body>/i);
     const sidepanelBody = match ? match[1] : sidepanelHtml;
 
@@ -69,7 +72,7 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     custFeedback.dispatchEvent(new Event('input', { bubbles: true }));
 
     // Wait for debounce (500ms) + background save + broadcast + sidebar render
-    await new Promise(r => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 700));
 
     // Verify draft was saved in DB
     const formsInDb = await db.forms.toArray();
@@ -98,7 +101,7 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     testBody.dispatchEvent(new Event('input', { bubbles: true }));
 
     // Wait for debounce (500ms) + background save + broadcast + sidebar render
-    await new Promise(r => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 700));
 
     // Verify draft was saved in DB
     const formsInDb = await db.forms.toArray();
@@ -129,7 +132,7 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     playgroundForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
     // Wait for background persistence and UI reload
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
 
     const formsInDb = await db.forms.toArray();
     expect(formsInDb.length).toBe(1);
@@ -152,20 +155,20 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     testBody.value = 'Nothing to see here.';
     playgroundForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
-    await new Promise(r => setTimeout(r, 250));
+    await new Promise((r) => setTimeout(r, 250));
     expect(historyList.querySelectorAll('.history-item').length).toBe(1);
 
     // Search for non-matching query
     searchInput.value = 'BetaZetaNotFound';
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    await new Promise(r => setTimeout(r, 350));
+    await new Promise((r) => setTimeout(r, 350));
 
     expect(historyList.querySelectorAll('.history-item').length).toBe(0);
 
     // Search for matching query
     searchInput.value = 'Alpha';
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    await new Promise(r => setTimeout(r, 350));
+    await new Promise((r) => setTimeout(r, 350));
 
     expect(historyList.querySelectorAll('.history-item').length).toBe(1);
   });

@@ -23,7 +23,7 @@ export function getElementSelector(element: Element): string {
   const parent = element.parentElement;
   if (!parent) return tag;
 
-  const children = Array.from(parent.children).filter(c => c.tagName === element.tagName);
+  const children = Array.from(parent.children).filter((c) => c.tagName === element.tagName);
   if (children.length > 1) {
     const index = children.indexOf(element) + 1;
     return `${tag}:nth-of-type(${index})`;

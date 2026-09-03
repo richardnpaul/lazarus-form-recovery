@@ -10,14 +10,17 @@
 ## 1. Executive Overview & Mission
 
 ### 1.1 Purpose
+
 **Lazarus: Form Recovery** is a browser extension designed to eliminate catastrophic loss of user input in web forms. It operates as a local, secure, and privacy-first background recorder that transparently captures input across traditional HTML forms, single-page application (SPA) dynamic inputs, `contenteditable` elements, WYSIWYG rich-text editors (Quill, TinyMCE, CKEditor, ProseMirror, Slate, Lexical), and AJAX/Fetch-driven form flows.
 
 When a user encounters a browser crash, power outage, accidental tab/window closure, session expiration, network failure, or unintentional form reset, Lazarus allows them to restore either the entire form state or individual field contents with a single click or keyboard shortcut.
 
 ### 1.2 Modernization Imperative
+
 The legacy codebase (`v2.x`/`v3.2.x`) was authored around deprecated browser extension APIs (XUL/XPCOM, Safari 5 `.safariextz`, Manifest V2 persistent background pages, WebSQL `openDatabase`, unmaintained Lovefield IndexedDB wrappers, custom JavaScript crypto string manipulations, and synchronous storage).
 
 This specification provides an exhaustive, unambiguous blueprint for rebuilding the extension from scratch to modern browser extension standards (**Manifest V3** across Chrome, Brave, Edge, Firefox, and Safari) with:
+
 1. **Zero-leak sandboxing** via Closed Shadow DOM.
 2. **Hardware-accelerated native cryptography** via the W3C Web Crypto API (AES-GCM-256 + PBKDF2/Argon2id).
 3. **Structured asynchronous storage** via IndexedDB with typed schemas.
@@ -52,6 +55,7 @@ lazarus_addon/
 ```
 
 ### 2.1 Core Subsystems in Legacy Code
+
 1. **Form Tracking Engine (`content.js`):**
    - Intercepts `input`, `keyup`, `change`, `focus`, `blur`, `submit`, `reset`, and `scroll`.
    - Distinguishes standard inputs from rich text (`textarea`, `contenteditable`, `iframe[designMode="on"]`).
@@ -72,6 +76,7 @@ lazarus_addon/
    - Automated expiration worker running every 30 minutes to drop records older than `expireFormsInterval` days.
 
 ### 2.2 Legacy UI/UX Audit & Technical Deficiencies
+
 A rigorous examination of the legacy user interface files (`options.html`, `options.css`, `login.html`, `disable-on-site.html`, `menu.js`, `dialog.js`) reveals severe architectural flaws, obsolete styling, and security vulnerabilities that must be discarded:
 
 1. **Host DOM Pollution & Bidirectional CSS Bleed:**
@@ -99,17 +104,17 @@ A rigorous examination of the legacy user interface files (`options.html`, `opti
 
 The table below documents every legacy architectural pattern that is broken or illegal in modern browsers, along with its required modern implementation:
 
-| Legacy Component / Pattern | Legacy Implementation | MV3 / Modern Limitation | Modern Architectural Replacement |
-| :--- | :--- | :--- | :--- |
-| **Background Execution** | Persistent `background.html` page running continuous in-memory timers (`setTimeout`, `setInterval`) and storing state in `Lazarus.Background.*` globals. | Service workers are **ephemeral** and terminated after ~30 seconds of inactivity. In-memory variables are lost on sleep; `window` and `document` do not exist. | **Stateless MV3 Service Worker (`background.ts`)**. All state persisted to `chrome.storage.session` (ephemeral) and `IndexedDB` (permanent). Background timers replaced with `chrome.alarms`. |
-| **Database Layer** | WebSQL (`openDatabase("lazarus3.sqlite")`) and Lovefield. | **WebSQL is completely removed** from all modern Chromium builds and WebKit. Lovefield is deprecated. | **IndexedDB** using **Dexie.js** or a typed native wrapper (`idb`). Fully accessible from both Service Workers and extension UI pages. |
-| **Cryptography** | Custom JavaScript implementations of RSA (`rsa.js`) and AES (`aes.js`) manipulating raw strings and binary conversions. Vulnerable to timing attacks. | Extension CSP strictly forbids `eval()` and insecure scripting. CPU-heavy synchronous JS crypto blocks Service Worker event loops. | **W3C Web Crypto API (`crypto.subtle`)**. Hardware-accelerated AES-GCM (256-bit) with PBKDF2 (SHA-256, 100k+ iterations) or Argon2id via WASM for key derivation. Constant-time execution. |
-| **In-Page Dialogs** | Injected `iframe` referencing `chrome-extension://.../login.html` directly into host pages via `dialog.js`, communicating via `window.postMessage`. | Modern web CSP (`frame-src`, `trusted-types`) blocks extension iframes on high-security sites (GitHub, banks, Google). Injected iframes leak extension presence. | **Closed Shadow DOM Overlay** or **Native Extension Action Popup / Side Panel** (`chrome.sidePanel`). Password prompts rendered in isolated Shadow Root or extension popup. |
-| **In-Situ Button & Menu** | Unscoped custom HTML tags (`<lazarusbutton>`, `<lazarusmenu>`, `<lazarusoverlay>`) appended to `doc.documentElement` with global stylesheets. | Host page CSS leaks into Lazarus UI (breaking layouts/fonts); Lazarus styles can corrupt host page rendering. Host JS can inspect/hijack menu events. | **Encapsulated Custom Element with Closed Shadow DOM** (`<lazarus-recovery-host>`). Injected Shadow Root isolates all CSS and DOM events from the host page. |
-| **Storage & Preferences** | Synchronous `localStorage` in background page and content scripts. | `localStorage` is **not available** in MV3 Service Workers. | **`chrome.storage.local`** (persistent settings/flags) and **`chrome.storage.session`** (in-memory fast cache, cleared on browser close). |
-| **Cross-Frame Tracking** | `fix-undefined-frames.js` recursive traversal of `iframe.contentDocument` across the DOM tree. | Violates cross-origin iframe security boundaries (SOP). Throws cross-origin `DOMException`. | Content scripts declared with `"all_frames": true` and `"match_about_blank": true`. Each frame operates independently and communicates directly with the Service Worker. |
-| **Rich Text Editor Support** | Hardcoded DOM queries (`textarea`, `div.isContentEditable`) and Facebook-specific hacks (`kludgeIsFacebookCommentField`). | Modern web uses complex virtual DOM and Rich Text frameworks (Lexical, ProseMirror, Slate, Monaco, CodeMirror, Shadow DOM components). | **Modern MutationObserver + Composed Path Event Delegation** + Dedicated adapters for Quill, TinyMCE, CKEditor, Lexical, DraftJS, and Monaco. |
-| **Backend Cloud Sync** | Obsolete proprietary XMLHttpRequests to decommissioned server (`getlazarus.com`) with SJCL PBKDF2. | Inactive endpoints, insecure HTTP fallback, unmaintained SJCL library. | **Optional Modern End-to-End Encrypted (E2EE) Sync Protocol** using WebCrypto + user-controlled WebDAV / Cloudflare Workers / Supabase, or omitted in Core to guarantee 100% offline privacy. |
+| Legacy Component / Pattern   | Legacy Implementation                                                                                                                                    | MV3 / Modern Limitation                                                                                                                                          | Modern Architectural Replacement                                                                                                                                                              |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Background Execution**     | Persistent `background.html` page running continuous in-memory timers (`setTimeout`, `setInterval`) and storing state in `Lazarus.Background.*` globals. | Service workers are **ephemeral** and terminated after ~30 seconds of inactivity. In-memory variables are lost on sleep; `window` and `document` do not exist.   | **Stateless MV3 Service Worker (`background.ts`)**. All state persisted to `chrome.storage.session` (ephemeral) and `IndexedDB` (permanent). Background timers replaced with `chrome.alarms`. |
+| **Database Layer**           | WebSQL (`openDatabase("lazarus3.sqlite")`) and Lovefield.                                                                                                | **WebSQL is completely removed** from all modern Chromium builds and WebKit. Lovefield is deprecated.                                                            | **IndexedDB** using **Dexie.js** or a typed native wrapper (`idb`). Fully accessible from both Service Workers and extension UI pages.                                                        |
+| **Cryptography**             | Custom JavaScript implementations of RSA (`rsa.js`) and AES (`aes.js`) manipulating raw strings and binary conversions. Vulnerable to timing attacks.    | Extension CSP strictly forbids `eval()` and insecure scripting. CPU-heavy synchronous JS crypto blocks Service Worker event loops.                               | **W3C Web Crypto API (`crypto.subtle`)**. Hardware-accelerated AES-GCM (256-bit) with PBKDF2 (SHA-256, 100k+ iterations) or Argon2id via WASM for key derivation. Constant-time execution.    |
+| **In-Page Dialogs**          | Injected `iframe` referencing `chrome-extension://.../login.html` directly into host pages via `dialog.js`, communicating via `window.postMessage`.      | Modern web CSP (`frame-src`, `trusted-types`) blocks extension iframes on high-security sites (GitHub, banks, Google). Injected iframes leak extension presence. | **Closed Shadow DOM Overlay** or **Native Extension Action Popup / Side Panel** (`chrome.sidePanel`). Password prompts rendered in isolated Shadow Root or extension popup.                   |
+| **In-Situ Button & Menu**    | Unscoped custom HTML tags (`<lazarusbutton>`, `<lazarusmenu>`, `<lazarusoverlay>`) appended to `doc.documentElement` with global stylesheets.            | Host page CSS leaks into Lazarus UI (breaking layouts/fonts); Lazarus styles can corrupt host page rendering. Host JS can inspect/hijack menu events.            | **Encapsulated Custom Element with Closed Shadow DOM** (`<lazarus-recovery-host>`). Injected Shadow Root isolates all CSS and DOM events from the host page.                                  |
+| **Storage & Preferences**    | Synchronous `localStorage` in background page and content scripts.                                                                                       | `localStorage` is **not available** in MV3 Service Workers.                                                                                                      | **`chrome.storage.local`** (persistent settings/flags) and **`chrome.storage.session`** (in-memory fast cache, cleared on browser close).                                                     |
+| **Cross-Frame Tracking**     | `fix-undefined-frames.js` recursive traversal of `iframe.contentDocument` across the DOM tree.                                                           | Violates cross-origin iframe security boundaries (SOP). Throws cross-origin `DOMException`.                                                                      | Content scripts declared with `"all_frames": true` and `"match_about_blank": true`. Each frame operates independently and communicates directly with the Service Worker.                      |
+| **Rich Text Editor Support** | Hardcoded DOM queries (`textarea`, `div.isContentEditable`) and Facebook-specific hacks (`kludgeIsFacebookCommentField`).                                | Modern web uses complex virtual DOM and Rich Text frameworks (Lexical, ProseMirror, Slate, Monaco, CodeMirror, Shadow DOM components).                           | **Modern MutationObserver + Composed Path Event Delegation** + Dedicated adapters for Quill, TinyMCE, CKEditor, Lexical, DraftJS, and Monaco.                                                 |
+| **Backend Cloud Sync**       | Obsolete proprietary XMLHttpRequests to decommissioned server (`getlazarus.com`) with SJCL PBKDF2.                                                       | Inactive endpoints, insecure HTTP fallback, unmaintained SJCL library.                                                                                           | **Optional Modern End-to-End Encrypted (E2EE) Sync Protocol** using WebCrypto + user-controlled WebDAV / Cloudflare Workers / Supabase, or omitted in Core to guarantee 100% offline privacy. |
 
 ---
 
@@ -166,7 +171,9 @@ The table below documents every legacy architectural pattern that is broken or i
 ### 4.1 Form & Input Interception Engine
 
 #### 4.1.1 Supported Field Types
+
 The extension must track and capture:
+
 1. **Standard HTML Form Controls:**
    - Text inputs: `type="text"`, `search`, `url`, `tel`, `email`, `password` (configurable), `number`, `date`, `datetime-local`, `month`, `week`, `color`.
    - Multiline inputs: `<textarea>`.
@@ -184,13 +191,16 @@ The extension must track and capture:
    - Inputs existing outside a `<form>` tag (common in modern React/Vue applications) must be automatically synthesized into a virtual form entity keyed by `window.location.href` and container DOM path.
 
 #### 4.1.2 Input Event Handling & Debouncing
+
 - **Typing Events:** The content script listens for `input`, `compositionend`, and `change` events in the capture phase (`useCapture: true`).
 - **Autosave Debounce:** Keystrokes reset an autosave timer (`AUTOSAVE_DELAY = 500ms`). When the user pauses typing for 500ms, the field state is bundled and transmitted to the Service Worker.
 - **Form Submission:** Listening to the `submit` event on `document`. When intercepted, all field values in the form are immediately collected and flagged as a finalized submission.
 - **Form Reset:** Listening to the `reset` event on `document`. Before the native reset clears values, Lazarus captures a snapshot so accidental resets can be reversed.
 
 #### 4.1.3 Active Editing Time Calculation
+
 To calculate saved user time without recording keylog timestamps:
+
 - Maintain `startEditTime` and `lastEditTime` timestamps per form instance.
 - If no input occurs for `EDITING_IDLE_TIME` (300,000ms / 5 minutes), the active timer pauses.
 - Total editing time is aggregated as $\sum (\text{lastEdit} - \text{startEdit})$ across all active editing intervals.
@@ -200,11 +210,13 @@ To calculate saved user time without recording keylog timestamps:
 ### 4.2 Storage Pipeline & Two-Tier Lifecycle
 
 #### 4.2.1 Tier 1: Ephemeral Autosave Buffer (`chrome.storage.session`)
+
 - As the user types, forms are saved to `chrome.storage.session` under `autosaves:{tabId}:{formInstanceId}`.
 - Autosaves represent volatile, in-progress drafts.
 - If the browser crashes or the tab is closed without submission, the session store preserves the text.
 
 #### 4.2.2 Tier 2: Permanent Encrypted Vault (IndexedDB)
+
 - An autosave is migrated to permanent IndexedDB storage when:
   1. The form fires a `submit` event.
   2. The form remains unedited for longer than `AUTOSAVE_EXPIRY_TIME` (5 minutes) and contains more than 10 characters of text.
@@ -216,6 +228,7 @@ To calculate saved user time without recording keylog timestamps:
 ### 4.3 In-Situ Recovery UI (Shadow DOM)
 
 #### 4.3.1 Floating Icon (`<lazarus-button>`)
+
 - When an editable field receives `focus`, a custom element `<lazarus-recovery-host>` is attached to the document root if not already present.
 - Inside the Closed Shadow Root, a floating trigger button (`<button class="lazarus-icon">`) is positioned relative to the focused element's `getBoundingClientRect()`.
 - **Positioning Logic:**
@@ -224,6 +237,7 @@ To calculate saved user time without recording keylog timestamps:
   - Opacity: Transitions from `opacity: 0.3` (idle) to `opacity: 1.0` (hover/focus).
 
 #### 4.3.2 Dropdown Recovery Menu (`<lazarus-menu>`)
+
 - Clicking the button displays an isolated dropdown menu.
 - **Menu Contents:**
   - List of past entries for this specific field / form, ordered by `lastModified` descending (max 10 entries).
@@ -232,12 +246,13 @@ To calculate saved user time without recording keylog timestamps:
     - Relative timestamp (e.g., "2 minutes ago", "Yesterday 4:15 PM").
     - Word / character count.
   - Special Actions:
-    - *Recover Entire Form* (if multiple fields match).
-    - *Disable on [domain.com]* (quick blocklist shortcut).
-    - *Extension Settings* (opens `options.html`).
-    - *Lock / Unlock Vault* (if Master Password is enabled).
+    - _Recover Entire Form_ (if multiple fields match).
+    - _Disable on [domain.com]_ (quick blocklist shortcut).
+    - _Extension Settings_ (opens `options.html`).
+    - _Lock / Unlock Vault_ (if Master Password is enabled).
 
 #### 4.3.3 Live Hover-Preview & Rollback
+
 - **Hover:** When the user hovers over a menu item, the content script stashes the current field value into a temporary variable (`field._lazarusDraft`) and temporarily writes the historical text into the field with a visual indicator (`background-color: #FFF9D2; color: #333; outline: 2px dashed #E5A500;`).
 - **Mouse Out:** If the user moves the mouse away without clicking, the field reverts instantly to `field._lazarusDraft` and styling is restored.
 - **Click:** The chosen historical text is committed, `_lazarusDraft` is cleared, and an `input` + `change` event is dispatched so host framework bindings (React, Vue, etc.) register the update.
@@ -247,7 +262,9 @@ To calculate saved user time without recording keylog timestamps:
 ### 4.4 Cryptography & Security Subsystem
 
 #### 4.4.1 Encryption Modes
+
 The user can select between two security tiers in settings:
+
 1. **Standard Mode (`none`):**
    - Data is stored in local IndexedDB without application-layer encryption.
    - Relies on OS-level disk encryption (FileVault, BitLocker, LUKS) and browser profile isolation.
@@ -260,6 +277,7 @@ The user can select between two security tiers in settings:
    - **Zero Knowledge:** The Master Password is never written to disk or storage. Only the salt and an encrypted verification token (to validate correct password entry) are persisted.
 
 #### 4.4.2 Privacy & Sensitive Data Scrubbing
+
 - **Password Fields:** By default, `input[type="password"]` is **ignored and never saved** unless the user explicitly toggles `savePasswords: true` in settings.
 - **Credit Card / PII Detection:** Text matching the Luhn algorithm (13–19 digit credit card sequences) or CVV patterns is automatically redacted or blocked from storage.
 - **Private / Incognito Browsing:** When a tab is in incognito mode (`tab.incognito === true`), Lazarus is **automatically disabled** by default unless the user explicitly enables incognito permissions and toggles incognito capture in options.
@@ -316,6 +334,7 @@ The user can select between two security tiers in settings:
 To guarantee a world-class, premium, and zero-conflict user experience across all extension surfaces, the implementation must adhere strictly to the following design system tokens, component contracts, and interaction state machines.
 
 #### 4.6.1 CSS Design Tokens & Theming (`src/common/styles/theme.css`)
+
 All extension interfaces must utilize unified CSS custom properties supporting dynamic system theme switching (`@media (prefers-color-scheme: dark)` or manual `.theme-dark` class toggle):
 
 ```css
@@ -357,7 +376,8 @@ All extension interfaces must utilize unified CSS custom properties supporting d
   --lz-border-glass: hsla(0, 0%, 100%, 0.3);
 
   /* Typography Stack */
-  --lz-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --lz-font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --lz-font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
   --lz-font-size-xs: 11px;
   --lz-font-size-sm: 12px;
@@ -419,9 +439,11 @@ All extension interfaces must utilize unified CSS custom properties supporting d
 ```
 
 #### 4.6.2 In-Situ Shadow DOM Host & Components (`src/content/shadow-ui/`)
+
 The in-page UI must be completely immune to host page CSS bleed and script tampering.
 
 ##### A. Closed Shadow Host Initialization (`shadow-host.ts`)
+
 1. Maintain a single custom element `<lazarus-recovery-host>` attached to `document.documentElement`.
 2. Attach a **Closed Shadow Root**:
    ```typescript
@@ -449,11 +471,27 @@ The in-page UI must be completely immune to host page CSS bleed and script tampe
    ```
 
 ##### B. Floating Trigger Button (`recovery-button.ts`)
+
 1. **DOM Structure:**
    ```html
-   <button class="lz-trigger-btn" aria-label="Lazarus Form Recovery" title="Recover field text (Lazarus)">
-     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+   <button
+     class="lz-trigger-btn"
+     aria-label="Lazarus Form Recovery"
+     title="Recover field text (Lazarus)"
+   >
+     <svg
+       viewBox="0 0 24 24"
+       width="14"
+       height="14"
+       fill="none"
+       stroke="currentColor"
+       stroke-width="2.2"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+     >
+       <path
+         d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+       />
      </svg>
    </button>
    ```
@@ -473,6 +511,7 @@ The in-page UI must be completely immune to host page CSS bleed and script tampe
    - Transition: `transition: opacity var(--lz-duration-fast) var(--lz-ease-smooth), transform var(--lz-duration-fast) var(--lz-ease-spring), background var(--lz-duration-fast);`
 
 ##### C. Dropdown Recovery Menu (`recovery-menu.ts`)
+
 1. **DOM Structure:**
    ```html
    <div class="lz-menu-card" role="dialog" aria-label="Recoverable Drafts">
@@ -493,7 +532,9 @@ The in-page UI must be completely immune to host page CSS bleed and script tampe
            <span class="lz-timestamp">3 mins ago</span>
            <span class="lz-badge">142 words</span>
          </div>
-         <p class="lz-snippet-preview">The rebuilding project requires replacing WebSQL with Dexie.js...</p>
+         <p class="lz-snippet-preview">
+           The rebuilding project requires replacing WebSQL with Dexie.js...
+         </p>
        </li>
      </ul>
      <div class="lz-menu-footer">
@@ -520,7 +561,9 @@ The in-page UI must be completely immune to host page CSS bleed and script tampe
    - `Escape`: Close menu, revert preview draft, and return focus to target input.
 
 ##### D. Live Hover-Preview & Rollback Engine (`live-preview.ts`)
+
 To allow instant visual confirmation before restoring:
+
 1. **Hover Stash (`mouseenter` on `.lz-snippet-item`):**
    - Store active field draft: `targetField._lazarusOriginalValue = targetField.value;`
    - Store active field styling: `targetField._lazarusOriginalBg = targetField.style.backgroundColor;`
@@ -554,7 +597,9 @@ To allow instant visual confirmation before restoring:
 ---
 
 #### 4.6.3 Modern Extension Action Popup (`src/popup/popup.html`)
+
 The popup provides instantaneous inspection and quick actions for the active tab:
+
 - **Dimensions:** Fixed width `380px`, dynamic height (`min-height: 360px; max-height: 560px;`).
 - **Header Section:**
   - Lazarus logo with pulsating status beacon (Green = Recording, Yellow = Encrypted/Locked, Grey = Disabled on Site).
@@ -578,7 +623,9 @@ The popup provides instantaneous inspection and quick actions for the active tab
 ---
 
 #### 4.6.4 Modern Extension Side Panel (`src/sidepanel/sidepanel.html`)
+
 Designed for deep recovery, long-term history browsing, and revision diffing alongside the user's active browsing workflow:
+
 - **Registration:** Configured in `manifest.json` under `"side_panel"` and managed via `chrome.sidePanel.setPanelBehavior`.
 - **Layout:** Responsive column (`width: 100%; height: 100vh; overflow: hidden; display: flex; flex-direction: column;`).
 - **Global Search & Filter Hub:**
@@ -595,7 +642,9 @@ Designed for deep recovery, long-term history browsing, and revision diffing alo
 ---
 
 #### 4.6.5 Modern Options & Management Page (`src/options/options.html`)
+
 Replaces the legacy 860px fixed-width container with a fluid, modern settings center:
+
 - **Layout Architecture:**
   - Centered responsive container: `max-width: 1040px; margin: 0 auto; padding: 2.5rem 1.5rem; display: grid; grid-template-columns: 240px 1fr; gap: 2rem;`
   - Sticky left sidebar navigation with navigation items:
@@ -609,7 +658,7 @@ Replaces the legacy 860px fixed-width container with a fluid, modern settings ce
   - **Automatic PII / Credit Card Redaction:** Toggle switch enabling regex and Luhn algorithm pattern detection to prevent credit card numbers from touching IndexedDB.
   - **Data Retention Duration:** Interactive slider ranging from `1` to `30` days with visual day indicator chip and real-time expiration notice.
 - **Tab 2: Security & Vault (Master Password):**
-  - **Encryption Mode:** Radio card selector between *Standard Mode* (Unencrypted local storage) and *Master Password Mode* (AES-GCM-256 with PBKDF2).
+  - **Encryption Mode:** Radio card selector between _Standard Mode_ (Unencrypted local storage) and _Master Password Mode_ (AES-GCM-256 with PBKDF2).
   - **Master Password Configuration:**
     - "Set Master Password" / "Change Password" modal dialog.
     - Real-time password strength meter (entropy estimation, length check, complexity indicator).
@@ -702,40 +751,40 @@ lazarus-form-recovery/
 // src/common/types/schema.ts
 
 export interface IDBDomain {
-  id: string;               // SHA-256 hash of hostname
-  domain: string;           // Plain or encrypted domain string
+  id: string; // SHA-256 hash of hostname
+  domain: string; // Plain or encrypted domain string
   totalEditingTime: number; // Aggregate editing seconds
-  lastModified: number;     // Unix timestamp (ms)
-  status: number;           // 0: Active, 1: Soft-deleted
+  lastModified: number; // Unix timestamp (ms)
+  status: number; // 0: Active, 1: Soft-deleted
 }
 
 export interface IDBForm {
-  id: string;               // UUID v4 or deterministic SHA-256 hash
-  domainId: string;         // Foreign key -> IDBDomain.id
-  url: string;              // Full URL (plain or AES-GCM encrypted)
-  formInstanceId: string;   // Runtime DOM instance identifier
-  title: string;            // Page / Form title
+  id: string; // UUID v4 or deterministic SHA-256 hash
+  domainId: string; // Foreign key -> IDBDomain.id
+  url: string; // Full URL (plain or AES-GCM encrypted)
+  formInstanceId: string; // Runtime DOM instance identifier
+  title: string; // Page / Form title
   encryption: 'none' | 'hybrid-aes-gcm';
-  editingTime: number;      // Seconds spent editing this form
-  lastModified: number;     // Unix timestamp (ms)
-  status: number;           // 0: Active, 1: Soft-deleted
+  editingTime: number; // Seconds spent editing this form
+  lastModified: number; // Unix timestamp (ms)
+  status: number; // 0: Active, 1: Soft-deleted
 }
 
 export interface IDBField {
-  id: string;               // SHA-256(domain + name + type + value)
-  formId: string;           // Foreign key -> IDBForm.id
-  domainId: string;         // Foreign key -> IDBDomain.id
-  name: string;             // Field name or selector identifier
-  type: string;             // 'text' | 'textarea' | 'contenteditable' | 'select' | etc.
-  value: string;            // Plain text or AES-GCM encrypted ciphertext
+  id: string; // SHA-256(domain + name + type + value)
+  formId: string; // Foreign key -> IDBForm.id
+  domainId: string; // Foreign key -> IDBDomain.id
+  name: string; // Field name or selector identifier
+  type: string; // 'text' | 'textarea' | 'contenteditable' | 'select' | etc.
+  value: string; // Plain text or AES-GCM encrypted ciphertext
   encryption: 'none' | 'hybrid-aes-gcm';
-  lastModified: number;     // Unix timestamp (ms)
-  status: number;           // 0: Active, 1: Soft-deleted
+  lastModified: number; // Unix timestamp (ms)
+  status: number; // 0: Active, 1: Soft-deleted
 }
 
 export interface IDBSetting {
-  key: string;              // Primary key (e.g. 'expireFormsInterval')
-  value: any;               // JSON-serializable value
+  key: string; // Primary key (e.g. 'expireFormsInterval')
+  value: any; // JSON-serializable value
   lastModified: number;
 }
 ```
@@ -758,7 +807,7 @@ export class LazarusDatabase extends Dexie {
       domains: 'id, domain, lastModified, status',
       forms: 'id, domainId, url, lastModified, status, [domainId+lastModified]',
       fields: 'id, formId, domainId, name, type, lastModified, status, [domainId+name+type]',
-      settings: 'key, lastModified'
+      settings: 'key, lastModified',
     });
   }
 }
@@ -778,7 +827,10 @@ All communication between Content Scripts, Service Worker, Popup, and Options is
 export type RuntimeMessage =
   | { type: 'SAVE_AUTOSAVE'; payload: { form: FormSnapshot } }
   | { type: 'SUBMIT_FORM'; payload: { form: FormSnapshot } }
-  | { type: 'GET_RECOVERABLE_TEXT'; payload: { domain: string; fieldName: string; fieldType: string } }
+  | {
+      type: 'GET_RECOVERABLE_TEXT';
+      payload: { domain: string; fieldName: string; fieldType: string };
+    }
   | { type: 'GET_RECOVERABLE_FORM'; payload: { formId: string } }
   | { type: 'CHECK_VAULT_STATUS' }
   | { type: 'UNLOCK_VAULT'; payload: { password: string } }
@@ -840,7 +892,7 @@ export class WebCryptoVault {
         name: 'PBKDF2',
         salt,
         iterations: this.PBKDF2_ITERATIONS,
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       keyMaterial,
       { name: 'AES-GCM', length: this.AES_KEY_LENGTH },
@@ -882,11 +934,7 @@ export class WebCryptoVault {
     const iv = combined.slice(0, this.IV_LENGTH);
     const cipherBuffer = combined.slice(this.IV_LENGTH);
 
-    const plainBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      cipherBuffer
-    );
+    const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherBuffer);
 
     return new TextDecoder().decode(plainBuffer);
   }
@@ -928,16 +976,8 @@ export class WebCryptoVault {
   "side_panel": {
     "default_path": "src/sidepanel/sidepanel.html"
   },
-  "permissions": [
-    "storage",
-    "alarms",
-    "contextMenus",
-    "sidePanel"
-  ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
+  "permissions": ["storage", "alarms", "contextMenus", "sidePanel"],
+  "host_permissions": ["http://*/*", "https://*/*"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
@@ -970,18 +1010,22 @@ export class WebCryptoVault {
 ## 7. Testing, Toolchain, Signing & CI/CD Strategy
 
 ### 7.1 Modern Build Toolchain
+
 - **Vite** + **`@crxjs/vite-plugin`**: Real-time HMR during extension development, producing optimized tree-shaken ES modules for Chrome, Firefox, and Safari.
 - **TypeScript (Strict Mode)**: Comprehensive type safety across message contracts, database entities, and DOM interfaces.
 
 ### 7.2 Automated Test Suite
 
 #### 7.2.1 Unit Tests (Vitest)
+
 - **WebCrypto Vault Suite:** Validates AES-GCM encryption/decryption, wrong-password rejection, salt generation, and corruption handling.
 - **Database Suite:** Validates IndexedDB transactions, TTL record expiration, soft-deletion, and text search queries.
 - **Field Extractor Suite:** Unit tests parsing complex HTML forms, nested radio buttons, and multi-select options using JSDOM / Happy-DOM.
 
 #### 7.2.2 End-to-End Tests (Playwright)
+
 Playwright launches an isolated Chromium browser instance loaded with the unpacked extension:
+
 1. **Form Crash Recovery Scenario:**
    - Navigates to a mock form page.
    - Types into multiple textboxes, textareas, and Quill rich text editors.
@@ -1026,6 +1070,7 @@ Playwright launches an isolated Chromium browser instance loaded with the unpack
 ```
 
 #### GitHub Actions Workflow (`.github/workflows/release.yml`):
+
 ```yaml
 name: Release & Multi-Browser Publish
 

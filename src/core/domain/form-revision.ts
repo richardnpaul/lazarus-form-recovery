@@ -31,7 +31,8 @@ export interface RevisionDecision {
   revisionId: string;
   revisionNumber: number;
   formId: string;
-  reason: 'initial' | 'milestone_reached' | 'idle_timeout' | 'final_submit' | 'forced' | 'active_update';
+  reason:
+    'initial' | 'milestone_reached' | 'idle_timeout' | 'final_submit' | 'forced' | 'active_update';
 }
 
 export class FormRevisionPolicy {
@@ -49,7 +50,11 @@ export class FormRevisionPolicy {
   /**
    * Generates a deterministic Form ID from domain, formInstance, and revisionId.
    */
-  public static computeFormId(domainId: string, formInstanceId: string, revisionId: string): string {
+  public static computeFormId(
+    domainId: string,
+    formInstanceId: string,
+    revisionId: string
+  ): string {
     return `${domainId}_${formInstanceId}_${revisionId}`;
   }
 
@@ -132,7 +137,10 @@ export class FormRevisionPolicy {
       };
     }
 
-    const revisionCreationTime = this.extractCreationTime(latestRevision.revisionId, latestRevision.lastModified);
+    const revisionCreationTime = this.extractCreationTime(
+      latestRevision.revisionId,
+      latestRevision.lastModified
+    );
     const activeDuration = currentTime - revisionCreationTime;
     if (activeDuration >= this.MILESTONE_DURATION_MS) {
       const revisionId = this.generateRevisionId(currentTime);
@@ -170,6 +178,6 @@ export class FormRevisionPolicy {
     // Sort descending (newest first)
     const sorted = [...revisions].sort((a, b) => b.lastModified - a.lastModified);
     // Elements past maxRevisions are pruned
-    return sorted.slice(maxRevisions).map(r => r.id);
+    return sorted.slice(maxRevisions).map((r) => r.id);
   }
 }

@@ -138,9 +138,10 @@ function renderFeed(items: any[]) {
   feedContainer.innerHTML = '';
 
   if (items.length === 0) {
-    const msg = currentMode === 'current'
-      ? `No form saves recorded for ${currentHostname} yet.<br>Drafts are automatically saved as you type!`
-      : 'No matching form saves found.';
+    const msg =
+      currentMode === 'current'
+        ? `No form saves recorded for ${currentHostname} yet.<br>Drafts are automatically saved as you type!`
+        : 'No matching form saves found.';
     feedContainer.innerHTML = `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -173,13 +174,17 @@ function renderFeed(items: any[]) {
         </div>
       </div>
       <div class="accordion-fields">
-        ${fields.map((f: any) => `
+        ${fields
+          .map(
+            (f: any) => `
           <div class="field-item">
             <span class="field-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name || 'field')}:</span>
             <span class="field-val-preview">${escapeHtml(f.value)}</span>
             <button class="copy-mini-btn" data-val="${escapeAttr(f.value)}">Copy</button>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     `;
 
@@ -197,7 +202,9 @@ function renderFeed(items: any[]) {
       const combined = fields.map((f: any) => `${f.name}: ${f.value}`).join('\n\n') || firstVal;
       await navigator.clipboard.writeText(combined);
       copyAllBtn.textContent = 'Copied!';
-      setTimeout(() => { copyAllBtn.textContent = 'Copy Text'; }, 1500);
+      setTimeout(() => {
+        copyAllBtn.textContent = 'Copy Text';
+      }, 1500);
     });
 
     // Hook up Mini Copy buttons
@@ -208,7 +215,9 @@ function renderFeed(items: any[]) {
         await navigator.clipboard.writeText(val);
         const prev = target.textContent;
         target.textContent = '✓';
-        setTimeout(() => { target.textContent = prev; }, 1200);
+        setTimeout(() => {
+          target.textContent = prev;
+        }, 1200);
       });
     });
 
@@ -217,7 +226,11 @@ function renderFeed(items: any[]) {
 }
 
 function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function escapeAttr(str: string): string {
@@ -272,7 +285,9 @@ searchInput.addEventListener('input', () => {
 
 // Vault Lock / Unlock Click
 vaultBtn.addEventListener('click', async () => {
-  const statusRes: RuntimeResponse = await chrome.runtime.sendMessage({ type: 'CHECK_VAULT_STATUS' });
+  const statusRes: RuntimeResponse = await chrome.runtime.sendMessage({
+    type: 'CHECK_VAULT_STATUS',
+  });
   if (!statusRes?.success || !statusRes.data) return;
 
   const { hasMasterPassword, isUnlocked } = statusRes.data;

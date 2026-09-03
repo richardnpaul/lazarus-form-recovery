@@ -48,7 +48,11 @@ export async function handleRuntimeMessage(
 
       case 'GET_RECOVERABLE_TEXT': {
         const { domain, fieldName, fieldType } = message.payload;
-        const items = await container.restoreFormUseCase.getRecoverableText(domain, fieldName, fieldType);
+        const items = await container.restoreFormUseCase.getRecoverableText(
+          domain,
+          fieldName,
+          fieldType
+        );
         return { success: true, data: items };
       }
 
@@ -101,7 +105,11 @@ export async function handleRuntimeMessage(
       }
 
       case 'DISABLE_DOMAIN': {
-        await container.domainPolicyUseCase.setDomainEnabled(message.payload.domain, false, message.payload.wipeExisting);
+        await container.domainPolicyUseCase.setDomainEnabled(
+          message.payload.domain,
+          false,
+          message.payload.wipeExisting
+        );
         return { success: true };
       }
 
@@ -111,7 +119,10 @@ export async function handleRuntimeMessage(
       }
 
       case 'SEARCH_HISTORY': {
-        const items = await container.historyQueryUseCase.searchHistory(message.payload.query, message.payload.limit);
+        const items = await container.historyQueryUseCase.searchHistory(
+          message.payload.query,
+          message.payload.limit
+        );
         return { success: true, data: items };
       }
 
@@ -121,12 +132,18 @@ export async function handleRuntimeMessage(
       }
 
       case 'GET_DOMAIN_HISTORY': {
-        const items = await container.historyQueryUseCase.getDomainHistory(message.payload.domain, message.payload.limit);
+        const items = await container.historyQueryUseCase.getDomainHistory(
+          message.payload.domain,
+          message.payload.limit
+        );
         return { success: true, data: items };
       }
 
       case 'GET_FORM_REVISIONS': {
-        const items = await container.historyQueryUseCase.getFormRevisions(message.payload.domain, message.payload.formInstanceId);
+        const items = await container.historyQueryUseCase.getFormRevisions(
+          message.payload.domain,
+          message.payload.formInstanceId
+        );
         return { success: true, data: items };
       }
 

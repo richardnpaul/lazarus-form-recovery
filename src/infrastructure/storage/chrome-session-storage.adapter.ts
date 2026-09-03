@@ -2,7 +2,10 @@ import { IEphemeralStoragePort } from '../../core/ports/outbound/ephemeral-cache
 import { FormSnapshotData } from '../../core/domain/form-revision';
 
 export class ChromeSessionStorageAdapter implements IEphemeralStoragePort {
-  public async saveEphemeralDraft(tabId: number | undefined, form: FormSnapshotData): Promise<void> {
+  public async saveEphemeralDraft(
+    tabId: number | undefined,
+    form: FormSnapshotData
+  ): Promise<void> {
     if (!chrome.storage?.session) return;
 
     const safeTabId = tabId ?? 'global';
@@ -50,7 +53,7 @@ export class ChromeSessionStorageAdapter implements IEphemeralStoragePort {
 
     try {
       const all = await chrome.storage.session.get(null);
-      const keysToRemove = Object.keys(all).filter(k => k.startsWith(prefix));
+      const keysToRemove = Object.keys(all).filter((k) => k.startsWith(prefix));
 
       if (keysToRemove.length > 0) {
         await chrome.storage.session.remove(keysToRemove);

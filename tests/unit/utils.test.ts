@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { formatTimeAgo, computeWordCount, sanitizePreview, computeSimpleDiff } from '../../src/common/utils/text';
+import {
+  formatTimeAgo,
+  computeWordCount,
+  sanitizePreview,
+  computeSimpleDiff,
+} from '../../src/common/utils/text';
 import { escapeCss, getElementSelector, computeButtonPosition } from '../../src/common/utils/dom';
 import { isValidLuhn, scrubSensitiveData } from '../../src/common/utils/pii';
 
@@ -24,7 +29,9 @@ describe('Text Utilities (src/common/utils/text.ts)', () => {
     expect(sanitizePreview('')).toBe('');
     expect(sanitizePreview('<p>Hello <strong>World</strong></p>')).toBe('Hello World');
     expect(sanitizePreview('Short text', 50)).toBe('Short text');
-    expect(sanitizePreview('This is a very long sentence that exceeds length', 10)).toBe('This is a ...');
+    expect(sanitizePreview('This is a very long sentence that exceeds length', 10)).toBe(
+      'This is a ...'
+    );
   });
 
   it('should compute diffs between identical and divergent texts', () => {
@@ -35,8 +42,8 @@ describe('Text Utilities (src/common/utils/text.ts)', () => {
     // Divergent
     const diff = computeSimpleDiff('the quick brown fox', 'the fast brown dog');
     expect(diff.length).toBeGreaterThan(1);
-    expect(diff.some(d => d.type === 'removed')).toBe(true);
-    expect(diff.some(d => d.type === 'added')).toBe(true);
+    expect(diff.some((d) => d.type === 'removed')).toBe(true);
+    expect(diff.some((d) => d.type === 'added')).toBe(true);
 
     // Completely different
     const diff2 = computeSimpleDiff('apple', 'banana');
@@ -44,11 +51,11 @@ describe('Text Utilities (src/common/utils/text.ts)', () => {
 
     // Extra tokens on old
     const diff3 = computeSimpleDiff('one two three', 'one');
-    expect(diff3.some(d => d.type === 'removed')).toBe(true);
+    expect(diff3.some((d) => d.type === 'removed')).toBe(true);
 
     // Extra tokens on new
     const diff4 = computeSimpleDiff('one', 'one two three');
-    expect(diff4.some(d => d.type === 'added')).toBe(true);
+    expect(diff4.some((d) => d.type === 'added')).toBe(true);
   });
 });
 
@@ -56,7 +63,7 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
   it('should escape CSS identifiers safely', () => {
     expect(escapeCss('normal-id')).toBe('normal-id');
     expect(escapeCss('weird:id.with spaces')).toBeDefined();
-    
+
     // Simulate CSS.escape available
     const originalCss = (globalThis as any).CSS;
     (globalThis as any).CSS = { escape: (s: string) => `escaped-${s}` };
@@ -168,6 +175,8 @@ describe('PII Utilities (src/common/utils/pii.ts)', () => {
     expect(scrubSensitiveData('123', 'cvv')).toBe('[REDACTED CVV]');
     expect(scrubSensitiveData('123', 'security_code')).toBe('[REDACTED CVV]');
     expect(scrubSensitiveData('Random text with no cards')).toBe('Random text with no cards');
-    expect(scrubSensitiveData('Invalid card pattern: 4532015112830367')).toContain('4532015112830367');
+    expect(scrubSensitiveData('Invalid card pattern: 4532015112830367')).toContain(
+      '4532015112830367'
+    );
   });
 });

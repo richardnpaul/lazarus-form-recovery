@@ -1,5 +1,9 @@
 import { IHistoryQueryUseCase } from '../ports/inbound/history-query.port';
-import { IFormRepositoryPort, FormWithFields, StoredFormRecord } from '../ports/outbound/form-repository.port';
+import {
+  IFormRepositoryPort,
+  FormWithFields,
+  StoredFormRecord,
+} from '../ports/outbound/form-repository.port';
 import { IEventBroadcasterPort } from '../ports/outbound/event-broadcaster.port';
 
 export class HistoryQueryUseCase implements IHistoryQueryUseCase {

@@ -1,8 +1,23 @@
-import { defaultRepositoryAdapter, DexieFormRepositoryAdapter } from '../infrastructure/db/dexie-form-repository.adapter';
-import { defaultVaultAdapter, WebCryptoVaultAdapter } from '../infrastructure/crypto/web-crypto-vault.adapter';
-import { defaultSessionStorage, ChromeSessionStorageAdapter } from '../infrastructure/storage/chrome-session-storage.adapter';
-import { defaultBroadcaster, RuntimeBroadcasterAdapter } from '../infrastructure/messaging/runtime-broadcaster.adapter';
-import { defaultScheduler, ChromeAlarmsAdapter } from '../infrastructure/scheduler/chrome-alarms.adapter';
+import {
+  defaultRepositoryAdapter,
+  DexieFormRepositoryAdapter,
+} from '../infrastructure/db/dexie-form-repository.adapter';
+import {
+  defaultVaultAdapter,
+  WebCryptoVaultAdapter,
+} from '../infrastructure/crypto/web-crypto-vault.adapter';
+import {
+  defaultSessionStorage,
+  ChromeSessionStorageAdapter,
+} from '../infrastructure/storage/chrome-session-storage.adapter';
+import {
+  defaultBroadcaster,
+  RuntimeBroadcasterAdapter,
+} from '../infrastructure/messaging/runtime-broadcaster.adapter';
+import {
+  defaultScheduler,
+  ChromeAlarmsAdapter,
+} from '../infrastructure/scheduler/chrome-alarms.adapter';
 
 import { SaveFormDraftUseCase } from './use-cases/save-form-draft.use-case';
 import { SubmitFormUseCase } from './use-cases/submit-form.use-case';
@@ -40,8 +55,18 @@ export class ServiceContainer {
     this.broadcaster = broadcaster;
     this.scheduler = scheduler;
 
-    this.saveFormDraftUseCase = new SaveFormDraftUseCase(this.repository, this.vault, this.sessionCache, this.broadcaster);
-    this.submitFormUseCase = new SubmitFormUseCase(this.repository, this.vault, this.sessionCache, this.broadcaster);
+    this.saveFormDraftUseCase = new SaveFormDraftUseCase(
+      this.repository,
+      this.vault,
+      this.sessionCache,
+      this.broadcaster
+    );
+    this.submitFormUseCase = new SubmitFormUseCase(
+      this.repository,
+      this.vault,
+      this.sessionCache,
+      this.broadcaster
+    );
     this.restoreFormUseCase = new RestoreFormUseCase(this.repository, this.vault);
     this.historyQueryUseCase = new HistoryQueryUseCase(this.repository, this.broadcaster);
     this.vaultSecurityUseCase = new VaultSecurityUseCase(this.vault, this.broadcaster);

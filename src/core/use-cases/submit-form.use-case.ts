@@ -1,7 +1,15 @@
-import { FormSnapshotData, FormRevisionPolicy, ExistingRevisionSummary } from '../domain/form-revision';
+import {
+  FormSnapshotData,
+  FormRevisionPolicy,
+  ExistingRevisionSummary,
+} from '../domain/form-revision';
 import { PiiSanitizer } from '../domain/pii-sanitizer';
 import { ISubmitFormUseCase, SaveFormResult } from '../ports/inbound/save-form.port';
-import { IFormRepositoryPort, StoredFormRecord, StoredFieldRecord } from '../ports/outbound/form-repository.port';
+import {
+  IFormRepositoryPort,
+  StoredFormRecord,
+  StoredFieldRecord,
+} from '../ports/outbound/form-repository.port';
 import { IVaultCryptoPort } from '../ports/outbound/vault-crypto.port';
 import { IEphemeralStoragePort } from '../ports/outbound/ephemeral-cache.port';
 import { IEventBroadcasterPort } from '../ports/outbound/event-broadcaster.port';
@@ -35,7 +43,7 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
     const formInstanceId = formSnapshot.formInstanceId || 'form_default';
 
     const existing = await this.repository.getRevisionsByFormInstance(domainId, formInstanceId);
-    const existingSummaries: ExistingRevisionSummary[] = existing.map(r => ({
+    const existingSummaries: ExistingRevisionSummary[] = existing.map((r) => ({
       id: r.id,
       revisionId: r.revisionId,
       revisionNumber: r.revisionNumber,
@@ -44,7 +52,10 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
     }));
 
     const latestRevision = existingSummaries[0];
-    const maxRevisionNumber = existingSummaries.reduce((max, r) => Math.max(max, r.revisionNumber || 1), 0);
+    const maxRevisionNumber = existingSummaries.reduce(
+      (max, r) => Math.max(max, r.revisionNumber || 1),
+      0
+    );
 
     const decision = FormRevisionPolicy.evaluateRevisionDecision(
       latestRevision,
@@ -81,7 +92,8 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
         if (!field.name && !field.value) continue;
 
         const sanitizedValue = PiiSanitizer.sanitize(field.value || '', field.name);
-        const { ciphertext: encValue, mode: fieldEncMode } = await this.vault.encrypt(sanitizedValue);
+        const { ciphertext: encValue, mode: fieldEncMode } =
+          await this.vault.encrypt(sanitizedValue);
 
         const fieldName = field.name || 'field_anonymous';
         const fieldType = field.type || 'text';
@@ -107,7 +119,7 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
     // Prune older revisions beyond the 10-revision cap
     const updatedRevisions = [
       { id: decision.formId, lastModified: now },
-      ...existingSummaries.map(r => ({ id: r.id, lastModified: r.lastModified })),
+      ...existingSummaries.map((r) => ({ id: r.id, lastModified: r.lastModified })),
     ];
     const toPrune = FormRevisionPolicy.calculateRevisionsToPrune(updatedRevisions);
     for (const pruneId of toPrune) {

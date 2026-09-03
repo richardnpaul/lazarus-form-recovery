@@ -1,8 +1,8 @@
 # Lazarus: Form Recovery — Modern WebExtension (Manifest V3) Specification v3.3.0
 
-> **Document Version:** 3.3.0  
-> **Status:** Authoritative Architectural Blueprint & Implemented Specification  
-> **Target Manifest:** Manifest V3 (Cross-Browser: Firefox Gecko, Chromium, Safari WebKit)  
+> **Document Version:** 3.3.0
+> **Status:** Authoritative Architectural Blueprint & Implemented Specification
+> **Target Manifest:** Manifest V3 (Cross-Browser: Firefox Gecko, Chromium, Safari WebKit)
 > **Target Toolchain:** TypeScript 5+, Vite / `@crxjs/vite-plugin`, Dexie.js (IndexedDB), W3C Web Crypto API, Vitest
 
 ---
@@ -12,6 +12,7 @@
 Lazarus is a local-first, privacy-preserving browser extension designed to eliminate accidental data loss from form disconnections, accidental tab closures, browser crashes, single-page application (SPA) unmounts, and accidental form resets.
 
 ### Core Architectural Guarantees
+
 1. **Local-First, Zero-Cloud:** All form inputs, drafts, and encryption keys are stored exclusively on the user's device. No telemetry, third-party analytics, or external API calls are permitted.
 2. **Hexagonal Architecture (Ports & Adapters):** Strict concentric separation between pure core domain logic/use cases (`src/core/`) and outer delivery mechanisms / infrastructure adapters (`src/infrastructure/`, `src/content/`, `src/background/`, `src/views/`). Core domain logic has zero dependencies on `chrome.*` or DOM APIs.
 3. **Multi-Version Revision History:** Forms are not treated as single destructive snapshots. The engine preserves chronological revisions (drafts, confirmed submissions, pre-reset states, milestone checkpoints), allowing historical comparison, text diffing, and selective rollback.
@@ -26,13 +27,17 @@ Lazarus is a local-first, privacy-preserving browser extension designed to elimi
 ## 2. Multi-Version Form Revision Engine
 
 ### 2.1 The Problem with Single-Snapshot Overwrites
+
 Legacy form recovery tools and naïve MV3 implementations overwrite existing form records on every autosave. This creates critical operational flaws:
+
 - If a user submits a form, re-visits the page, and accidentally types a single character or clears the form, the previous completed submission is permanently erased.
 - If a user writes continuously for hours, a simple idle-timeout policy never triggers because each keystroke resets `lastModified`, leaving only a single revision forever.
 - Context menus and recovery popups cannot offer rollback points.
 
 ### 2.2 Revision Data Model (`IDBForm` & `IDBField`)
+
 To support multiple revisions without unbounded storage growth:
+
 - **`IDBForm` Identity:** Each form revision is assigned a composite primary key:
   $$\text{formId} = \text{domainId} + \text{"\_"} + \text{formInstanceId} + \text{"\_"} + \text{revisionId}$$
   - `domainId`: Normalized hostname (e.g. `github.com`).
@@ -45,9 +50,11 @@ To support multiple revisions without unbounded storage growth:
   - Compound Index on fields: `[domainId+name+type]` enables rapid historical querying of all past values entered into that specific field across all forms and revisions on the domain.
 
 ### 2.3 Revision Snapshot Policy & Milestone Checkpoints
+
 To prevent performance degradation and database bloat while still capturing meaningful rollback milestones during long editing sessions:
+
 1. **Continuous Editing Session (Active Draft Update):**
-   - Keystrokes within an active 5-minute milestone window update the *current revision in place* via a 500ms debounce.
+   - Keystrokes within an active 5-minute milestone window update the _current revision in place_ via a 500ms debounce.
 2. **Milestone Checkpoints ($\Delta t \ge 5\text{ minutes}$):**
    - When active editing on a revision spans $\ge 5$ minutes from its creation timestamp, the engine automatically seals the current draft and branches into an incremented milestone revision ($N+1$). This ensures extended writing sessions generate distinct checkpoints.
 3. **Manual Snapshot Force ("Save Snapshot Now"):**
@@ -60,16 +67,19 @@ To prevent performance degradation and database bloat while still capturing mean
    - Re-opening a page or resuming after 15+ minutes of complete inactivity branches into a new chronological revision.
 
 ### 2.4 Revision Retention & Pruning Algorithm
+
 - **Cap per Form Instance:** Each form instance retains a maximum of **10 revisions**.
 - **Pruning Rule:** When an 11th revision is added, the oldest non-final draft (`isFinalSubmit == false`) is automatically deleted along with its associated fields. Confirmed submissions (`isFinalSubmit == true`) are prioritized and protected from automated pruning.
 
 ### 2.5 Multi-Version Retrieval (`getRecoverableText`)
+
 - Queries the compound index `[domainId+name+type]`.
 - Decrypts field values in constant-time using AES-GCM.
 - Automatically deduplicates identical text entries across revisions, preserving the most recent timestamp for each unique historical value.
 - Returns an array of historical snippets ordered by `lastModified DESC`, powering the in-situ dropdown menu and context menus.
 
 ### 2.6 Real-Time Event Broadcasting Protocol (`FORM_SAVED`)
+
 - When any form snapshot or submission is committed in the background, the background router broadcasts a high-priority runtime message:
   ```typescript
   {
@@ -89,6 +99,7 @@ To prevent performance degradation and database bloat while still capturing mean
 ## 3. Dynamic Context Menu Multi-Version Recovery Protocol
 
 ### 3.1 Architecture Overview
+
 Right-clicking an editable field in any web page dynamically presents a hierarchical recovery menu populated with historical revisions for that exact page and field:
 
 ```
@@ -107,6 +118,7 @@ Right-clicking an editable field in any web page dynamically presents a hierarch
 ```
 
 ### 3.2 Dynamic Context Menu Lifecycle
+
 1. **Inspection on `contextmenu` / `focus`:**
    - Content script intercepts the `contextmenu` event on trackable elements.
    - Extracts `domain`, `formInstanceId`, `fieldName`, and `fieldType`.
@@ -124,17 +136,20 @@ Right-clicking an editable field in any web page dynamically presents a hierarch
 ## 4. Cross-Browser Manifest V3 Architecture
 
 ### 4.1 Firefox Gecko vs. Chromium MV3 Specifications
+
 Firefox and Chromium diverge in their Manifest V3 background execution and sidebar models:
 
-| Architecture Area | Firefox Gecko Target (`dist/`) | Chromium Target (`dist-chrome/`) |
-| :--- | :--- | :--- |
-| **Background Execution** | Event Page Scripts: `"background": { "scripts": [...] }` (Mandatory because `background.service_worker` is disabled by default in Firefox) | Service Worker: `"background": { "service_worker": "...", "type": "module" }` |
-| **Side View UI** | `"sidebar_action": { "default_panel": "src/sidepanel/sidepanel.html" }` | `"side_panel": { "default_path": "src/sidepanel/sidepanel.html" }` with `"sidePanel"` permission |
-| **Extension ID** | Required: `"browser_specific_settings": { "gecko": { "id": "..." } }` | Not required |
-| **Host Permissions** | `"<all_urls>"` | `"<all_urls>"` |
+| Architecture Area        | Firefox Gecko Target (`dist/`)                                                                                                             | Chromium Target (`dist-chrome/`)                                                                 |
+| :----------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Background Execution** | Event Page Scripts: `"background": { "scripts": [...] }` (Mandatory because `background.service_worker` is disabled by default in Firefox) | Service Worker: `"background": { "service_worker": "...", "type": "module" }`                    |
+| **Side View UI**         | `"sidebar_action": { "default_panel": "src/sidepanel/sidepanel.html" }`                                                                    | `"side_panel": { "default_path": "src/sidepanel/sidepanel.html" }` with `"sidePanel"` permission |
+| **Extension ID**         | Required: `"browser_specific_settings": { "gecko": { "id": "..." } }`                                                                      | Not required                                                                                     |
+| **Host Permissions**     | `"<all_urls>"`                                                                                                                             | `"<all_urls>"`                                                                                   |
 
 ### 4.2 Disambiguated Entrypoint Naming Directive
+
 To prevent bundlers (Rollup / `@crxjs/vite-plugin`) from misrouting the content script into the background loader:
+
 - Background Script: `src/background/service-worker.ts`
 - Content Script: `src/content/content-script.ts`
 
@@ -143,6 +158,7 @@ To prevent bundlers (Rollup / `@crxjs/vite-plugin`) from misrouting the content 
 ## 5. Cryptographic Vault Specification
 
 ### 5.1 Native Web Crypto API Implementation
+
 - **Key Derivation (PBKDF2):**
   - Algorithm: PBKDF2 with HMAC-SHA-256.
   - Iterations: 100,000 rounds.
@@ -174,6 +190,7 @@ graph TD
 ```
 
 ### 6.1 Tier 1: Unit Tests (`tests/unit/`)
+
 1. `lazarus-db.test.ts`: IndexedDB table schemas, compound indexes, soft-deletion, and query sorting.
 2. `web-crypto.test.ts`: WebCrypto PBKDF2 key derivation, AES-GCM encryption/decryption, tampered ciphertext rejection.
 3. `vault.test.ts`: Master Password setup, sentinel verification, auto-lock inactivity timers, in-memory key purging, and error conditions.
@@ -193,6 +210,7 @@ graph TD
 17. `content-script.test.ts`: In-page bootstrap and tracker initialization.
 
 ### 6.2 Tier 2: Integration Tests (`tests/integration/`)
+
 1. `form-recovery-flow.test.ts`:
    - Validates DOM input capture → 500ms debounce timer → background service worker message receipt → Dexie IndexedDB commit → `GET_ALL_HISTORY` and `GET_RECOVERABLE_TEXT` retrieval.
    - Validates **Multi-Version Form Revisions**: tests multiple submissions on the same form, verifying incremental `revisionNumber` generation, `GET_FORM_REVISIONS` chronological ordering, and multiple snippet availability.
@@ -206,22 +224,37 @@ graph TD
 To guarantee absolute operational reliability in production environments where form data loss would cause catastrophic user frustration, Lazarus mandates a **100% Code Coverage Standard** across the entire codebase.
 
 #### 6.3.1 Coverage Architecture & Toolchain
+
 - **Engine:** `@vitest/coverage-v8` native V8 instrumentation.
 - **Environment:** Headless DOM emulation via JSDOM with complete W3C and WebExtension API mocks (`tests/setup.ts`).
 - **Execution Script:** `npm run test:coverage` (aliased to `vitest run --coverage`).
 - **Granular Verification:** `tests/check-coverage.cjs` provides automated file-by-file line verification.
 
 #### 6.3.2 Module Coverage Matrix
-| Module Layer | Covered Files | Target Coverage | Key Validated Branches |
-| :--- | :--- | :---: | :--- |
-| **Common Utilities** | `text.ts`, `dom.ts`, `pii.ts` | **100%** | Date formatting, word count, LCS diffs, CSS escaping, viewport clamping, Luhn card validation, CVV scrubbing. |
-| **Cryptographic Vault** | `web-crypto.ts`, `vault.ts` | **100%** | PBKDF2 (100k iters), AES-GCM-256, auto-lock timer, in-memory key purging, sentinel verification, tampering rejection. |
-| **Database & Storage** | `lazarus-db.ts`, `repository.ts`, `storage-manager.ts` | **100%** | Dexie schema, compound indexes, milestone branching, 10-revision pruning, encrypted URL handling, ephemeral session cache. |
-| **Content Script Engine** | `form-tracker.ts`, `field-extractor.ts`, `content-script.ts` | **100%** | Input debouncing, submit/reset interception, active editing timers, contextmenu triggers, synthetic DOM events, framework inputs. |
-| **Rich Text Adapters** | `prose-mirror.ts`, `quill-adapter.ts`, `tinymce-adapter.ts`, `contenteditable.ts`, `index.ts` | **100%** | DOM detection, HTML value extraction, programmatic value restoration. |
-| **In-Situ Shadow DOM UI** | `shadow-host.ts`, `recovery-button.ts`, `recovery-menu.ts`, `live-preview.ts` | **100%** | Closed shadow boundary, `ResizeObserver` positioning, hover live previews, keyboard navigation (Arrow/Enter/Esc), form restoration. |
-| **Background Orchestration** | `service-worker.ts`, `alarms.ts`, `context-menus.ts`, `message-router.ts` | **100%** | Lifecycle hooks, 30m cleanup alarms, dynamic hierarchical context menus, broadcast sync, 18 RPC handlers. |
-| **Extension Views** | `popup.ts`, `sidepanel.ts`, `options.ts` | **100%** | Feeds, accordions, clipboard copy, diff viewer, test playground, settings sliders, password strength meters, JSON export, nuclear wipe. |
+
+| Module Layer                 | Covered Files                                                                                 | Target Coverage | Key Validated Branches                                                                                                                  |
+| :--------------------------- | :-------------------------------------------------------------------------------------------- | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| **Common Utilities**         | `text.ts`, `dom.ts`, `pii.ts`                                                                 |    **100%**     | Date formatting, word count, LCS diffs, CSS escaping, viewport clamping, Luhn card validation, CVV scrubbing.                           |
+| **Cryptographic Vault**      | `web-crypto.ts`, `vault.ts`                                                                   |    **100%**     | PBKDF2 (100k iters), AES-GCM-256, auto-lock timer, in-memory key purging, sentinel verification, tampering rejection.                   |
+| **Database & Storage**       | `lazarus-db.ts`, `repository.ts`, `storage-manager.ts`                                        |    **100%**     | Dexie schema, compound indexes, milestone branching, 10-revision pruning, encrypted URL handling, ephemeral session cache.              |
+| **Content Script Engine**    | `form-tracker.ts`, `field-extractor.ts`, `content-script.ts`                                  |    **100%**     | Input debouncing, submit/reset interception, active editing timers, contextmenu triggers, synthetic DOM events, framework inputs.       |
+| **Rich Text Adapters**       | `prose-mirror.ts`, `quill-adapter.ts`, `tinymce-adapter.ts`, `contenteditable.ts`, `index.ts` |    **100%**     | DOM detection, HTML value extraction, programmatic value restoration.                                                                   |
+| **In-Situ Shadow DOM UI**    | `shadow-host.ts`, `recovery-button.ts`, `recovery-menu.ts`, `live-preview.ts`                 |    **100%**     | Closed shadow boundary, `ResizeObserver` positioning, hover live previews, keyboard navigation (Arrow/Enter/Esc), form restoration.     |
+| **Background Orchestration** | `service-worker.ts`, `alarms.ts`, `context-menus.ts`, `message-router.ts`                     |    **100%**     | Lifecycle hooks, 30m cleanup alarms, dynamic hierarchical context menus, broadcast sync, 18 RPC handlers.                               |
+| **Extension Views**          | `popup.ts`, `sidepanel.ts`, `options.ts`                                                      |    **100%**     | Feeds, accordions, clipboard copy, diff viewer, test playground, settings sliders, password strength meters, JSON export, nuclear wipe. |
+
+#### 6.4 Pre-Commit Code Quality Gates & Automated Enforcement
+
+To ensure no malformed, unformatted, broken, or regressive code is ever committed to version control or pushed to remote repositories, Lazarus implements an automated 4-stage pre-commit pipeline using **Husky**, **lint-staged**, and **.pre-commit-config.yaml**:
+
+1. **Stage 1: Prettier Code Formatting (`lint-staged`)**
+   - Automatically checks and formats staged TypeScript, JavaScript, HTML, CSS, JSON, and Markdown files prior to commit.
+2. **Stage 2: Static Type Verification (`tsc --noEmit`)**
+   - Compiles the entire project in non-emitting mode to ensure zero TypeScript diagnostic errors or missing imports.
+3. **Stage 3: Automated Regression & Integration Testing (`npm test`)**
+   - Runs the entire test suite (141 unit and integration tests across 23 suites) with zero tolerance for failing assertions.
+4. **Stage 4: Dual-Target Production Build Verification**
+   - Compiles the Firefox Manifest V3 distribution (`npm run build`) and Chrome Manifest V3 distribution (`npm run build:chrome`) to verify that tree-shaking, chunk imports, and manifest generation succeed cleanly.
 
 ---
 
@@ -299,6 +332,7 @@ src/
 ```
 
 ### 7.3 Core Invariants
+
 1. **Zero Runtime API Bleed:** No file inside `src/core/` may import or reference `chrome.*`, `browser.*`, `window`, or `document`.
 2. **Deterministic Domain Rules:** Revision milestone timing ($\Delta t \ge 5\text{ min}$), 10-revision cap calculation, and Luhn credit card detection are strictly encapsulated within pure domain classes.
 3. **Mock-Free Testing:** Core domain entities and use cases are verified using pure unit tests with zero browser mock setups and execution times $<15\text{ms}$.
@@ -308,9 +342,11 @@ src/
 ## 8. Build Targets & Distribution Guide
 
 ### 7.1 Firefox Gecko Package
+
 ```bash
 npm run build
 ```
+
 - **Output:** `dist/`
 - **Manifest:** `"background": { "scripts": ["assets/service-worker.ts-[hash].js"] }`
 - **Installation:**
@@ -319,9 +355,11 @@ npm run build
   3. Select `/workspaces/lazarus-form-recovery/dist/manifest.json`.
 
 ### 7.2 Chromium / Chrome Package
+
 ```bash
 npm run build:chrome
 ```
+
 - **Output:** `dist-chrome/`
 - **Manifest:** `"background": { "service_worker": "service-worker-loader.js", "type": "module" }`
 - **Installation:**

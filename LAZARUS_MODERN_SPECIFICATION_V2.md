@@ -1,8 +1,8 @@
 # Lazarus: Form Recovery — Modern WebExtension (Manifest V3) Specification v2.2.0
 
-> **Document Version:** 2.2.0  
-> **Status:** Final Architectural Blueprint & Implemented Specification  
-> **Target Manifest:** Manifest V3 (Cross-Browser: Firefox Gecko, Chromium, Safari WebKit)  
+> **Document Version:** 2.2.0
+> **Status:** Final Architectural Blueprint & Implemented Specification
+> **Target Manifest:** Manifest V3 (Cross-Browser: Firefox Gecko, Chromium, Safari WebKit)
 > **Target Toolchain:** TypeScript 5+, Vite / `@crxjs/vite-plugin`, Dexie.js (IndexedDB), Web Crypto API, Vitest
 
 ---
@@ -12,6 +12,7 @@
 During full implementation, testing, and debugging against browser engines (Chromium and Firefox Gecko), five critical architectural requirements were identified, reconciled, and codified into this specification:
 
 ### 1.1 Firefox Manifest V3 Background Scripts vs. Chromium Service Workers
+
 - **Original Specification (v2.0.0, Section 6):** Prescribed a static Chrome-only `manifest.json` referencing `"background": { "service_worker": "..." }`.
 - **The Firefox Constraint:** In Firefox Gecko's Manifest V3 implementation, `background.service_worker` is **disabled by default** (gated behind the `extensions.manifestV3.backgroundServiceWorker` flag in `about:config`). Attempting to load an MV3 extension with `background.service_worker` as a temporary add-on in Firefox (`about:debugging`) triggers a fatal installation error:
   ```text
@@ -48,6 +49,7 @@ During full implementation, testing, and debugging against browser engines (Chro
   - Dynamic generation is handled via `manifest.config.ts`, where `process.env.BROWSER !== 'chrome'` produces the Firefox distribution (`dist/`) and `process.env.BROWSER === 'chrome'` produces the Chromium distribution (`dist-chrome/`).
 
 ### 1.2 Disambiguated Entrypoint Naming (Vite / Bundler Chunk Collision Prevention)
+
 - **Problem Statement:** Naming multiple extension entrypoints with the generic name `index.ts` (specifically `src/background/index.ts` and `src/content/index.ts`) causes Rollup / `@crxjs/vite-plugin` chunk naming collisions. The bundler generates a shared or misrouted loader (`service-worker-loader.js`) that imports the **content script** instead of the background script.
 - **Consequence:** The background service worker attempts to execute DOM-dependent logic (`document.addEventListener`), crashing on boot with:
   ```text
@@ -59,6 +61,7 @@ During full implementation, testing, and debugging against browser engines (Chro
   - Content Script: `src/content/content-script.ts`
 
 ### 1.3 Mandatory Multi-Tier Testing: Unit & Integration Test Architecture
+
 - **Problem Statement:** Pure unit tests operating in JSDOM with isolated mocks can pass 100% while the extension fails completely at runtime due to cross-boundary messaging, async timer deadlocks, or bundling misroutes.
 - **Specification Directive:** The test suite must enforce a **3-Tier Testing Pyramid**:
   1. **Tier 1: Unit Tests (`tests/unit/`)**: Verify isolated functions, classes, and crypto algorithms (Luhn validator, WebCrypto vault, pure Dexie schemas).
@@ -68,15 +71,18 @@ During full implementation, testing, and debugging against browser engines (Chro
   3. **Tier 3: End-to-End Tests (`tests/e2e/`)**: Browser-level validation using Playwright launching unpacked browser instances.
 
 ### 1.4 Domain Identification & Normalization (`IDBDomain.id`)
+
 - **Original Specification (v2.0.0, Section 5.2):** Specified `id: string; // SHA-256 hash of hostname` for domains.
 - **Implementation & Better Rationale:** Asynchronously computing a SHA-256 cryptographic hash on every debounced keystroke introduces pipeline lag and complicates human-readable compound indexing `[domainId+lastModified]` and wildcard pattern matching.
 - **Resolution:** `IDBDomain.id` is standardized on normalized hostname strings (e.g. `github.com`), with domain wildcard matching (`*.example.com`) evaluated via regex matching in `repository.ts`.
 
 ### 1.5 Design System Standardization (Emerald / Teal Palette)
+
 - **Original Specification (v2.0.0, Section 4.6.1):** Prescribed an Emerald/Teal brand theme (`--lz-accent-primary: hsl(160, 84%, 39%)`).
 - **Resolution:** Removed legacy orange/amber styles across all surfaces. Centralized styling in `src/common/styles/theme.css` using Emerald/Teal tokens, supporting dark/light modes and glassmorphic styling (`var(--lz-blur-glass)`).
 
 ### 1.6 Side Panel Interactive Playground Integration
+
 - **Specification Directive:** In addition to search, filtering, and revision diffing, the side panel (`src/sidepanel/sidepanel.html`) includes an interactive test playground form. This allows real-time manual and automated verification of autosaving, database persistence, and form restoration directly inside the extension UI.
 
 ---
@@ -84,12 +90,14 @@ During full implementation, testing, and debugging against browser engines (Chro
 ## 2. Implemented Subsystems & Component Architecture
 
 ### 2.1 Cryptographic Vault (`src/common/crypto/`)
+
 - **Native WebCrypto (`web-crypto.ts`):** Constant-time AES-GCM-256 encryption/decryption with random 12-byte IVs and PBKDF2 (SHA-256, 100,000 iterations).
 - **Vault Manager (`vault.ts`):**
   - Zero-knowledge storage: Master Password is never persisted. Only a random 32-byte salt and an encrypted verification sentinel (`LAZARUS_VAULT_VERIFIED_v1`) are stored in IndexedDB.
   - Inactivity Auto-Lock: Configurable inactivity timer (5m, 15m, 30m, 1h, never) automatically purges the derived CryptoKey from memory.
 
 ### 2.2 Content Script & Form Tracking Engine (`src/content/`)
+
 - **Capture-Phase Listeners (`form-tracker.ts`):**
   - Intercepts `input`, `compositionend`, and `change` with 500ms debounce.
   - Intercepts `reset` to snapshot state before native reset clears fields.
@@ -109,6 +117,7 @@ During full implementation, testing, and debugging against browser engines (Chro
   - Live Preview Engine (`live-preview.ts`): Non-destructive hover stash (`targetField._lazarusOriginalValue`), preview styling, rollback on mouseleave, and synthetic `input`+`change` event dispatch on commit.
 
 ### 2.3 Storage Pipeline & Background Service Worker (`src/background/`)
+
 - **Tier 1 (Ephemeral Session Buffer):** `chrome.storage.session` stores volatile drafts under `autosaves:{tabId}:{formInstanceId}`. Cleared automatically on tab close.
 - **Tier 2 (Permanent Vault):** Encrypted or plain records persisted into Dexie.js IndexedDB.
 - **Automated Alarms (`alarms.ts`):** 30-minute periodic alarm purges records older than user-defined retention policy (`expireFormsInterval` days).
@@ -116,14 +125,15 @@ During full implementation, testing, and debugging against browser engines (Chro
 - **Keyboard Shortcuts:** `Alt+Shift+L` to recover the last edited form on the current page.
 
 ### 2.4 User Interface Surfaces
+
 - **Action Popup (`src/popup/`):** Fixed 380px width, Emerald theme, active domain toggle, tabbed switcher (`Current Tab` vs `Global Search`), expandable accordion cards with one-click copy and restore.
 - **Side Panel (`src/sidepanel/`):** Full-height control center with date filter chips, revision timeline, interactive diff viewer, and integrated testing playground.
 - **Options Management (`src/options/`):** 5-tab settings center:
-  1. *General Preferences:* Password toggle with warning banner, Luhn credit card redaction, 1–30 day retention slider.
-  2. *Security & Vault:* Standard vs Master Password (AES-GCM-256) selector, password setup modal with strength meter, auto-lock timeout.
-  3. *Disabled Domains:* Wildcard domain exclusion table and unblock management.
-  4. *Storage & Maintenance:* Storage estimate meter (`navigator.storage.estimate()`), encrypted JSON backup export, and nuclear wipe modal requiring typing `DELETE`.
-  5. *About & Diagnostics:* Build versions and service worker heartbeat diagnostics.
+  1. _General Preferences:_ Password toggle with warning banner, Luhn credit card redaction, 1–30 day retention slider.
+  2. _Security & Vault:_ Standard vs Master Password (AES-GCM-256) selector, password setup modal with strength meter, auto-lock timeout.
+  3. _Disabled Domains:_ Wildcard domain exclusion table and unblock management.
+  4. _Storage & Maintenance:_ Storage estimate meter (`navigator.storage.estimate()`), encrypted JSON backup export, and nuclear wipe modal requiring typing `DELETE`.
+  5. _About & Diagnostics:_ Build versions and service worker heartbeat diagnostics.
 
 ---
 
@@ -132,6 +142,7 @@ During full implementation, testing, and debugging against browser engines (Chro
 The automated test suite enforces the testing pyramid with **49 passing tests across 9 test suites**:
 
 ### 3.1 Unit Tests (7 Suites, 46 Tests)
+
 - `tests/unit/lazarus-db.test.ts`: Compound indexes, soft-deletion, and TTL expiration.
 - `tests/unit/web-crypto.test.ts`: Key derivation, AES-GCM encryption/decryption, tampered ciphertext rejection.
 - `tests/unit/vault.test.ts`: Master password lifecycle, unlock verification, and auto-lock inactivity.
@@ -141,6 +152,7 @@ The automated test suite enforces the testing pyramid with **49 passing tests ac
 - `tests/unit/alarms.test.ts`: Scheduled retention cleanup of expired forms.
 
 ### 3.2 Integration Tests (2 Suites, 3 Tests)
+
 - `tests/integration/form-recovery-flow.test.ts`:
   - **Full Capture-to-Storage Lifecycle:** Validates DOM input typing → 500ms debounce timer → background message dispatch → IndexedDB record write → history retrieval (`GET_ALL_HISTORY`) → in-situ restore lookup (`GET_RECOVERABLE_TEXT`).
   - **Sidebar Playground Autosave:** Validates that saving from the side panel playground persists to IndexedDB and immediately populates the history feed.
@@ -152,9 +164,11 @@ The automated test suite enforces the testing pyramid with **49 passing tests ac
 ## 4. Build Targets & Browser Installation Guide
 
 ### 4.1 Firefox Gecko Installation
+
 ```bash
 npm run build
 ```
+
 - **Output Directory:** `dist/`
 - **Manifest Background Configuration:** `"background": { "scripts": ["assets/service-worker.ts-[hash].js"] }`
 - **Installation Steps:**
@@ -163,9 +177,11 @@ npm run build
   3. Select the file: `/workspaces/lazarus-form-recovery/dist/manifest.json`.
 
 ### 4.2 Chromium / Chrome Installation
+
 ```bash
 npm run build:chrome
 ```
+
 - **Output Directory:** `dist-chrome/`
 - **Manifest Background Configuration:** `"background": { "service_worker": "service-worker-loader.js", "type": "module" }`
 - **Installation Steps:**

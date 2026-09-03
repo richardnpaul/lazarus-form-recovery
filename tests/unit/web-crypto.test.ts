@@ -4,9 +4,7 @@ import { WebCryptoVault } from '../../src/common/crypto/web-crypto';
 describe('WebCryptoVault Unit Tests', () => {
   const testPassword = 'CorrectHorseBatteryStaple!42';
   const testSalt = new Uint8Array([
-    12, 34, 56, 78, 90, 21, 43, 65,
-    87, 10, 11, 12, 13, 14, 15, 16,
-    17, 18, 19, 20, 21, 22, 23, 24,
+    12, 34, 56, 78, 90, 21, 43, 65, 87, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
     25, 26, 27, 28, 29, 30, 31, 32,
   ]);
 
@@ -73,7 +71,8 @@ describe('WebCryptoVault Unit Tests', () => {
 
     it('should preserve complex Unicode, emojis, and HTML entities', async () => {
       const key = await WebCryptoVault.deriveKey(testPassword, testSalt);
-      const original = '🔥 Phoenix recovery! 你好,世界! <form action="/post"><textarea>100%</textarea></form> 🚀🎉';
+      const original =
+        '🔥 Phoenix recovery! 你好,世界! <form action="/post"><textarea>100%</textarea></form> 🚀🎉';
 
       const encrypted = await WebCryptoVault.encrypt(original, key);
       const decrypted = await WebCryptoVault.decrypt(encrypted, key);

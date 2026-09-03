@@ -62,10 +62,10 @@ describe('Full Form Recovery & Storage Integration Flow', () => {
     const fields = await db.fields.toArray();
     expect(fields.length).toBe(2);
 
-    const nameField = fields.find(f => f.name === 'full_name');
+    const nameField = fields.find((f) => f.name === 'full_name');
     expect(nameField?.value).toBe('Alice Henderson');
 
-    const notesField = fields.find(f => f.name === 'order_notes');
+    const notesField = fields.find((f) => f.name === 'order_notes');
     expect(notesField?.value).toBe('Please leave package at side porch');
 
     // 6. Test GET_ALL_HISTORY runtime message
@@ -137,9 +137,7 @@ describe('Full Form Recovery & Storage Integration Flow', () => {
           domain,
           title: 'Customer Feedback Form',
           editingTime: 12,
-          fields: [
-            { name: 'message', type: 'textarea', value: 'First revision: Great product!' },
-          ],
+          fields: [{ name: 'message', type: 'textarea', value: 'First revision: Great product!' }],
         },
       },
     };
@@ -158,7 +156,11 @@ describe('Full Form Recovery & Storage Integration Flow', () => {
           title: 'Customer Feedback Form',
           editingTime: 30,
           fields: [
-            { name: 'message', type: 'textarea', value: 'Second revision: Need support for mobile app.' },
+            {
+              name: 'message',
+              type: 'textarea',
+              value: 'Second revision: Need support for mobile app.',
+            },
           ],
         },
       },
@@ -171,8 +173,8 @@ describe('Full Form Recovery & Storage Integration Flow', () => {
     const forms = await db.forms.where('domainId').equals(domain).toArray();
     expect(forms.length).toBe(2);
 
-    const rev1Form = forms.find(f => f.revisionNumber === 1);
-    const rev2Form = forms.find(f => f.revisionNumber === 2);
+    const rev1Form = forms.find((f) => f.revisionNumber === 1);
+    const rev2Form = forms.find((f) => f.revisionNumber === 2);
     expect(rev1Form).toBeDefined();
     expect(rev2Form).toBeDefined();
     expect(rev1Form?.isFinalSubmit).toBe(true);

@@ -36,7 +36,8 @@
   --lz-border-glass: hsla(0, 0%, 100%, 0.3);
 
   /* Typography Stack */
-  --lz-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --lz-font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --lz-font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
   --lz-font-size-xs: 11px;
   --lz-font-size-sm: 12px;

@@ -40,12 +40,22 @@ describe('Popup UI Controller (src/popup/popup.ts)', () => {
       if (msg.type === 'CHECK_VAULT_STATUS') {
         return { success: true, data: { hasMasterPassword: false, isUnlocked: false } };
       }
-      if (msg.type === 'GET_DOMAIN_HISTORY' || msg.type === 'GET_ALL_HISTORY' || msg.type === 'SEARCH_HISTORY') {
+      if (
+        msg.type === 'GET_DOMAIN_HISTORY' ||
+        msg.type === 'GET_ALL_HISTORY' ||
+        msg.type === 'SEARCH_HISTORY'
+      ) {
         return {
           success: true,
           data: [
             {
-              form: { id: 'f1', title: 'Test Form', lastModified: Date.now() - 5000, revisionNumber: 1, isFinalSubmit: true },
+              form: {
+                id: 'f1',
+                title: 'Test Form',
+                lastModified: Date.now() - 5000,
+                revisionNumber: 1,
+                isFinalSubmit: true,
+              },
               fields: [
                 { name: 'username', value: 'alice' },
                 { name: 'bio', value: 'A short bio snippet' },

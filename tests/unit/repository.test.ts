@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { db } from '../../src/common/db/lazarus-db';
-import { repository, normalizeDomainId, matchesDomainPattern } from '../../src/common/db/repository';
+import {
+  repository,
+  normalizeDomainId,
+  matchesDomainPattern,
+} from '../../src/common/db/repository';
 import { vault } from '../../src/common/crypto/vault';
 
 describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)', () => {

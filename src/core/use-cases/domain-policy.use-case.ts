@@ -11,7 +11,11 @@ export class DomainPolicyUseCase {
     return this.repository.isDomainEnabled(domain);
   }
 
-  public async setDomainEnabled(domain: string, enabled: boolean, wipeExisting = false): Promise<void> {
+  public async setDomainEnabled(
+    domain: string,
+    enabled: boolean,
+    wipeExisting = false
+  ): Promise<void> {
     await this.repository.setDomainEnabled(domain, enabled);
 
     if (!enabled && wipeExisting) {

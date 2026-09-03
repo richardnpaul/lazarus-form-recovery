@@ -7,8 +7,15 @@ import { VaultSecurityUseCase } from '../../../src/core/use-cases/vault-security
 import { DomainPolicyUseCase } from '../../../src/core/use-cases/domain-policy.use-case';
 import { RetentionCleanupUseCase } from '../../../src/core/use-cases/retention-cleanup.use-case';
 
-import { IFormRepositoryPort, StoredFormRecord, StoredFieldRecord } from '../../../src/core/ports/outbound/form-repository.port';
-import { IVaultCryptoPort, EncryptionResult } from '../../../src/core/ports/outbound/vault-crypto.port';
+import {
+  IFormRepositoryPort,
+  StoredFormRecord,
+  StoredFieldRecord,
+} from '../../../src/core/ports/outbound/form-repository.port';
+import {
+  IVaultCryptoPort,
+  EncryptionResult,
+} from '../../../src/core/ports/outbound/vault-crypto.port';
 import { IEphemeralStoragePort } from '../../../src/core/ports/outbound/ephemeral-cache.port';
 import { IEventBroadcasterPort } from '../../../src/core/ports/outbound/event-broadcaster.port';
 
@@ -26,7 +33,9 @@ describe('Hexagonal Use Cases (Core)', () => {
     fieldsDb = new Map();
 
     mockRepo = {
-      saveFormRecord: vi.fn(async (form) => { formsDb.set(form.id, form); }),
+      saveFormRecord: vi.fn(async (form) => {
+        formsDb.set(form.id, form);
+      }),
       saveFieldRecords: vi.fn(async (fields) => {
         if (fields.length > 0) fieldsDb.set(fields[0].formId, fields);
       }),
@@ -34,20 +43,42 @@ describe('Hexagonal Use Cases (Core)', () => {
       getFieldsByFormId: vi.fn(async (id) => fieldsDb.get(id) || []),
       getRevisionsByFormInstance: vi.fn(async (domainId, formInstanceId) => {
         return Array.from(formsDb.values()).filter(
-          f => f.domainId === domainId && f.formInstanceId === formInstanceId && f.status === 0
+          (f) => f.domainId === domainId && f.formInstanceId === formInstanceId && f.status === 0
         );
       }),
       getLatestRevisionsForDomain: vi.fn(async (domainId, limit = 5) => {
         return Array.from(formsDb.values())
-          .filter(f => f.domainId === domainId && f.status === 0)
+          .filter((f) => f.domainId === domainId && f.status === 0)
           .slice(0, limit);
       }),
       getAllHistory: vi.fn(async () => []),
       getDomainHistory: vi.fn(async () => []),
       searchHistory: vi.fn(async () => []),
       getRecoverableText: vi.fn(async () => [
-        { id: 'f1', formId: 'frm1', domainId: 'ex.com', revisionId: 'r1', name: 'user', type: 'text', value: 'alice', encryption: 'plaintext', lastModified: 1000, status: 0 },
-        { id: 'f2', formId: 'frm1', domainId: 'ex.com', revisionId: 'r1', name: 'user', type: 'text', value: 'alice', encryption: 'plaintext', lastModified: 900, status: 0 },
+        {
+          id: 'f1',
+          formId: 'frm1',
+          domainId: 'ex.com',
+          revisionId: 'r1',
+          name: 'user',
+          type: 'text',
+          value: 'alice',
+          encryption: 'plaintext',
+          lastModified: 1000,
+          status: 0,
+        },
+        {
+          id: 'f2',
+          formId: 'frm1',
+          domainId: 'ex.com',
+          revisionId: 'r1',
+          name: 'user',
+          type: 'text',
+          value: 'alice',
+          encryption: 'plaintext',
+          lastModified: 900,
+          status: 0,
+        },
       ]),
       softDeleteForm: vi.fn(async (id) => {
         const f = formsDb.get(id);
@@ -57,7 +88,10 @@ describe('Hexagonal Use Cases (Core)', () => {
         const f = formsDb.get(id);
         if (f) f.status = 1;
       }),
-      clearAllHistory: vi.fn(async () => { formsDb.clear(); fieldsDb.clear(); }),
+      clearAllHistory: vi.fn(async () => {
+        formsDb.clear();
+        fieldsDb.clear();
+      }),
       purgeExpiredForms: vi.fn(async () => 4),
       isDomainEnabled: vi.fn(async (domain) => domain !== 'blocked.com'),
       setDomainEnabled: vi.fn(async () => {}),
@@ -67,7 +101,10 @@ describe('Hexagonal Use Cases (Core)', () => {
     };
 
     mockVault = {
-      encrypt: vi.fn(async (text: string): Promise<EncryptionResult> => ({ ciphertext: `enc_${text}`, mode: 'hybrid-aes-gcm' })),
+      encrypt: vi.fn(async (text: string): Promise<EncryptionResult> => ({
+        ciphertext: `enc_${text}`,
+        mode: 'hybrid-aes-gcm',
+      })),
       decrypt: vi.fn(async (cipher) => cipher.replace('enc_', '')),
       hasMasterPassword: vi.fn(async () => true),
       setMasterPassword: vi.fn(async () => {}),
@@ -108,26 +145,31 @@ describe('Hexagonal Use Cases (Core)', () => {
 
     it('saves a form draft, sanitizes PII cards, encrypts, and broadcasts event', async () => {
       const useCase = new SaveFormDraftUseCase(mockRepo, mockVault, mockSession, mockBroadcaster);
-      const res = await useCase.execute({
-        domain: 'example.com',
-        url: 'https://example.com/checkout',
-        formInstanceId: 'checkout_form',
-        fields: [
-          { name: 'card', type: 'text', value: '4532015112830366' }, // valid Luhn
-          { name: 'notes', type: 'textarea', value: 'urgent delivery' },
-        ],
-      }, 101);
+      const res = await useCase.execute(
+        {
+          domain: 'example.com',
+          url: 'https://example.com/checkout',
+          formInstanceId: 'checkout_form',
+          fields: [
+            { name: 'card', type: 'text', value: '4532015112830366' }, // valid Luhn
+            { name: 'notes', type: 'textarea', value: 'urgent delivery' },
+          ],
+        },
+        101
+      );
 
       expect(res.success).toBe(true);
       expect(res.revisionNumber).toBe(1);
       expect(mockSession.saveEphemeralDraft).toHaveBeenCalledWith(101, expect.any(Object));
       expect(mockRepo.saveFormRecord).toHaveBeenCalled();
       expect(mockRepo.saveFieldRecords).toHaveBeenCalled();
-      expect(mockBroadcaster.broadcastFormSaved).toHaveBeenCalledWith(expect.objectContaining({
-        domain: 'example.com',
-        formInstanceId: 'checkout_form',
-        revisionNumber: 1,
-      }));
+      expect(mockBroadcaster.broadcastFormSaved).toHaveBeenCalledWith(
+        expect.objectContaining({
+          domain: 'example.com',
+          formInstanceId: 'checkout_form',
+          revisionNumber: 1,
+        })
+      );
 
       // Verify that the field with valid Luhn card was sanitized before encryption
       expect(mockVault.encrypt).toHaveBeenCalledWith('[REDACTED CREDIT CARD]');
@@ -154,12 +196,16 @@ describe('Hexagonal Use Cases (Core)', () => {
       }
 
       const useCase = new SaveFormDraftUseCase(mockRepo, mockVault, mockSession, mockBroadcaster);
-      const res = await useCase.execute({
-        domain: 'example.com',
-        url: 'https://example.com',
-        formInstanceId: 'form_cap',
-        fields: [],
-      }, undefined, true); // force new revision
+      const res = await useCase.execute(
+        {
+          domain: 'example.com',
+          url: 'https://example.com',
+          formInstanceId: 'form_cap',
+          fields: [],
+        },
+        undefined,
+        true
+      ); // force new revision
 
       expect(res.success).toBe(true);
       expect(mockRepo.softDeleteRevision).toHaveBeenCalled();
@@ -169,12 +215,15 @@ describe('Hexagonal Use Cases (Core)', () => {
   describe('SubmitFormUseCase', () => {
     it('creates a submitted milestone and clears tab drafts', async () => {
       const useCase = new SubmitFormUseCase(mockRepo, mockVault, mockSession, mockBroadcaster);
-      const res = await useCase.execute({
-        domain: 'example.com',
-        url: 'https://example.com/form',
-        formInstanceId: 'form_submit',
-        fields: [{ name: 'email', type: 'email', value: 'user@example.com' }],
-      }, 42);
+      const res = await useCase.execute(
+        {
+          domain: 'example.com',
+          url: 'https://example.com/form',
+          formInstanceId: 'form_submit',
+          fields: [{ name: 'email', type: 'email', value: 'user@example.com' }],
+        },
+        42
+      );
 
       expect(res.success).toBe(true);
       expect(res.reason).toBe('final_submit');
@@ -212,7 +261,18 @@ describe('Hexagonal Use Cases (Core)', () => {
       });
 
       fieldsDb.set('form_xyz', [
-        { id: 'fld1', formId: 'form_xyz', domainId: 'example.com', revisionId: 'r1', name: 'bio', type: 'text', value: 'enc_Hello world', encryption: 'hybrid-aes-gcm', lastModified: 1000, status: 0 },
+        {
+          id: 'fld1',
+          formId: 'form_xyz',
+          domainId: 'example.com',
+          revisionId: 'r1',
+          name: 'bio',
+          type: 'text',
+          value: 'enc_Hello world',
+          encryption: 'hybrid-aes-gcm',
+          lastModified: 1000,
+          status: 0,
+        },
       ]);
 
       const useCase = new RestoreFormUseCase(mockRepo, mockVault);

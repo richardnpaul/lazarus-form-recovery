@@ -19,18 +19,18 @@ chrome.runtime.onStartup?.addListener(() => {
 });
 
 // Central Runtime Message Listener
-chrome.runtime.onMessage.addListener(
-  (
-    message: RuntimeMessage,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: RuntimeResponse) => void
-  ) => {
-    handleRuntimeMessage(message, sender)
-      .then(sendResponse)
-      .catch((err) => sendResponse({ success: false, error: err.message }));
-    return true; // Keep channel open for async response
-  }
-);
+export function onRuntimeMessage(
+  message: RuntimeMessage,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response: RuntimeResponse) => void
+) {
+  handleRuntimeMessage(message, sender)
+    .then(sendResponse)
+    .catch((err) => sendResponse({ success: false, error: err.message }));
+  return true; // Keep channel open for async response
+}
+
+chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 // Tab lifecycle: clean up session autosaves on tab close
 chrome.tabs?.onRemoved?.addListener((tabId) => {

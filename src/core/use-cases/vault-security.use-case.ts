@@ -18,7 +18,9 @@ export class VaultSecurityUseCase implements IVaultSecurityUseCase {
     };
   }
 
-  public async setupMasterPassword(password: string): Promise<{ success: boolean; error?: string }> {
+  public async setupMasterPassword(
+    password: string
+  ): Promise<{ success: boolean; error?: string }> {
     if (!password || password.length < 6) {
       return { success: false, error: 'Password must be at least 6 characters.' };
     }

@@ -11,7 +11,11 @@ export class TextDiffEngine {
   /**
    * Computes a token-level (word or character) diff between oldText and newText.
    */
-  public static computeDiff(oldText: string, newText: string, mode: 'word' | 'char' = 'word'): DiffChange[] {
+  public static computeDiff(
+    oldText: string,
+    newText: string,
+    mode: 'word' | 'char' = 'word'
+  ): DiffChange[] {
     const oldTokens = mode === 'word' ? this.tokenizeWords(oldText) : oldText.split('');
     const newTokens = mode === 'word' ? this.tokenizeWords(newText) : newText.split('');
 

@@ -81,7 +81,11 @@ export class LivePreviewManager {
   private applyPreviewStyles() {
     if (!this.target) return;
     this.target.style.setProperty('background-color', 'var(--lz-preview-bg, #FFF9D2)', 'important');
-    this.target.style.setProperty('outline', '2px dashed var(--lz-preview-outline, #E5A500)', 'important');
+    this.target.style.setProperty(
+      'outline',
+      '2px dashed var(--lz-preview-outline, #E5A500)',
+      'important'
+    );
     this.target.style.setProperty('outline-offset', '-1px', 'important');
   }
 

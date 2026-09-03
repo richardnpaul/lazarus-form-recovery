@@ -21,7 +21,7 @@ export class WebCryptoVault {
         name: 'PBKDF2',
         salt: salt as unknown as BufferSource,
         iterations: this.PBKDF2_ITERATIONS,
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       keyMaterial,
       { name: 'AES-GCM', length: this.AES_KEY_LENGTH },
@@ -63,11 +63,7 @@ export class WebCryptoVault {
     const iv = combined.slice(0, this.IV_LENGTH);
     const cipherBuffer = combined.slice(this.IV_LENGTH);
 
-    const plainBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      cipherBuffer
-    );
+    const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, cipherBuffer);
 
     return new TextDecoder().decode(plainBuffer);
   }

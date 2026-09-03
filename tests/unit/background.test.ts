@@ -40,7 +40,7 @@ describe('Background Storage & Message Router Tests', () => {
 
     const fields = await db.fields.toArray();
     expect(fields.length).toBe(2);
-    expect(fields.find(f => f.name === 'issue_title')?.value).toBe('Bug: Form reset accident');
+    expect(fields.find((f) => f.name === 'issue_title')?.value).toBe('Bug: Form reset accident');
   });
 
   it('should retrieve saved field text via GET_RECOVERABLE_TEXT and form via GET_RECOVERABLE_FORM', async () => {
@@ -53,9 +53,7 @@ describe('Background Storage & Message Router Tests', () => {
           domain: 'news.ycombinator.com',
           title: 'Hacker News',
           editingTime: 10,
-          fields: [
-            { name: 'text', type: 'textarea', value: 'Insightful tech comment here' },
-          ],
+          fields: [{ name: 'text', type: 'textarea', value: 'Insightful tech comment here' }],
         },
       },
     });
@@ -93,7 +91,11 @@ describe('Background Storage & Message Router Tests', () => {
           title: 'Programming Discussion',
           editingTime: 20,
           fields: [
-            { name: 'comment', type: 'textarea', value: 'WebExtensions with MV3 are very capable.' },
+            {
+              name: 'comment',
+              type: 'textarea',
+              value: 'WebExtensions with MV3 are very capable.',
+            },
           ],
         },
       },
@@ -146,13 +148,22 @@ describe('Background Storage & Message Router Tests', () => {
       fields: [{ name: 'test', type: 'text', value: 'val' }],
     };
 
-    const autoRes = await chrome.runtime.sendMessage({ type: 'SAVE_AUTOSAVE', payload: { form: sampleForm } });
+    const autoRes = await chrome.runtime.sendMessage({
+      type: 'SAVE_AUTOSAVE',
+      payload: { form: sampleForm },
+    });
     expect(autoRes.success).toBe(false);
 
-    const subRes = await chrome.runtime.sendMessage({ type: 'SUBMIT_FORM', payload: { form: sampleForm } });
+    const subRes = await chrome.runtime.sendMessage({
+      type: 'SUBMIT_FORM',
+      payload: { form: sampleForm },
+    });
     expect(subRes.success).toBe(false);
 
-    const forceRes = await chrome.runtime.sendMessage({ type: 'FORCE_SAVE_SNAPSHOT', payload: { form: sampleForm } });
+    const forceRes = await chrome.runtime.sendMessage({
+      type: 'FORCE_SAVE_SNAPSHOT',
+      payload: { form: sampleForm },
+    });
     expect(forceRes.success).toBe(false);
 
     // Re-enable domain

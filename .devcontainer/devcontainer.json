@@ -1,20 +1,15 @@
 {
   "name": "Lazarus Form Recovery",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:26-trixie",
-  "mounts": [
-    "source=${localEnv:HOME}/.gemini,target=/home/node/.gemini,type=bind"
-  ],
+  "mounts": ["source=${localEnv:HOME}/.gemini,target=/home/node/.gemini,type=bind"],
   "remoteUser": "node",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
-      ],
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
   },
-  "postCreateCommand": "sudo ln -s /home/node/.gemini /root/.gemini 2>/dev/null || true; npm install"
+  "postCreateCommand": "sudo apt update && sudo apt install -y pre-commit && sudo ln -s /home/node/.gemini /root/.gemini 2>/dev/null || true; npm install && pre-commit install"
 }

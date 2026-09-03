@@ -13,7 +13,8 @@ export class FormTracker {
   private lastInteractedElement: HTMLElement | null = null;
 
   // Active editing time state per form: formInstanceId -> { start, last, totalSec }
-  private editingSessions: Map<string, { start: number; last: number; totalSec: number }> = new Map();
+  private editingSessions: Map<string, { start: number; last: number; totalSec: number }> =
+    new Map();
 
   private onInput = this.handleInput.bind(this);
   private onCompositionEnd = this.handleInput.bind(this);
@@ -103,19 +104,23 @@ export class FormTracker {
       const form = target.closest('form');
       const formInstanceId = form?.id || form?.getAttribute('name') || undefined;
       const adapter = findRichTextAdapter(target);
-      const fieldName = adapter ? adapter.getName(target) : target.getAttribute('name') || target.id || undefined;
+      const fieldName = adapter
+        ? adapter.getName(target)
+        : target.getAttribute('name') || target.id || undefined;
       const fieldType = adapter ? adapter.name : target.tagName.toLowerCase();
 
       // Send to background to dynamically populate context submenus
-      chrome.runtime.sendMessage({
-        type: 'UPDATE_CONTEXT_MENU',
-        payload: {
-          domain: window.location.hostname,
-          formInstanceId,
-          fieldName,
-          fieldType,
-        },
-      }).catch(() => {});
+      chrome.runtime
+        .sendMessage({
+          type: 'UPDATE_CONTEXT_MENU',
+          payload: {
+            domain: window.location.hostname,
+            formInstanceId,
+            fieldName,
+            fieldType,
+          },
+        })
+        .catch(() => {});
     }
   }
 
@@ -125,7 +130,7 @@ export class FormTracker {
 
     this.lastInteractedElement = target;
     const formElement = target.closest('form');
-    const formId = formElement ? (formElement.id || 'form_wrapper') : 'fake_form';
+    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
     this.updateEditingTime(formId);
 
     if (this.autosaveTimer) {
@@ -176,7 +181,7 @@ export class FormTracker {
 
   private triggerAutosave(target: HTMLElement) {
     const formElement = target.closest('form');
-    const formId = formElement ? (formElement.id || 'form_wrapper') : 'fake_form';
+    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
     const editingTime = this.updateEditingTime(formId);
 
     const formSnapshot = FieldExtractor.buildFormSnapshot(target, editingTime);
@@ -224,15 +229,20 @@ export class FormTracker {
       if (!Array.isArray(fields) || fields.length === 0) return;
 
       // Find target form in document
-      let targetForm = this.lastInteractedElement?.closest('form') || document.querySelector('form');
+      let targetForm =
+        this.lastInteractedElement?.closest('form') || document.querySelector('form');
 
       fields.forEach((field: any) => {
         let el: HTMLElement | null = null;
         if (targetForm) {
-          el = targetForm.querySelector(`[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`);
+          el = targetForm.querySelector(
+            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
+          );
         }
         if (!el) {
-          el = document.querySelector(`[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`);
+          el = document.querySelector(
+            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
+          );
         }
 
         if (el) {
@@ -251,20 +261,26 @@ export class FormTracker {
   }
 
   private forceSaveCurrentForm() {
-    const target = this.lastInteractedElement || (document.activeElement as HTMLElement) || document.querySelector('form, input, textarea');
+    const target =
+      this.lastInteractedElement ||
+      (document.activeElement as HTMLElement) ||
+      document.querySelector('form, input, textarea');
     if (!target) return;
 
     const formElement = target.closest('form');
-    const formId = formElement ? (formElement.id || 'form_wrapper') : 'fake_form';
+    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
     const editingTime = this.updateEditingTime(formId);
     const formSnapshot = FieldExtractor.buildFormSnapshot(target as HTMLElement, editingTime);
 
-    chrome.runtime.sendMessage({
-      type: 'FORCE_SAVE_SNAPSHOT',
-      payload: { form: formSnapshot },
-    }).then(() => {
-      this.flashConfirmation(target as HTMLElement);
-    }).catch(() => {});
+    chrome.runtime
+      .sendMessage({
+        type: 'FORCE_SAVE_SNAPSHOT',
+        payload: { form: formSnapshot },
+      })
+      .then(() => {
+        this.flashConfirmation(target as HTMLElement);
+      })
+      .catch(() => {});
   }
 
   private applyValueToElement(element: HTMLElement, value: string) {

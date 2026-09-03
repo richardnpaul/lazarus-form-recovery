@@ -27,7 +27,7 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
       title: 'Recent Form',
       encryption: 'none',
       editingTime: 10,
-      lastModified: now - (1 * dayMs),
+      lastModified: now - 1 * dayMs,
       status: 0,
     });
     await db.fields.put({
@@ -39,7 +39,7 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
       type: 'text',
       value: 'Fresh value',
       encryption: 'none',
-      lastModified: now - (1 * dayMs),
+      lastModified: now - 1 * dayMs,
       status: 0,
     });
 
@@ -54,7 +54,7 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
       title: 'Expired Form',
       encryption: 'none',
       editingTime: 5,
-      lastModified: now - (10 * dayMs),
+      lastModified: now - 10 * dayMs,
       status: 0,
     });
     await db.fields.put({
@@ -66,7 +66,7 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
       type: 'text',
       value: 'Old value',
       encryption: 'none',
-      lastModified: now - (10 * dayMs),
+      lastModified: now - 10 * dayMs,
       status: 0,
     });
 
@@ -89,7 +89,9 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
   it('registers periodic alarms and handles onAlarm events', async () => {
     const { setupAlarms } = await import('../../src/background/alarms');
     setupAlarms();
-    expect(chrome.alarms.create).toHaveBeenCalledWith('cleanup-expired-forms', { periodInMinutes: 30 });
+    expect(chrome.alarms.create).toHaveBeenCalledWith('cleanup-expired-forms', {
+      periodInMinutes: 30,
+    });
 
     const alarmListeners = (chrome.alarms.onAlarm.addListener as any).mock?.calls || [];
     if (alarmListeners.length > 0) {

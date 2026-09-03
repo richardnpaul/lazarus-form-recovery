@@ -92,8 +92,8 @@ describe('LazarusDatabase Unit Tests (Dexie + IndexedDB)', () => {
         .toArray();
 
       expect(results.length).toBe(2);
-      expect(results.map(f => f.id)).toContain('form-1');
-      expect(results.map(f => f.id)).toContain('form-2');
+      expect(results.map((f) => f.id)).toContain('form-1');
+      expect(results.map((f) => f.id)).toContain('form-2');
     });
 
     it('should filter out soft-deleted forms', async () => {
@@ -153,17 +153,14 @@ describe('LazarusDatabase Unit Tests (Dexie + IndexedDB)', () => {
         title: 'Hacker News Old',
         encryption: 'none',
         editingTime: 10,
-        lastModified: now - (12 * 24 * 60 * 60 * 1000), // 12 days old
+        lastModified: now - 12 * 24 * 60 * 60 * 1000, // 12 days old
         status: 0,
       };
 
       await db.forms.bulkPut([freshForm, oldForm]);
 
       // Query records older than threshold
-      const expiredForms = await db.forms
-        .where('lastModified')
-        .below(expiredThreshold)
-        .toArray();
+      const expiredForms = await db.forms.where('lastModified').below(expiredThreshold).toArray();
 
       expect(expiredForms.length).toBe(1);
       expect(expiredForms[0].id).toBe('old-form');

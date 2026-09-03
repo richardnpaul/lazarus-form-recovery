@@ -1,7 +1,15 @@
-import { FormSnapshotData, FormRevisionPolicy, ExistingRevisionSummary } from '../domain/form-revision';
+import {
+  FormSnapshotData,
+  FormRevisionPolicy,
+  ExistingRevisionSummary,
+} from '../domain/form-revision';
 import { PiiSanitizer } from '../domain/pii-sanitizer';
 import { ISaveFormDraftUseCase, SaveFormResult } from '../ports/inbound/save-form.port';
-import { IFormRepositoryPort, StoredFormRecord, StoredFieldRecord } from '../ports/outbound/form-repository.port';
+import {
+  IFormRepositoryPort,
+  StoredFormRecord,
+  StoredFieldRecord,
+} from '../ports/outbound/form-repository.port';
 import { IVaultCryptoPort } from '../ports/outbound/vault-crypto.port';
 import { IEphemeralStoragePort } from '../ports/outbound/ephemeral-cache.port';
 import { IEventBroadcasterPort } from '../ports/outbound/event-broadcaster.port';
@@ -44,7 +52,7 @@ export class SaveFormDraftUseCase implements ISaveFormDraftUseCase {
 
     // 3. Query existing revisions for this form instance
     const existing = await this.repository.getRevisionsByFormInstance(domainId, formInstanceId);
-    const existingSummaries: ExistingRevisionSummary[] = existing.map(r => ({
+    const existingSummaries: ExistingRevisionSummary[] = existing.map((r) => ({
       id: r.id,
       revisionId: r.revisionId,
       revisionNumber: r.revisionNumber,
@@ -53,7 +61,10 @@ export class SaveFormDraftUseCase implements ISaveFormDraftUseCase {
     }));
 
     const latestRevision = existingSummaries[0];
-    const maxRevisionNumber = existingSummaries.reduce((max, r) => Math.max(max, r.revisionNumber || 1), 0);
+    const maxRevisionNumber = existingSummaries.reduce(
+      (max, r) => Math.max(max, r.revisionNumber || 1),
+      0
+    );
 
     // 4. Domain Decision: active update vs new revision
     const decision = FormRevisionPolicy.evaluateRevisionDecision(
@@ -94,7 +105,8 @@ export class SaveFormDraftUseCase implements ISaveFormDraftUseCase {
         if (!field.name && !field.value) continue;
 
         const sanitizedValue = PiiSanitizer.sanitize(field.value || '', field.name);
-        const { ciphertext: encValue, mode: fieldEncMode } = await this.vault.encrypt(sanitizedValue);
+        const { ciphertext: encValue, mode: fieldEncMode } =
+          await this.vault.encrypt(sanitizedValue);
 
         const fieldName = field.name || 'field_anonymous';
         const fieldType = field.type || 'text';
@@ -121,7 +133,7 @@ export class SaveFormDraftUseCase implements ISaveFormDraftUseCase {
     if (decision.shouldSpawnNewRevision) {
       const updatedRevisions = [
         { id: decision.formId, lastModified: now },
-        ...existingSummaries.map(r => ({ id: r.id, lastModified: r.lastModified })),
+        ...existingSummaries.map((r) => ({ id: r.id, lastModified: r.lastModified })),
       ];
       const toPrune = FormRevisionPolicy.calculateRevisionsToPrune(updatedRevisions);
       for (const pruneId of toPrune) {

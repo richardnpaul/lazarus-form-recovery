@@ -7,5 +7,9 @@ export interface RecoverableFieldSnippet {
 
 export interface IRestoreFormUseCase {
   getRecoverableForm(formId: string): Promise<FormWithFields | undefined>;
-  getRecoverableText(domain: string, fieldName: string, fieldType: string): Promise<RecoverableFieldSnippet[]>;
+  getRecoverableText(
+    domain: string,
+    fieldName: string,
+    fieldType: string
+  ): Promise<RecoverableFieldSnippet[]>;
 }

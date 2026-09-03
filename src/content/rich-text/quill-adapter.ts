@@ -4,10 +4,7 @@ export class QuillAdapter implements RichTextAdapter {
   public readonly name = 'quill';
 
   public matches(element: HTMLElement): boolean {
-    return (
-      element.classList.contains('ql-editor') ||
-      element.closest('.ql-container') !== null
-    );
+    return element.classList.contains('ql-editor') || element.closest('.ql-container') !== null;
   }
 
   public getValue(element: HTMLElement): string {

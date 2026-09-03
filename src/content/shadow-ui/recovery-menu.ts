@@ -112,7 +112,7 @@ export class RecoveryMenu {
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.toLowerCase().trim();
       this.filteredItems = q
-        ? this.currentItems.filter(item => item.value.toLowerCase().includes(q))
+        ? this.currentItems.filter((item) => item.value.toLowerCase().includes(q))
         : [...this.currentItems];
       this.renderList();
     });
@@ -243,7 +243,8 @@ export class RecoveryMenu {
       if (current) this.previewManager.preview(current.value);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      this.focusedIndex = (this.focusedIndex - 1 + this.filteredItems.length) % this.filteredItems.length;
+      this.focusedIndex =
+        (this.focusedIndex - 1 + this.filteredItems.length) % this.filteredItems.length;
       this.updateFocusedItemClass();
       const current = this.filteredItems[this.focusedIndex];
       if (current) this.previewManager.preview(current.value);

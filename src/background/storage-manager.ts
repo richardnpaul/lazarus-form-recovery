@@ -52,7 +52,9 @@ export class SessionStorageManager {
   /**
    * Promotes session autosaves to permanent IndexedDB vault.
    */
-  public async promoteAutosaveToVault(snapshot: FormSnapshot): Promise<{ formId: string; domainId: string }> {
+  public async promoteAutosaveToVault(
+    snapshot: FormSnapshot
+  ): Promise<{ formId: string; domainId: string }> {
     return await repository.saveFormSnapshot(snapshot, true);
   }
 
@@ -65,7 +67,7 @@ export class SessionStorageManager {
     try {
       const all = await chrome.storage.session.get(null);
       const prefix = `autosaves:${tabId}:`;
-      const keysToRemove = Object.keys(all).filter(k => k.startsWith(prefix));
+      const keysToRemove = Object.keys(all).filter((k) => k.startsWith(prefix));
 
       if (keysToRemove.length > 0) {
         await chrome.storage.session.remove(keysToRemove);

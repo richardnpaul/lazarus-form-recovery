@@ -1,5 +1,9 @@
 import { IRestoreFormUseCase, RecoverableFieldSnippet } from '../ports/inbound/restore-form.port';
-import { IFormRepositoryPort, FormWithFields, StoredFieldRecord } from '../ports/outbound/form-repository.port';
+import {
+  IFormRepositoryPort,
+  FormWithFields,
+  StoredFieldRecord,
+} from '../ports/outbound/form-repository.port';
 import { IVaultCryptoPort } from '../ports/outbound/vault-crypto.port';
 
 export class RestoreFormUseCase implements IRestoreFormUseCase {
@@ -24,8 +28,8 @@ export class RestoreFormUseCase implements IRestoreFormUseCase {
     const rawFields = await this.repository.getFieldsByFormId(formId);
     const decryptedFields: StoredFieldRecord[] = await Promise.all(
       rawFields
-        .filter(f => f.status === 0)
-        .map(async f => {
+        .filter((f) => f.status === 0)
+        .map(async (f) => {
           let val = f.value;
           try {
             val = await this.vault.decrypt(f.value, f.encryption);
@@ -48,11 +52,15 @@ export class RestoreFormUseCase implements IRestoreFormUseCase {
     };
   }
 
-  public async getRecoverableText(domain: string, fieldName: string, fieldType: string): Promise<RecoverableFieldSnippet[]> {
+  public async getRecoverableText(
+    domain: string,
+    fieldName: string,
+    fieldType: string
+  ): Promise<RecoverableFieldSnippet[]> {
     const rawFields = await this.repository.getRecoverableText(domain, fieldName, fieldType);
 
     const decrypted = await Promise.all(
-      rawFields.map(async f => {
+      rawFields.map(async (f) => {
         let val = f.value;
         try {
           val = await this.vault.decrypt(f.value, f.encryption);
@@ -65,6 +73,8 @@ export class RestoreFormUseCase implements IRestoreFormUseCase {
         };
       })
     );
+
+    decrypted.sort((a, b) => (b.lastModified || 0) - (a.lastModified || 0));
 
     // Deduplicate by text value, preserving newest
     const seen = new Set<string>();

@@ -23,9 +23,13 @@ const prefAutolockSelect = document.getElementById('pref-autolock-select') as HT
 const passwordModal = document.getElementById('password-modal') as HTMLElement;
 const passwordModalTitle = document.getElementById('password-modal-title') as HTMLElement;
 const inputMasterPass = document.getElementById('input-master-pass') as HTMLInputElement;
-const inputMasterPassConfirm = document.getElementById('input-master-pass-confirm') as HTMLInputElement;
+const inputMasterPassConfirm = document.getElementById(
+  'input-master-pass-confirm'
+) as HTMLInputElement;
 const passwordStrengthLabel = document.getElementById('password-strength-label') as HTMLElement;
-const btnCancelPasswordModal = document.getElementById('btn-cancel-password-modal') as HTMLButtonElement;
+const btnCancelPasswordModal = document.getElementById(
+  'btn-cancel-password-modal'
+) as HTMLButtonElement;
 const btnSaveMasterPass = document.getElementById('btn-save-master-pass') as HTMLButtonElement;
 
 // Domains Tab Elements
@@ -56,11 +60,11 @@ async function init() {
 }
 
 function setupTabs() {
-  navItems.forEach(item => {
+  navItems.forEach((item) => {
     item.addEventListener('click', () => {
       const tab = item.getAttribute('data-tab');
-      navItems.forEach(i => i.classList.remove('is-active'));
-      panels.forEach(p => p.classList.remove('is-active'));
+      navItems.forEach((i) => i.classList.remove('is-active'));
+      panels.forEach((p) => p.classList.remove('is-active'));
 
       item.classList.add('is-active');
       document.getElementById(`panel-${tab}`)?.classList.add('is-active');
@@ -69,7 +73,9 @@ function setupTabs() {
 }
 
 async function loadSettings() {
-  const res: RuntimeResponse<ExtensionSettings> = await chrome.runtime.sendMessage({ type: 'GET_SETTINGS' });
+  const res: RuntimeResponse<ExtensionSettings> = await chrome.runtime.sendMessage({
+    type: 'GET_SETTINGS',
+  });
   if (res?.success && res.data) {
     currentSettings = res.data;
 
@@ -102,7 +108,9 @@ async function saveSettings(patch: Partial<ExtensionSettings>) {
 }
 
 async function checkVault() {
-  const res: RuntimeResponse<VaultStatus> = await chrome.runtime.sendMessage({ type: 'CHECK_VAULT_STATUS' });
+  const res: RuntimeResponse<VaultStatus> = await chrome.runtime.sendMessage({
+    type: 'CHECK_VAULT_STATUS',
+  });
   if (res?.success && res.data) {
     currentVaultStatus = res.data;
     if (currentVaultStatus.hasMasterPassword) {
@@ -249,11 +257,12 @@ btnSaveMasterPass.addEventListener('click', async () => {
 function renderDomainsTable(domains: string[]) {
   domainTableBody.innerHTML = '';
   if (domains.length === 0) {
-    domainTableBody.innerHTML = '<tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>';
+    domainTableBody.innerHTML =
+      '<tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>';
     return;
   }
 
-  domains.forEach(domain => {
+  domains.forEach((domain) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family: var(--lz-font-mono); font-weight: 500;">${escapeHtml(domain)}</td>
@@ -294,7 +303,9 @@ async function calculateStorage() {
       const estimate = await navigator.storage.estimate();
       const usageMb = ((estimate.usage || 0) / (1024 * 1024)).toFixed(2);
       const quotaMb = ((estimate.quota || 0) / (1024 * 1024)).toFixed(0);
-      const pct = estimate.quota ? Math.min(100, Math.round(((estimate.usage || 0) / estimate.quota) * 100)) : 0;
+      const pct = estimate.quota
+        ? Math.min(100, Math.round(((estimate.usage || 0) / estimate.quota) * 100))
+        : 0;
 
       storageProgressBar.style.width = `${pct}%`;
       storageEstimateLabel.textContent = `Using ~${usageMb} MB of ${quotaMb} MB available storage quota.`;
@@ -343,7 +354,11 @@ btnConfirmWipe.addEventListener('click', async () => {
 });
 
 function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function escapeAttr(str: string): string {

@@ -152,7 +152,8 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
 
     // 11. Window focus & tab activation
     window.dispatchEvent(new Event('focus'));
-    const tabActivatedListeners = ((chrome.tabs as any)?.onActivated?.addListener as any)?.mock?.calls || [];
+    const tabActivatedListeners =
+      ((chrome.tabs as any)?.onActivated?.addListener as any)?.mock?.calls || [];
     if (tabActivatedListeners.length > 0) {
       tabActivatedListeners[0][0]({ tabId: 1, windowId: 1 });
     }

@@ -126,21 +126,24 @@ body {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--lz-border-strong);
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 18px;
 }
 
 .slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 14px;
   width: 14px;
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 50%;
 }
 
@@ -222,7 +225,9 @@ input:checked + .slider:before {
   border-radius: var(--lz-radius-md);
   padding: 12px;
   box-shadow: var(--lz-shadow-sm);
-  transition: box-shadow 120ms ease, border-color 120ms ease;
+  transition:
+    box-shadow 120ms ease,
+    border-color 120ms ease;
 }
 
 .form-card:hover {

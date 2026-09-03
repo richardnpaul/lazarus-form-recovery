@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-chrome
+coverage
+.agents
+*.png
+*.ico
+*.svg
+package-lock.json

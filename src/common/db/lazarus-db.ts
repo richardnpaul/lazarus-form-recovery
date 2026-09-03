@@ -14,14 +14,16 @@ export class LazarusDatabase extends Dexie {
       domains: 'id, domain, lastModified, status',
       forms: 'id, domainId, url, lastModified, status',
       fields: 'id, formId, domainId, name, type, lastModified, status',
-      settings: 'key, lastModified'
+      settings: 'key, lastModified',
     });
 
     this.version(2).stores({
       domains: 'id, domain, lastModified, status',
-      forms: 'id, domainId, formInstanceId, revisionId, url, lastModified, status, [domainId+lastModified], [domainId+formInstanceId+lastModified]',
-      fields: 'id, formId, domainId, revisionId, name, type, lastModified, status, [domainId+name+type]',
-      settings: 'key, lastModified'
+      forms:
+        'id, domainId, formInstanceId, revisionId, url, lastModified, status, [domainId+lastModified], [domainId+formInstanceId+lastModified]',
+      fields:
+        'id, formId, domainId, revisionId, name, type, lastModified, status, [domainId+name+type]',
+      settings: 'key, lastModified',
     });
   }
 }

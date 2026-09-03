@@ -109,7 +109,8 @@ body {
   margin-bottom: 3px;
 }
 
-.form-input, .form-textarea {
+.form-input,
+.form-textarea {
   width: 100%;
   background: var(--lz-bg-canvas);
   border: 1px solid var(--lz-border-subtle);
@@ -121,7 +122,8 @@ body {
   transition: border-color 120ms;
 }
 
-.form-input:focus, .form-textarea:focus {
+.form-input:focus,
+.form-textarea:focus {
   border-color: var(--lz-accent-primary);
 }
 
@@ -239,7 +241,9 @@ body {
   border-radius: var(--lz-radius-md);
   padding: 10px 12px;
   box-shadow: var(--lz-shadow-sm);
-  transition: background 120ms, border-color 120ms;
+  transition:
+    background 120ms,
+    border-color 120ms;
 }
 
 .history-item:hover {

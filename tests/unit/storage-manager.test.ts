@@ -29,7 +29,7 @@ describe('SessionStorageManager (src/background/storage-manager.ts)', () => {
     (chrome.storage.session.get as any).mockResolvedValueOnce({
       'autosaves:101:f1': { snapshot: sampleSnapshot, timestamp: Date.now() },
       'autosaves:102:f2': { snapshot: sampleSnapshot, timestamp: Date.now() },
-      'unrelated_key': 'val',
+      unrelated_key: 'val',
     });
 
     const snapshots = await sessionStorageManager.getTabAutosaves(101);

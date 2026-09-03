@@ -1,265 +1,337 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lazarus Form Recovery — Settings</title>
-  <link rel="stylesheet" href="./options.css">
-</head>
-<body>
-  <div class="options-layout">
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="sidebar-brand">
-        <div class="sidebar-logo">L</div>
-        <div class="sidebar-title">Lazarus</div>
-      </div>
-      <nav class="sidebar-nav">
-        <button class="nav-item is-active" data-tab="general">🛡️ General Preferences</button>
-        <button class="nav-item" data-tab="security">🔐 Security & Vault</button>
-        <button class="nav-item" data-tab="domains">🌐 Disabled Domains</button>
-        <button class="nav-item" data-tab="storage">💾 Storage & Data</button>
-        <button class="nav-item" data-tab="about">ℹ️ About & Diagnostics</button>
-      </nav>
-    </aside>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Tab 1: General Preferences -->
-      <section class="tab-panel is-active" id="panel-general">
-        <header class="panel-header">
-          <h1 class="panel-title">General Preferences</h1>
-          <p class="panel-desc">Configure input interception policies and retention durations.</p>
-        </header>
-
-        <!-- Save Passwords Toggle -->
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title">Save Password Fields</div>
-              <div class="setting-subtitle">Record and recover input typed into password fields.</div>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="pref-save-passwords">
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-          <div class="alert-banner alert-warning" id="passwords-warning" style="display: none;">
-            ⚠️ <strong>Security Notice:</strong> Storing password field entries on disk exposes sensitive credentials to anyone with access to your device. Keep Master Password mode active.
-          </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lazarus Form Recovery — Settings</title>
+    <link rel="stylesheet" href="./options.css" />
+  </head>
+  <body>
+    <div class="options-layout">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo">L</div>
+          <div class="sidebar-title">Lazarus</div>
         </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item is-active" data-tab="general">🛡️ General Preferences</button>
+          <button class="nav-item" data-tab="security">🔐 Security & Vault</button>
+          <button class="nav-item" data-tab="domains">🌐 Disabled Domains</button>
+          <button class="nav-item" data-tab="storage">💾 Storage & Data</button>
+          <button class="nav-item" data-tab="about">ℹ️ About & Diagnostics</button>
+        </nav>
+      </aside>
 
-        <!-- Credit Card Scrubbing -->
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title">Automatic PII / Credit Card Redaction</div>
-              <div class="setting-subtitle">Detect 13–19 digit credit cards with the Luhn algorithm and redact CVVs from touching local storage.</div>
+      <!-- Main Content Area -->
+      <main class="main-content">
+        <!-- Tab 1: General Preferences -->
+        <section class="tab-panel is-active" id="panel-general">
+          <header class="panel-header">
+            <h1 class="panel-title">General Preferences</h1>
+            <p class="panel-desc">Configure input interception policies and retention durations.</p>
+          </header>
+
+          <!-- Save Passwords Toggle -->
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title">Save Password Fields</div>
+                <div class="setting-subtitle">
+                  Record and recover input typed into password fields.
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="pref-save-passwords" />
+                <span class="switch-slider"></span>
+              </label>
             </div>
-            <label class="switch">
-              <input type="checkbox" id="pref-filter-cards" checked>
-              <span class="switch-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Retention Slider -->
-        <div class="setting-card">
-          <div class="setting-title">Data Retention Period</div>
-          <div class="setting-subtitle">Automatically purge form drafts older than the specified duration.</div>
-          <div class="slider-container">
-            <input type="range" min="1" max="30" value="10" class="range-input" id="pref-retention-slider">
-            <span class="slider-chip" id="retention-chip">10 days</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Tab 2: Security & Vault -->
-      <section class="tab-panel" id="panel-security">
-        <header class="panel-header">
-          <h1 class="panel-title">Security & Encryption Vault</h1>
-          <p class="panel-desc">Manage cryptographic storage and master password protection.</p>
-        </header>
-
-        <div class="setting-card">
-          <div class="setting-title">Encryption Mode</div>
-          <div class="radio-card-grid">
-            <div class="radio-card is-selected" id="mode-standard">
-              <div class="radio-card-title">Standard Mode (Local Only)</div>
-              <div class="radio-card-desc">Zero-configuration. Forms stored in local IndexedDB isolated to your browser profile.</div>
-            </div>
-            <div class="radio-card" id="mode-vault">
-              <div class="radio-card-title">Master Password Vault (AES-GCM-256)</div>
-              <div class="radio-card-desc">Military-grade AES-256 encryption using PBKDF2 key derivation. Password required to read drafts.</div>
+            <div class="alert-banner alert-warning" id="passwords-warning" style="display: none">
+              ⚠️ <strong>Security Notice:</strong> Storing password field entries on disk exposes
+              sensitive credentials to anyone with access to your device. Keep Master Password mode
+              active.
             </div>
           </div>
-        </div>
 
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title">Vault Status</div>
-              <div class="setting-subtitle" id="vault-status-desc">Master Password is not configured.</div>
+          <!-- Credit Card Scrubbing -->
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title">Automatic PII / Credit Card Redaction</div>
+                <div class="setting-subtitle">
+                  Detect 13–19 digit credit cards with the Luhn algorithm and redact CVVs from
+                  touching local storage.
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="pref-filter-cards" checked />
+                <span class="switch-slider"></span>
+              </label>
             </div>
-            <button class="btn btn-primary" id="btn-configure-password">Set Master Password</button>
           </div>
-        </div>
 
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title">Auto-Lock Inactivity Timeout</div>
-              <div class="setting-subtitle">Automatically purge derived decryption keys after a period of inactivity.</div>
+          <!-- Retention Slider -->
+          <div class="setting-card">
+            <div class="setting-title">Data Retention Period</div>
+            <div class="setting-subtitle">
+              Automatically purge form drafts older than the specified duration.
             </div>
-            <select id="pref-autolock-select" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--lz-border-subtle); background: var(--lz-bg-canvas); color: var(--lz-text-primary);">
-              <option value="5">5 minutes</option>
-              <option value="15" selected>15 minutes</option>
-              <option value="30">30 minutes</option>
-              <option value="60">1 hour</option>
-              <option value="0">Never during session</option>
-            </select>
+            <div class="slider-container">
+              <input
+                type="range"
+                min="1"
+                max="30"
+                value="10"
+                class="range-input"
+                id="pref-retention-slider"
+              />
+              <span class="slider-chip" id="retention-chip">10 days</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Tab 3: Disabled Domains -->
-      <section class="tab-panel" id="panel-domains">
-        <header class="panel-header">
-          <h1 class="panel-title">Disabled Domains</h1>
-          <p class="panel-desc">Exclude specific sites or wildcard patterns from form recording.</p>
-        </header>
+        <!-- Tab 2: Security & Vault -->
+        <section class="tab-panel" id="panel-security">
+          <header class="panel-header">
+            <h1 class="panel-title">Security & Encryption Vault</h1>
+            <p class="panel-desc">Manage cryptographic storage and master password protection.</p>
+          </header>
 
-        <div class="setting-card">
-          <div class="setting-title">Add Excluded Domain</div>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="input-new-domain" placeholder="e.g. *.bank.com or localhost:*" style="flex: 1; padding: 8px 12px; border: 1px solid var(--lz-border-subtle); border-radius: var(--lz-radius-sm); background: var(--lz-bg-canvas); color: var(--lz-text-primary);">
-            <button class="btn btn-primary" id="btn-add-domain">Block Domain</button>
+          <div class="setting-card">
+            <div class="setting-title">Encryption Mode</div>
+            <div class="radio-card-grid">
+              <div class="radio-card is-selected" id="mode-standard">
+                <div class="radio-card-title">Standard Mode (Local Only)</div>
+                <div class="radio-card-desc">
+                  Zero-configuration. Forms stored in local IndexedDB isolated to your browser
+                  profile.
+                </div>
+              </div>
+              <div class="radio-card" id="mode-vault">
+                <div class="radio-card-title">Master Password Vault (AES-GCM-256)</div>
+                <div class="radio-card-desc">
+                  Military-grade AES-256 encryption using PBKDF2 key derivation. Password required
+                  to read drafts.
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="setting-card">
-          <div class="setting-title">Excluded Domain List</div>
-          <table class="data-table">
-            <thead>
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title">Vault Status</div>
+                <div class="setting-subtitle" id="vault-status-desc">
+                  Master Password is not configured.
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btn-configure-password">
+                Set Master Password
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title">Auto-Lock Inactivity Timeout</div>
+                <div class="setting-subtitle">
+                  Automatically purge derived decryption keys after a period of inactivity.
+                </div>
+              </div>
+              <select
+                id="pref-autolock-select"
+                style="
+                  padding: 6px 12px;
+                  border-radius: 6px;
+                  border: 1px solid var(--lz-border-subtle);
+                  background: var(--lz-bg-canvas);
+                  color: var(--lz-text-primary);
+                "
+              >
+                <option value="5">5 minutes</option>
+                <option value="15" selected>15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="0">Never during session</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 3: Disabled Domains -->
+        <section class="tab-panel" id="panel-domains">
+          <header class="panel-header">
+            <h1 class="panel-title">Disabled Domains</h1>
+            <p class="panel-desc">
+              Exclude specific sites or wildcard patterns from form recording.
+            </p>
+          </header>
+
+          <div class="setting-card">
+            <div class="setting-title">Add Excluded Domain</div>
+            <div style="display: flex; gap: 8px">
+              <input
+                type="text"
+                id="input-new-domain"
+                placeholder="e.g. *.bank.com or localhost:*"
+                style="
+                  flex: 1;
+                  padding: 8px 12px;
+                  border: 1px solid var(--lz-border-subtle);
+                  border-radius: var(--lz-radius-sm);
+                  background: var(--lz-bg-canvas);
+                  color: var(--lz-text-primary);
+                "
+              />
+              <button class="btn btn-primary" id="btn-add-domain">Block Domain</button>
+            </div>
+          </div>
+
+          <div class="setting-card">
+            <div class="setting-title">Excluded Domain List</div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Domain Pattern</th>
+                  <th style="text-align: right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="domain-table-body">
+                <tr>
+                  <td colspan="2" style="color: var(--lz-text-muted); text-align: center">
+                    No disabled domains yet.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Tab 4: Storage & Data -->
+        <section class="tab-panel" id="panel-storage">
+          <header class="panel-header">
+            <h1 class="panel-title">Storage & Maintenance</h1>
+            <p class="panel-desc">
+              Inspect storage utilization, export encrypted backups, or wipe all records.
+            </p>
+          </header>
+
+          <div class="setting-card">
+            <div class="setting-title">IndexedDB Storage Capacity</div>
+            <div class="progress-container">
+              <div class="progress-bar" id="storage-progress-bar"></div>
+            </div>
+            <div class="setting-subtitle" id="storage-estimate-label">
+              Calculating storage footprint...
+            </div>
+          </div>
+
+          <div class="setting-card">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title">Export Form History</div>
+                <div class="setting-subtitle">
+                  Download complete form history serialized into a JSON backup.
+                </div>
+              </div>
+              <button class="btn btn-primary" id="btn-export-data">Export JSON</button>
+            </div>
+          </div>
+
+          <div class="setting-card" style="border-color: hsla(0, 84%, 60%, 0.3)">
+            <div class="setting-row">
+              <div class="setting-meta">
+                <div class="setting-title" style="color: var(--lz-status-danger)">
+                  Danger Zone: Nuclear Wipe
+                </div>
+                <div class="setting-subtitle">
+                  Permanently delete all recorded domains, forms, and field drafts.
+                </div>
+              </div>
+              <button class="btn btn-danger" id="btn-wipe-history">Erase All History</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 5: About & Diagnostics -->
+        <section class="tab-panel" id="panel-about">
+          <header class="panel-header">
+            <h1 class="panel-title">About & Diagnostics</h1>
+            <p class="panel-desc">Extension version and background service worker diagnostics.</p>
+          </header>
+
+          <div class="setting-card">
+            <table class="data-table">
               <tr>
-                <th>Domain Pattern</th>
-                <th style="text-align: right;">Action</th>
+                <td>Extension Version</td>
+                <td style="font-weight: 600">4.0.0 (Manifest V3)</td>
               </tr>
-            </thead>
-            <tbody id="domain-table-body">
-              <tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Tab 4: Storage & Data -->
-      <section class="tab-panel" id="panel-storage">
-        <header class="panel-header">
-          <h1 class="panel-title">Storage & Maintenance</h1>
-          <p class="panel-desc">Inspect storage utilization, export encrypted backups, or wipe all records.</p>
-        </header>
-
-        <div class="setting-card">
-          <div class="setting-title">IndexedDB Storage Capacity</div>
-          <div class="progress-container">
-            <div class="progress-bar" id="storage-progress-bar"></div>
+              <tr>
+                <td>Target Engine</td>
+                <td style="font-weight: 600">Chromium & Firefox Gecko</td>
+              </tr>
+              <tr>
+                <td>Cryptography Engine</td>
+                <td style="font-weight: 600">W3C Web Crypto API (AES-GCM-256 + PBKDF2)</td>
+              </tr>
+              <tr>
+                <td>Database Engine</td>
+                <td style="font-weight: 600">Dexie.js IndexedDB</td>
+              </tr>
+              <tr>
+                <td>Background Status</td>
+                <td id="worker-heartbeat" style="color: var(--lz-status-success); font-weight: 600">
+                  ● Active
+                </td>
+              </tr>
+            </table>
           </div>
-          <div class="setting-subtitle" id="storage-estimate-label">Calculating storage footprint...</div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modal: Set / Change Master Password -->
+    <div class="modal-overlay" id="password-modal">
+      <div class="modal-card">
+        <h2 class="modal-title" id="password-modal-title">Set Master Password</h2>
+        <div class="form-field">
+          <label for="input-master-pass">New Master Password</label>
+          <input type="password" id="input-master-pass" placeholder="Enter a secure password..." />
         </div>
-
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title">Export Form History</div>
-              <div class="setting-subtitle">Download complete form history serialized into a JSON backup.</div>
-            </div>
-            <button class="btn btn-primary" id="btn-export-data">Export JSON</button>
-          </div>
+        <div class="form-field">
+          <label for="input-master-pass-confirm">Confirm Password</label>
+          <input type="password" id="input-master-pass-confirm" placeholder="Re-type password..." />
         </div>
-
-        <div class="setting-card" style="border-color: hsla(0, 84%, 60%, 0.3);">
-          <div class="setting-row">
-            <div class="setting-meta">
-              <div class="setting-title" style="color: var(--lz-status-danger);">Danger Zone: Nuclear Wipe</div>
-              <div class="setting-subtitle">Permanently delete all recorded domains, forms, and field drafts.</div>
-            </div>
-            <button class="btn btn-danger" id="btn-wipe-history">Erase All History</button>
-          </div>
+        <div class="setting-subtitle" id="password-strength-label">Password strength: Empty</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-password-modal">Cancel</button>
+          <button class="btn btn-primary" id="btn-save-master-pass">Save Master Password</button>
         </div>
-      </section>
-
-      <!-- Tab 5: About & Diagnostics -->
-      <section class="tab-panel" id="panel-about">
-        <header class="panel-header">
-          <h1 class="panel-title">About & Diagnostics</h1>
-          <p class="panel-desc">Extension version and background service worker diagnostics.</p>
-        </header>
-
-        <div class="setting-card">
-          <table class="data-table">
-            <tr>
-              <td>Extension Version</td>
-              <td style="font-weight: 600;">4.0.0 (Manifest V3)</td>
-            </tr>
-            <tr>
-              <td>Target Engine</td>
-              <td style="font-weight: 600;">Chromium & Firefox Gecko</td>
-            </tr>
-            <tr>
-              <td>Cryptography Engine</td>
-              <td style="font-weight: 600;">W3C Web Crypto API (AES-GCM-256 + PBKDF2)</td>
-            </tr>
-            <tr>
-              <td>Database Engine</td>
-              <td style="font-weight: 600;">Dexie.js IndexedDB</td>
-            </tr>
-            <tr>
-              <td>Background Status</td>
-              <td id="worker-heartbeat" style="color: var(--lz-status-success); font-weight: 600;">● Active</td>
-            </tr>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Modal: Set / Change Master Password -->
-  <div class="modal-overlay" id="password-modal">
-    <div class="modal-card">
-      <h2 class="modal-title" id="password-modal-title">Set Master Password</h2>
-      <div class="form-field">
-        <label for="input-master-pass">New Master Password</label>
-        <input type="password" id="input-master-pass" placeholder="Enter a secure password...">
-      </div>
-      <div class="form-field">
-        <label for="input-master-pass-confirm">Confirm Password</label>
-        <input type="password" id="input-master-pass-confirm" placeholder="Re-type password...">
-      </div>
-      <div class="setting-subtitle" id="password-strength-label">Password strength: Empty</div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="btn-cancel-password-modal">Cancel</button>
-        <button class="btn btn-primary" id="btn-save-master-pass">Save Master Password</button>
       </div>
     </div>
-  </div>
 
-  <!-- Modal: Wipe All Confirmation -->
-  <div class="modal-overlay" id="wipe-modal">
-    <div class="modal-card">
-      <h2 class="modal-title" style="color: var(--lz-status-danger);">Confirm Complete History Erase</h2>
-      <p class="setting-subtitle">This action is irreversible. All captured form history, drafts, and editing logs will be permanently erased.</p>
-      <div class="form-field">
-        <label for="input-wipe-confirm">Type <strong>DELETE</strong> to confirm:</label>
-        <input type="text" id="input-wipe-confirm" placeholder="DELETE">
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="btn-cancel-wipe-modal">Cancel</button>
-        <button class="btn btn-danger" id="btn-confirm-wipe" disabled>Permanently Erase</button>
+    <!-- Modal: Wipe All Confirmation -->
+    <div class="modal-overlay" id="wipe-modal">
+      <div class="modal-card">
+        <h2 class="modal-title" style="color: var(--lz-status-danger)">
+          Confirm Complete History Erase
+        </h2>
+        <p class="setting-subtitle">
+          This action is irreversible. All captured form history, drafts, and editing logs will be
+          permanently erased.
+        </p>
+        <div class="form-field">
+          <label for="input-wipe-confirm">Type <strong>DELETE</strong> to confirm:</label>
+          <input type="text" id="input-wipe-confirm" placeholder="DELETE" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-wipe-modal">Cancel</button>
+          <button class="btn btn-danger" id="btn-confirm-wipe" disabled>Permanently Erase</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script type="module" src="./options.ts"></script>
-</body>
+    <script type="module" src="./options.ts"></script>
+  </body>
 </html>

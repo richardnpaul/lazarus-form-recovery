@@ -9,7 +9,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
     vi.useFakeTimers();
     sentMessages = [];
     document.body.innerHTML = '';
-    document.documentElement.querySelectorAll('lazarus-recovery-host').forEach(el => el.remove());
+    document.documentElement.querySelectorAll('lazarus-recovery-host').forEach((el) => el.remove());
 
     // Intercept chrome.runtime.sendMessage
     vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
@@ -118,7 +118,9 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(sentMessages.length).toBe(1);
       const msg = sentMessages[0];
       expect(msg.type).toBe('SAVE_AUTOSAVE');
-      expect(msg.payload.form.fields[0].value).toBe('Paragraph 1\n\nParagraph 2 with code snippet.');
+      expect(msg.payload.form.fields[0].value).toBe(
+        'Paragraph 1\n\nParagraph 2 with code snippet.'
+      );
       expect(msg.payload.form.fields[0].type).toBe('textarea');
 
       // Contenteditable
@@ -190,7 +192,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
 
       input.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }));
 
-      const contextMsg = sentMessages.find(m => m.type === 'UPDATE_CONTEXT_MENU');
+      const contextMsg = sentMessages.find((m) => m.type === 'UPDATE_CONTEXT_MENU');
       expect(contextMsg).toBeDefined();
       expect(contextMsg.payload.formInstanceId).toBe('context-form');
     });
@@ -229,7 +231,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
 
       // 3. FORCE_SAVE_NOW
       await (tracker as any).handleRuntimeMessage({ action: 'FORCE_SAVE_NOW' });
-      const forceMsg = sentMessages.find(m => m.type === 'FORCE_SAVE_SNAPSHOT');
+      const forceMsg = sentMessages.find((m) => m.type === 'FORCE_SAVE_SNAPSHOT');
       expect(forceMsg).toBeDefined();
 
       // Test applyValueToElement on rich text and textContent fallbacks

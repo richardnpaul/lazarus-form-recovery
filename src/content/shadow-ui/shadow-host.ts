@@ -74,7 +74,7 @@ export class LazarusRecoveryHost extends HTMLElement {
     const adapter = findRichTextAdapter(target);
     const fieldName = adapter
       ? adapter.getName(target)
-      : (target.getAttribute('name') || target.id || '');
+      : target.getAttribute('name') || target.id || '';
     const fieldType = adapter ? adapter.name : target.tagName.toLowerCase();
 
     const msg: RuntimeMessage = {
@@ -121,7 +121,9 @@ export class LazarusRecoveryHost extends HTMLElement {
 
         if (formElement) {
           fields.forEach((f: any) => {
-            const input = formElement.querySelector(`[name="${escapeCss(f.name)}"], #${escapeCss(f.name)}`) as HTMLElement;
+            const input = formElement.querySelector(
+              `[name="${escapeCss(f.name)}"], #${escapeCss(f.name)}`
+            ) as HTMLElement;
             if (input) {
               const adapter = findRichTextAdapter(input);
               if (adapter) {

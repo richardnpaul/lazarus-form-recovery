@@ -40,8 +40,8 @@ describe('Core Domain: TextDiffEngine', () => {
     const diff = TextDiffEngine.computeDiff(oldText, newText, 'word');
     expect(diff).toBeDefined();
 
-    const removed = diff.find(d => d.type === 'removed');
-    const added = diff.find(d => d.type === 'added');
+    const removed = diff.find((d) => d.type === 'removed');
+    const added = diff.find((d) => d.type === 'added');
 
     expect(removed?.value).toBe('quick');
     expect(added?.value).toContain('fast');
@@ -49,8 +49,8 @@ describe('Core Domain: TextDiffEngine', () => {
 
   it('computes character-level diffs correctly', () => {
     const diff = TextDiffEngine.computeDiff('cat', 'car', 'char');
-    expect(diff.some(d => d.type === 'removed' && d.value === 't')).toBe(true);
-    expect(diff.some(d => d.type === 'added' && d.value === 'r')).toBe(true);
+    expect(diff.some((d) => d.type === 'removed' && d.value === 't')).toBe(true);
+    expect(diff.some((d) => d.type === 'added' && d.value === 'r')).toBe(true);
   });
 
   it('handles empty or identical strings', () => {
@@ -80,8 +80,8 @@ describe('Core Domain: EditingSessionTracker', () => {
 
   it('resets start time when idle threshold is exceeded', () => {
     let session = EditingSessionTracker.recordActivity(undefined, 1000);
-    session = EditingSessionTracker.recordActivity(session, 1000 + (6 * 60 * 1000)); // 6 minutes later
-    expect(session.startTime).toBe(1000 + (6 * 60 * 1000));
+    session = EditingSessionTracker.recordActivity(session, 1000 + 6 * 60 * 1000); // 6 minutes later
+    expect(session.startTime).toBe(1000 + 6 * 60 * 1000);
     expect(session.totalActiveSeconds).toBe(0);
   });
 });
@@ -152,7 +152,7 @@ describe('Core Domain: FormRevisionPolicy', () => {
       1,
       'github.com',
       'issue_form',
-      1000 + (16 * 60 * 1000) // 16 minutes later
+      1000 + 16 * 60 * 1000 // 16 minutes later
     );
     expect(decision.reason).toBe('idle_timeout');
     expect(decision.revisionNumber).toBe(2);
@@ -166,7 +166,7 @@ describe('Core Domain: FormRevisionPolicy', () => {
       1,
       'github.com',
       'issue_form',
-      1000 + (6 * 60 * 1000) // 6 minutes after creation
+      1000 + 6 * 60 * 1000 // 6 minutes after creation
     );
     expect(decision.reason).toBe('milestone_reached');
     expect(decision.revisionNumber).toBe(2);

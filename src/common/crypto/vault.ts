@@ -155,16 +155,21 @@ export class VaultManager {
     }
 
     if (this.autoLockMinutes > 0 && this.activeKey) {
-      this.autoLockTimer = setTimeout(() => {
-        this.lock();
-      }, this.autoLockMinutes * 60 * 1000);
+      this.autoLockTimer = setTimeout(
+        () => {
+          this.lock();
+        },
+        this.autoLockMinutes * 60 * 1000
+      );
     }
   }
 
   /**
    * Encrypts a string if vault is enabled and active key is available.
    */
-  public async encrypt(text: string): Promise<{ ciphertext: string; mode: 'none' | 'hybrid-aes-gcm' }> {
+  public async encrypt(
+    text: string
+  ): Promise<{ ciphertext: string; mode: 'none' | 'hybrid-aes-gcm' }> {
     if (this.activeKey) {
       this.resetAutoLockTimer();
       const ciphertext = await WebCryptoVault.encrypt(text, this.activeKey);

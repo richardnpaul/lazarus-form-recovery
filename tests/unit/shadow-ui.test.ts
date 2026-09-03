@@ -56,7 +56,9 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
       // Commit
       let inputFired = false;
-      input.addEventListener('input', () => { inputFired = true; });
+      input.addEventListener('input', () => {
+        inputFired = true;
+      });
       manager.commit('Committed Text');
       expect(input.value).toBe('Committed Text');
       expect(inputFired).toBe(true);
@@ -91,7 +93,9 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(el).toBeInstanceOf(HTMLButtonElement);
 
       let clicked = false;
-      btn.onClick(() => { clicked = true; });
+      btn.onClick(() => {
+        clicked = true;
+      });
 
       el.click();
       expect(clicked).toBe(true);
@@ -155,7 +159,9 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(target.value).toBe('First draft note');
 
       let committedVal = '';
-      menu.onCommit((val) => { committedVal = val; });
+      menu.onCommit((val) => {
+        committedVal = val;
+      });
       container.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
       expect(committedVal).toBe('First draft note');
 
@@ -179,7 +185,9 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
       // Click footer actions
       let restoreAllFired = false;
-      menu.onRestoreEntireForm(() => { restoreAllFired = true; });
+      menu.onRestoreEntireForm(() => {
+        restoreAllFired = true;
+      });
       (container.querySelector('.lz-restore-all-btn') as HTMLButtonElement)?.click();
       expect(restoreAllFired).toBe(true);
 

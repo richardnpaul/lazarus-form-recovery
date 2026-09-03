@@ -3,7 +3,12 @@ import { formatTimeAgo, sanitizePreview } from '../common/utils/text';
 
 // Cache of dynamic context menu items mapped to data
 interface ContextMenuCache {
-  formRevisions: Array<{ id: string; revisionNumber: number; isFinalSubmit?: boolean; lastModified: number }>;
+  formRevisions: Array<{
+    id: string;
+    revisionNumber: number;
+    isFinalSubmit?: boolean;
+    lastModified: number;
+  }>;
   fieldTexts: Array<{ value: string; lastModified: number }>;
   activeTargetSelector?: string;
 }
@@ -116,13 +121,13 @@ export async function updateDynamicContextMenus(
     }
 
     currentCache = {
-      formRevisions: formRevisions.map(item => ({
+      formRevisions: formRevisions.map((item) => ({
         id: item.form.id,
         revisionNumber: item.form.revisionNumber || 1,
         isFinalSubmit: item.form.isFinalSubmit,
         lastModified: item.form.lastModified,
       })),
-      fieldTexts: fieldTexts.map(f => ({
+      fieldTexts: fieldTexts.map((f) => ({
         value: f.value,
         lastModified: f.lastModified,
       })),
@@ -203,66 +208,72 @@ function rebuildSubmenus() {
 }
 
 // Click Listener
-if (chrome.contextMenus?.onClicked) {
-  chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-    if (!tab?.id || !tab.url) return;
+export async function handleContextMenuClick(info: any, tab?: any) {
+  if (!tab?.id || !tab.url) return;
 
-    try {
-      const url = new URL(tab.url);
-      const domain = url.hostname;
-      const itemId = String(info.menuItemId);
+  try {
+    const url = new URL(tab.url);
+    const domain = url.hostname;
+    const itemId = String(info.menuItemId);
 
-      if (itemId === 'lazarus-save-now') {
-        // Send message to content script to force snapshot
-        chrome.tabs.sendMessage(tab.id, { action: 'FORCE_SAVE_NOW' }).catch(() => {});
-        return;
+    if (itemId === 'lazarus-save-now') {
+      // Send message to content script to force snapshot
+      chrome.tabs.sendMessage(tab.id, { action: 'FORCE_SAVE_NOW' }).catch(() => {});
+      return;
+    }
+
+    if (itemId === 'lazarus-open-sidebar') {
+      if (chrome.sidePanel?.open && tab.windowId) {
+        await chrome.sidePanel.open({ windowId: tab.windowId });
+      } else if (typeof (chrome as any)?.sidebarAction?.open === 'function') {
+        (chrome as any).sidebarAction.open();
+      } else {
+        chrome.tabs.create({ url: chrome.runtime.getURL('src/sidepanel/sidepanel.html') });
       }
+      return;
+    }
 
-      if (itemId === 'lazarus-open-sidebar') {
-        if (chrome.sidePanel?.open && tab.windowId) {
-          await chrome.sidePanel.open({ windowId: tab.windowId });
-        } else if (typeof (chrome as any)?.sidebarAction?.open === 'function') {
-          (chrome as any).sidebarAction.open();
-        } else {
-          chrome.tabs.create({ url: chrome.runtime.getURL('src/sidepanel/sidepanel.html') });
-        }
-        return;
+    if (itemId === 'lazarus-disable-domain') {
+      if (confirm(`Disable Lazarus Form Recovery on ${domain}?`)) {
+        await repository.disableDomain(domain, false);
       }
+      return;
+    }
 
-      if (itemId === 'lazarus-disable-domain') {
-        if (confirm(`Disable Lazarus Form Recovery on ${domain}?`)) {
-          await repository.disableDomain(domain, false);
-        }
-        return;
-      }
-
-      // Check if clicking a specific form revision
-      if (itemId.startsWith('lazarus-form-rev-')) {
-        const idx = parseInt(itemId.replace('lazarus-form-rev-', ''), 10);
-        const selectedRev = currentCache.formRevisions[idx];
-        if (selectedRev?.id) {
-          chrome.tabs.sendMessage(tab.id, {
+    // Check if clicking a specific form revision
+    if (itemId.startsWith('lazarus-form-rev-')) {
+      const idx = parseInt(itemId.replace('lazarus-form-rev-', ''), 10);
+      const selectedRev = currentCache.formRevisions[idx];
+      if (selectedRev?.id) {
+        chrome.tabs
+          .sendMessage(tab.id, {
             action: 'RESTORE_FORM_REVISION',
             payload: { formId: selectedRev.id },
-          }).catch(() => {});
-        }
-        return;
+          })
+          .catch(() => {});
       }
+      return;
+    }
 
-      // Check if clicking a specific field snippet
-      if (itemId.startsWith('lazarus-field-val-')) {
-        const idx = parseInt(itemId.replace('lazarus-field-val-', ''), 10);
-        const selectedSnippet = currentCache.fieldTexts[idx];
-        if (selectedSnippet?.value) {
-          chrome.tabs.sendMessage(tab.id, {
+    // Check if clicking a specific field snippet
+    if (itemId.startsWith('lazarus-field-val-')) {
+      const idx = parseInt(itemId.replace('lazarus-field-val-', ''), 10);
+      const selectedSnippet = currentCache.fieldTexts[idx];
+      if (selectedSnippet?.value) {
+        chrome.tabs
+          .sendMessage(tab.id, {
             action: 'RESTORE_FIELD_TEXT',
             payload: { value: selectedSnippet.value },
-          }).catch(() => {});
-        }
-        return;
+          })
+          .catch(() => {});
       }
-    } catch (err) {
-      console.error('Error handling context menu action:', err);
+      return;
     }
-  });
+  } catch (err) {
+    console.error('Error handling context menu action:', err);
+  }
+}
+
+if (chrome.contextMenus?.onClicked) {
+  chrome.contextMenus.onClicked.addListener(handleContextMenuClick);
 }

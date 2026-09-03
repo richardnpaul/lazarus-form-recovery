@@ -110,8 +110,14 @@ body {
 }
 
 @keyframes lzFadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .panel-header {
@@ -303,21 +309,24 @@ body {
 .switch-slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--lz-border-strong);
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 20px;
 }
 
 .switch-slider:before {
   position: absolute;
-  content: "";
+  content: '';
   height: 16px;
   width: 16px;
   left: 2px;
   bottom: 2px;
   background-color: white;
-  transition: .2s;
+  transition: 0.2s;
   border-radius: 50%;
 }
 
@@ -370,7 +379,10 @@ input:checked + .switch-slider:before {
 .modal-overlay {
   display: none;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--lz-bg-overlay);
   backdrop-filter: var(--lz-blur-glass);
   -webkit-backdrop-filter: var(--lz-blur-glass);
@@ -413,7 +425,8 @@ input:checked + .switch-slider:before {
   font-weight: 600;
 }
 
-.form-field input, .form-field select {
+.form-field input,
+.form-field select {
   padding: 8px 12px;
   border: 1px solid var(--lz-border-subtle);
   border-radius: var(--lz-radius-sm);
@@ -423,7 +436,8 @@ input:checked + .switch-slider:before {
   outline: none;
 }
 
-.form-field input:focus, .form-field select:focus {
+.form-field input:focus,
+.form-field select:focus {
   border-color: var(--lz-accent-primary);
 }
 

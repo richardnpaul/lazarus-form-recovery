@@ -37,7 +37,7 @@ function applyDateFilter(items: any[]): any[] {
   if (currentFilter === '7days') maxAgeMs = 7 * 24 * 60 * 60 * 1000;
   if (currentFilter === '30days') maxAgeMs = 30 * 24 * 60 * 60 * 1000;
 
-  return items.filter(item => {
+  return items.filter((item) => {
     const age = now - (item.form?.lastModified || 0);
     return age <= maxAgeMs;
   });
@@ -80,7 +80,8 @@ function renderHistory(items: any[]) {
 
     const fieldsHtml = fields
       .filter((f: any) => f.value && f.value.trim().length > 0)
-      .map((f: any) => `
+      .map(
+        (f: any) => `
         <div class="field-row">
           <span class="field-label" title="${escapeHtml(f.name)}">${escapeHtml(f.name || 'field')}:</span>
           <span class="field-value">${escapeHtml(f.value)}</span>
@@ -89,7 +90,8 @@ function renderHistory(items: any[]) {
             <button class="action-btn diff-field-btn" data-name="${escapeAttr(f.name)}" data-value="${escapeAttr(f.value)}">Diff</button>
           </div>
         </div>
-      `)
+      `
+      )
       .join('');
 
     const timeAgo = form.lastModified ? formatTimeAgo(form.lastModified) : 'Unknown time';
@@ -121,7 +123,7 @@ function renderHistory(items: any[]) {
     `;
 
     // Copy field click
-    itemEl.querySelectorAll('.copy-field-btn').forEach(btn => {
+    itemEl.querySelectorAll('.copy-field-btn').forEach((btn) => {
       btn.addEventListener('click', async (e) => {
         const btnEl = e.currentTarget as HTMLElement;
         const val = btnEl?.getAttribute('data-value') || '';
@@ -137,7 +139,7 @@ function renderHistory(items: any[]) {
     });
 
     // Diff field click
-    itemEl.querySelectorAll('.diff-field-btn').forEach(btn => {
+    itemEl.querySelectorAll('.diff-field-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const fieldName = (e.currentTarget as HTMLElement).getAttribute('data-name') || '';
         const currentVal = (e.currentTarget as HTMLElement).getAttribute('data-value') || '';
@@ -154,7 +156,11 @@ function renderHistory(items: any[]) {
         fields.forEach((f: any) => {
           if (f.name === 'subject' || f.name?.toLowerCase().includes('title')) {
             testTitle.value = f.value;
-          } else if (f.name === 'notes' || f.type === 'textarea' || f.name?.toLowerCase().includes('body')) {
+          } else if (
+            f.name === 'notes' ||
+            f.type === 'textarea' ||
+            f.name?.toLowerCase().includes('body')
+          ) {
             testBody.value = f.value;
           } else if (!testTitle.value) {
             testTitle.value = f.value;
@@ -218,9 +224,11 @@ function openDiffViewer(fieldName: string, currentVal: string, allItems: any[]) 
     </div>
     <div class="diff-split">
       ${diffChunks
-        .map(chunk => {
-          if (chunk.type === 'added') return `<span class="diff-add">${escapeHtml(chunk.value)}</span>`;
-          if (chunk.type === 'removed') return `<span class="diff-del">${escapeHtml(chunk.value)}</span>`;
+        .map((chunk) => {
+          if (chunk.type === 'added')
+            return `<span class="diff-add">${escapeHtml(chunk.value)}</span>`;
+          if (chunk.type === 'removed')
+            return `<span class="diff-del">${escapeHtml(chunk.value)}</span>`;
           return escapeHtml(chunk.value);
         })
         .join('')}
@@ -229,7 +237,11 @@ function openDiffViewer(fieldName: string, currentVal: string, allItems: any[]) 
 }
 
 function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function escapeAttr(str: string): string {
@@ -264,9 +276,12 @@ export function triggerPlaygroundAutosave(isSubmit = false) {
     },
   };
 
-  chrome.runtime.sendMessage(message).then(() => {
-    loadHistory(searchInput?.value || '');
-  }).catch(() => {});
+  chrome.runtime
+    .sendMessage(message)
+    .then(() => {
+      loadHistory(searchInput?.value || '');
+    })
+    .catch(() => {});
 }
 
 export function initSidepanel() {
@@ -289,9 +304,9 @@ export function initSidepanel() {
     closeDiffBtn.onclick = () => diffViewer.classList.remove('is-visible');
   }
 
-  filterChips.forEach(chip => {
+  filterChips.forEach((chip) => {
     chip.onclick = () => {
-      filterChips.forEach(c => c.classList.remove('is-active'));
+      filterChips.forEach((c) => c.classList.remove('is-active'));
       chip.classList.add('is-active');
       currentFilter = (chip.getAttribute('data-filter') as any) || 'all';
       loadHistory(searchInput?.value || '');
