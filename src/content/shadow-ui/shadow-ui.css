@@ -1,0 +1,243 @@
+:host {
+  all: initial !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  z-index: 2147483647 !important;
+  pointer-events: none !important;
+  font-family: var(--lz-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+
+/* Floating Trigger Button */
+.lz-trigger-btn {
+  pointer-events: auto;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--lz-border-strong, hsla(160, 84%, 39%, 0.3));
+  background: var(--lz-bg-surface-glass, hsla(0, 0%, 100%, 0.88));
+  color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--lz-shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+  backdrop-filter: var(--lz-blur-glass, blur(8px));
+  -webkit-backdrop-filter: var(--lz-blur-glass, blur(8px));
+  opacity: 0.45;
+  transform: scale(0.92);
+  transition: opacity 120ms ease, transform 120ms cubic-bezier(0.16, 1, 0.3, 1), background 120ms ease, color 120ms ease;
+  user-select: none;
+}
+
+.lz-trigger-btn:hover {
+  opacity: 1.0;
+  transform: scale(1.08);
+  background: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  color: #ffffff;
+  box-shadow: 0 4px 12px hsla(160, 84%, 39%, 0.35);
+}
+
+.lz-trigger-btn.is-active {
+  opacity: 1.0;
+  background: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  color: #ffffff;
+}
+
+/* Dropdown Recovery Menu Card */
+.lz-menu-card {
+  pointer-events: auto;
+  position: absolute;
+  top: 30px;
+  right: 0;
+  width: 320px;
+  max-height: 390px;
+  background: var(--lz-bg-surface-glass, hsla(0, 0%, 100%, 0.95));
+  backdrop-filter: var(--lz-blur-glass, blur(16px) saturate(180%));
+  -webkit-backdrop-filter: var(--lz-blur-glass, blur(16px) saturate(180%));
+  border: 1px solid var(--lz-border-subtle, hsl(214, 32%, 91%));
+  border-radius: var(--lz-radius-lg, 12px);
+  box-shadow: var(--lz-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.15));
+  color: var(--lz-text-primary, hsl(222, 47%, 11%));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: var(--lz-font-size-base, 13px);
+  line-height: 1.4;
+  animation: lzFadeIn 140ms ease-out;
+}
+
+@keyframes lzFadeIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lz-menu-header {
+  padding: 10px 14px;
+  background: var(--lz-bg-surface-elevated, hsl(210, 20%, 96%));
+  border-bottom: 1px solid var(--lz-border-subtle, hsl(214, 32%, 91%));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lz-menu-title {
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--lz-text-primary, hsl(222, 47%, 11%));
+}
+
+.lz-menu-title svg {
+  color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+}
+
+.lz-item-counter {
+  font-size: var(--lz-font-size-xs, 11px);
+  color: var(--lz-text-muted, hsl(215, 16%, 57%));
+  background: var(--lz-accent-subtle, hsl(160, 84%, 94%));
+  padding: 2px 7px;
+  border-radius: var(--lz-radius-full, 9999px);
+  font-weight: 600;
+}
+
+/* Search Box */
+.lz-search-box {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--lz-border-subtle, hsl(214, 32%, 91%));
+  background: var(--lz-bg-surface, #ffffff);
+}
+
+.lz-search-input {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid var(--lz-border-subtle, #e2e8f0);
+  border-radius: 6px;
+  background: var(--lz-bg-canvas, #f8fafc);
+  color: var(--lz-text-primary, #0f172a);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.lz-search-input:focus {
+  border-color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  box-shadow: 0 0 0 2px var(--lz-accent-ring, hsla(160, 84%, 39%, 0.25));
+}
+
+/* Snippet List */
+.lz-snippet-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 240px;
+  padding: 4px 0;
+}
+
+.lz-snippet-item {
+  padding: 9px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--lz-border-subtle, #f1f5f9);
+  transition: background 120ms ease;
+  outline: none;
+}
+
+.lz-snippet-item:last-child {
+  border-bottom: none;
+}
+
+.lz-snippet-item:hover, .lz-snippet-item.is-focused {
+  background: var(--lz-accent-subtle, hsl(160, 84%, 96%));
+}
+
+.lz-snippet-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--lz-text-muted, hsl(215, 16%, 57%));
+  margin-bottom: 3px;
+}
+
+.lz-snippet-meta .lz-badge {
+  background: var(--lz-border-subtle, #e2e8f0);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.lz-snippet-preview {
+  font-size: 12px;
+  color: var(--lz-text-primary, #1e293b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty State */
+.lz-empty-state {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--lz-text-muted, #64748b);
+  font-size: 12px;
+}
+
+/* Footer */
+.lz-menu-footer {
+  padding: 8px 12px;
+  background: var(--lz-bg-surface-elevated, hsl(210, 20%, 96%));
+  border-top: 1px solid var(--lz-border-subtle, hsl(214, 32%, 91%));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.lz-restore-all-btn {
+  background: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.lz-restore-all-btn:hover {
+  background: var(--lz-accent-hover, hsl(160, 84%, 32%));
+}
+
+.lz-footer-links {
+  display: flex;
+  gap: 6px;
+}
+
+.lz-icon-link {
+  background: transparent;
+  border: 1px solid var(--lz-border-subtle, #cbd5e1);
+  border-radius: 4px;
+  padding: 3px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--lz-text-secondary, #475569);
+  transition: all 120ms ease;
+}
+
+.lz-icon-link:hover {
+  border-color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+  color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+}

@@ -1,0 +1,124 @@
+:root {
+  /* Surface & Background Colors (HSL) */
+  --lz-bg-canvas: hsl(210, 20%, 98%);
+  --lz-bg-surface: hsl(0, 0%, 100%);
+  --lz-bg-surface-elevated: hsl(210, 20%, 96%);
+  --lz-bg-surface-glass: hsla(0, 0%, 100%, 0.85);
+  --lz-bg-overlay: hsla(220, 20%, 10%, 0.45);
+
+  /* Text & Foreground Hierarchy */
+  --lz-text-primary: hsl(222, 47%, 11%);
+  --lz-text-secondary: hsl(215, 16%, 37%);
+  --lz-text-muted: hsl(215, 16%, 57%);
+  --lz-text-inverse: hsl(0, 0%, 100%);
+
+  /* Lazarus Brand Accent (Emerald / Teal Recovery Theme) */
+  --lz-accent-primary: hsl(160, 84%, 39%);
+  --lz-accent-hover: hsl(160, 84%, 32%);
+  --lz-accent-active: hsl(160, 84%, 26%);
+  --lz-accent-subtle: hsl(160, 84%, 94%);
+  --lz-accent-ring: hsla(160, 84%, 39%, 0.35);
+
+  /* Semantic State Colors */
+  --lz-status-success: hsl(142, 71%, 45%);
+  --lz-status-warning: hsl(38, 92%, 50%);
+  --lz-status-danger: hsl(0, 84%, 60%);
+  --lz-status-info: hsl(217, 91%, 60%);
+
+  /* In-Situ Live Preview Tokens */
+  --lz-preview-bg: hsl(48, 100%, 94%);
+  --lz-preview-outline: hsl(38, 92%, 50%);
+  --lz-preview-text: hsl(38, 92%, 18%);
+
+  /* Borders & Dividers */
+  --lz-border-subtle: hsl(214, 32%, 91%);
+  --lz-border-strong: hsl(214, 20%, 82%);
+  --lz-border-glass: hsla(0, 0%, 100%, 0.3);
+
+  /* Typography Stack */
+  --lz-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --lz-font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
+  --lz-font-size-xs: 11px;
+  --lz-font-size-sm: 12px;
+  --lz-font-size-base: 13px;
+  --lz-font-size-md: 14px;
+  --lz-font-size-lg: 16px;
+  --lz-font-size-xl: 20px;
+  --lz-font-size-2xl: 24px;
+
+  /* Elevation & Glassmorphism Shadows */
+  --lz-shadow-sm: 0 1px 2px 0 hsla(0, 0%, 0%, 0.05);
+  --lz-shadow-md: 0 4px 6px -1px hsla(0, 0%, 0%, 0.08), 0 2px 4px -1px hsla(0, 0%, 0%, 0.04);
+  --lz-shadow-lg: 0 10px 15px -3px hsla(0, 0%, 0%, 0.1), 0 4px 6px -2px hsla(0, 0%, 0%, 0.05);
+  --lz-shadow-xl: 0 20px 25px -5px hsla(0, 0%, 0%, 0.15), 0 10px 10px -5px hsla(0, 0%, 0%, 0.04);
+  --lz-blur-glass: blur(12px) saturate(180%);
+
+  /* Border Radius */
+  --lz-radius-sm: 4px;
+  --lz-radius-md: 8px;
+  --lz-radius-lg: 12px;
+  --lz-radius-full: 9999px;
+
+  /* Animation Curves */
+  --lz-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --lz-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --lz-duration-fast: 120ms;
+  --lz-duration-normal: 220ms;
+  --lz-duration-slow: 350ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --lz-bg-canvas: hsl(222, 47%, 7%);
+    --lz-bg-surface: hsl(222, 47%, 10%);
+    --lz-bg-surface-elevated: hsl(217, 33%, 15%);
+    --lz-bg-surface-glass: hsla(222, 47%, 11%, 0.85);
+    --lz-bg-overlay: hsla(222, 47%, 4%, 0.7);
+
+    --lz-text-primary: hsl(210, 40%, 98%);
+    --lz-text-secondary: hsl(215, 20%, 72%);
+    --lz-text-muted: hsl(215, 16%, 50%);
+    --lz-text-inverse: hsl(222, 47%, 11%);
+
+    --lz-accent-primary: hsl(160, 84%, 44%);
+    --lz-accent-hover: hsl(160, 84%, 50%);
+    --lz-accent-active: hsl(160, 84%, 38%);
+    --lz-accent-subtle: hsla(160, 84%, 44%, 0.15);
+    --lz-accent-ring: hsla(160, 84%, 44%, 0.4);
+
+    --lz-border-subtle: hsl(217, 33%, 18%);
+    --lz-border-strong: hsl(217, 33%, 25%);
+    --lz-border-glass: hsla(217, 33%, 30%, 0.4);
+
+    --lz-preview-bg: hsl(48, 90%, 15%);
+    --lz-preview-outline: hsl(38, 92%, 55%);
+    --lz-preview-text: hsl(48, 100%, 90%);
+  }
+}
+
+.theme-dark {
+  --lz-bg-canvas: hsl(222, 47%, 7%);
+  --lz-bg-surface: hsl(222, 47%, 10%);
+  --lz-bg-surface-elevated: hsl(217, 33%, 15%);
+  --lz-bg-surface-glass: hsla(222, 47%, 11%, 0.85);
+  --lz-bg-overlay: hsla(222, 47%, 4%, 0.7);
+
+  --lz-text-primary: hsl(210, 40%, 98%);
+  --lz-text-secondary: hsl(215, 20%, 72%);
+  --lz-text-muted: hsl(215, 16%, 50%);
+  --lz-text-inverse: hsl(222, 47%, 11%);
+
+  --lz-accent-primary: hsl(160, 84%, 44%);
+  --lz-accent-hover: hsl(160, 84%, 50%);
+  --lz-accent-active: hsl(160, 84%, 38%);
+  --lz-accent-subtle: hsla(160, 84%, 44%, 0.15);
+  --lz-accent-ring: hsla(160, 84%, 44%, 0.4);
+
+  --lz-border-subtle: hsl(217, 33%, 18%);
+  --lz-border-strong: hsl(217, 33%, 25%);
+  --lz-border-glass: hsla(217, 33%, 30%, 0.4);
+
+  --lz-preview-bg: hsl(48, 90%, 15%);
+  --lz-preview-outline: hsl(38, 92%, 55%);
+  --lz-preview-text: hsl(48, 100%, 90%);
+}

@@ -1,0 +1,33 @@
+import"./modulepreload-polyfill-P2Xu9kJm.js";import{r as e,t}from"./text-BP2gtUTj.js";var n=document.getElementById(`history-list`),r=document.getElementById(`history-count`),i=document.getElementById(`search-input`),a=document.getElementById(`diff-viewer`),o=document.getElementById(`diff-title`),s=document.getElementById(`diff-content`),c=document.getElementById(`close-diff-btn`),l=document.getElementById(`toggle-playground-title`),u=document.getElementById(`playground-form`),d=document.getElementById(`test-title`),f=document.getElementById(`test-body`),p=document.getElementById(`clear-playground-btn`),m=document.getElementById(`clear-history-btn`),h=document.getElementById(`open-options-btn`),g=document.querySelectorAll(`.filter-chip`),_=`all`,v=null,y=null;async function b(e=``){let t=e.trim()?{type:`SEARCH_HISTORY`,payload:{query:e.trim()}}:{type:`GET_ALL_HISTORY`,payload:{limit:50}};try{let e=await chrome.runtime.sendMessage(t);e?.success&&Array.isArray(e.data)?C(x(e.data)):S()}catch(e){console.error(`Failed to load history:`,e),S()}}function x(e){if(_===`all`)return e;let t=Date.now(),n=864e5;return _===`7days`&&(n=6048e5),_===`30days`&&(n=2592e6),e.filter(e=>t-(e.form?.lastModified||0)<=n)}function S(){r.textContent=`0 drafts`,n.innerHTML=`
+    <div class="empty-history">
+      <p style="margin-bottom: 6px; font-weight: 600;">No saved form data found</p>
+      <p style="color: var(--lz-text-muted);">Type in the test box above or visit any webpage to see Lazarus automatically preserve your inputs.</p>
+    </div>
+  `}function C(t){if(r.textContent=`${t.length} ${t.length===1?`draft`:`drafts`}`,t.length===0){S();return}n.innerHTML=``,t.forEach(t=>{let r=t.form,a=Array.isArray(t.fields)?t.fields:[],o=document.createElement(`div`);o.className=`history-item`;let s=a.filter(e=>e.value&&e.value.trim().length>0).map(e=>`
+        <div class="field-row">
+          <span class="field-label" title="${T(e.name)}">${T(e.name||`field`)}:</span>
+          <span class="field-value">${T(e.value)}</span>
+          <div style="display: flex; gap: 4px;">
+            <button class="action-btn copy-field-btn" data-value="${E(e.value)}">Copy</button>
+            <button class="action-btn diff-field-btn" data-name="${E(e.name)}" data-value="${E(e.value)}">Diff</button>
+          </div>
+        </div>
+      `).join(``);o.innerHTML=`
+      <div class="item-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span class="item-domain">${T(r?.domain||`Unknown Domain`)}</span>
+            <span class="filter-chip is-active" style="padding: 1px 6px; font-size: 10px;">Rev ${r?.revisionNumber||1}${r?.isFinalSubmit?` • Submitted`:``}</span>
+          </div>
+          <div style="font-size: 11px; color: var(--lz-text-secondary);">${T(r?.title||`Form Draft`)}</div>
+        </div>
+        <div class="item-time">${e(r?.lastModified||Date.now())}</div>
+      </div>
+      <div class="item-field-list">
+        ${s||`<div style="color: var(--lz-text-muted); font-size: 11px;">No non-empty fields recorded.</div>`}
+      </div>
+      <div class="item-actions">
+        <button class="action-btn restore-playground-btn" data-formid="${E(r?.id)}">Fill Test Box</button>
+        <button class="action-btn delete delete-form-btn" data-formid="${E(r?.id)}">Delete</button>
+      </div>
+    `,o.querySelectorAll(`.copy-field-btn`).forEach(e=>{e.addEventListener(`click`,async e=>{let t=e.target,n=t.getAttribute(`data-value`)||``;await navigator.clipboard.writeText(n);let r=t.textContent;t.textContent=`Copied!`,t.style.color=`var(--lz-status-success)`,setTimeout(()=>{t.textContent=r,t.style.color=``},1500)})}),o.querySelectorAll(`.diff-field-btn`).forEach(e=>{e.addEventListener(`click`,e=>{let t=e.target,n=t.getAttribute(`data-name`)||`field`;w(n,t.getAttribute(`data-value`)||``,n===`subject`?d.value:f.value)})}),o.querySelector(`.restore-playground-btn`)?.addEventListener(`click`,()=>{let e=a.find(e=>e.name===`subject`)||a[0],t=a.find(e=>e.name===`notes`)||a[1];e&&d&&(d.value=e.value),t&&f&&(f.value=t.value),u.style.display=`block`}),o.querySelector(`.delete-form-btn`)?.addEventListener(`click`,async()=>{r?.id&&(await chrome.runtime.sendMessage({type:`DELETE_FORM`,payload:{formId:r.id}}),b(i.value))}),n.appendChild(o)})}function w(e,n,r){o.textContent=`Revision Diff: ${e} (Snapshot vs Current Draft)`,s.innerHTML=t(n,r).map(e=>e.type===`added`?`<span class="diff-added">${T(e.value)}</span>`:e.type===`removed`?`<span class="diff-removed">${T(e.value)}</span>`:T(e.value)).join(``),a.classList.add(`is-visible`),typeof a.scrollIntoView==`function`&&a.scrollIntoView({behavior:`smooth`})}c.addEventListener(`click`,()=>{a.classList.remove(`is-visible`)});function T(e){return e.replace(/&/g,`&amp;`).replace(/</g,`&lt;`).replace(/>/g,`&gt;`).replace(/"/g,`&quot;`)}function E(e){return e.replace(/"/g,`&quot;`)}g.forEach(e=>{e.addEventListener(`click`,()=>{g.forEach(e=>e.classList.remove(`is-active`)),e.classList.add(`is-active`),_=e.getAttribute(`data-filter`)||`all`,b(i.value)})}),i.addEventListener(`input`,()=>{v&&window.clearTimeout(v),v=window.setTimeout(()=>{b(i.value)},250)});function D(e=!1){let t=d.value,n=f.value;if(!t.trim()&&!n.trim())return;let r={type:e?`SUBMIT_FORM`:`SAVE_AUTOSAVE`,payload:{form:{formInstanceId:`sidepanel-playground`,url:window.location.href,domain:`sidepanel.lazarus`,title:`Sidepanel Playground Form`,editingTime:10,fields:[{name:`subject`,type:`text`,value:t},{name:`notes`,type:`textarea`,value:n}]}}};chrome.runtime.sendMessage(r).then(()=>{b(i.value)}).catch(()=>{})}u.addEventListener(`input`,()=>{y&&window.clearTimeout(y),y=window.setTimeout(()=>{D(!1)},500)}),u.addEventListener(`submit`,e=>{e.preventDefault(),D(!0)}),p.addEventListener(`click`,()=>{d.value=``,f.value=``}),l.addEventListener(`click`,()=>{let e=u.style.display===`none`;u.style.display=e?`block`:`none`}),m.addEventListener(`click`,async e=>{e.preventDefault(),confirm(`Are you sure you want to clear all recovered form history?`)&&(await chrome.runtime.sendMessage({type:`CLEAR_ALL_HISTORY`}),b())}),h.addEventListener(`click`,e=>{e.preventDefault(),chrome.runtime.openOptionsPage()}),chrome.runtime.onMessage?.addListener(e=>{(e?.type===`FORM_SAVED`||e?.type===`REFRESH_HISTORY`)&&b(i.value)}),window.addEventListener(`focus`,()=>{b(i.value)}),chrome.tabs?.onActivated?.addListener(()=>{b(i.value)}),setInterval(()=>{let e=document.activeElement?.id;e!==`search-input`&&e!==`test-title`&&e!==`test-body`&&b(i.value)},2500),b();

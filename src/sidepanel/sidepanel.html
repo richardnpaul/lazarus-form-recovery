@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lazarus Form Recovery — Side Panel</title>
+  <link rel="stylesheet" href="./sidepanel.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="sidepanel-header">
+    <div class="brand">
+      <div class="logo">L</div>
+      <div class="title">Lazarus Control Center</div>
+    </div>
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span>Active</span>
+    </div>
+  </header>
+
+  <!-- Diff Viewer Modal Card (shown when user clicks "Diff") -->
+  <section class="diff-viewer" id="diff-viewer">
+    <div class="diff-header">
+      <span class="diff-title" id="diff-title">Revision Diff Viewer</span>
+      <button class="action-btn" id="close-diff-btn">Close ✕</button>
+    </div>
+    <div class="diff-body" id="diff-content"></div>
+  </section>
+
+  <!-- Interactive Test Playground (Collapsible) -->
+  <section class="playground-card">
+    <div class="card-title" id="toggle-playground-title">
+      <span>⚡ Test Recovery Playground</span>
+      <span style="font-size: 10px; font-weight: normal; color: var(--lz-text-muted);">Autosaves as you type ▾</span>
+    </div>
+    <form id="playground-form">
+      <div class="form-group">
+        <label for="test-title">Subject / Title</label>
+        <input type="text" id="test-title" name="subject" class="form-input" placeholder="Type a subject...">
+      </div>
+      <div class="form-group">
+        <label for="test-body">Draft Notes / Comments</label>
+        <textarea id="test-body" name="notes" class="form-textarea" placeholder="Type any thoughts or form content here..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary">Save Now</button>
+        <button type="button" id="clear-playground-btn" class="btn btn-secondary">Clear Inputs</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Search Filter -->
+  <div class="search-container">
+    <input type="search" id="search-input" class="search-input" placeholder="Search captured form history...">
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="filter-chips">
+    <button class="filter-chip is-active" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="today">Today</button>
+    <button class="filter-chip" data-filter="7days">Last 7 Days</button>
+    <button class="filter-chip" data-filter="30days">Last 30 Days</button>
+  </div>
+
+  <!-- History Feed Header -->
+  <div class="history-header">
+    <span style="font-weight: 600; font-size: 12px;">Saved Drafts</span>
+    <span id="history-count" class="history-count">Loading...</span>
+  </div>
+
+  <!-- History List -->
+  <main id="history-list" class="history-list"></main>
+
+  <!-- Footer -->
+  <footer class="sidepanel-footer">
+    <a id="clear-history-btn">🗑️ Clear All</a>
+    <a id="open-options-btn">⚙️ Settings</a>
+  </footer>
+
+  <script type="module" src="./sidepanel.ts"></script>
+</body>
+</html>
