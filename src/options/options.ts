@@ -54,9 +54,21 @@ let currentVaultStatus: VaultStatus | null = null;
 
 async function init() {
   setupTabs();
+  renderDiagnostics();
   await loadSettings();
   await checkVault();
   await calculateStorage();
+}
+
+function renderDiagnostics() {
+  const versionEl = document.getElementById('diagnostic-version');
+  if (versionEl) {
+    const version =
+      typeof chrome !== 'undefined' && chrome.runtime?.getManifest
+        ? chrome.runtime.getManifest()?.version || '0.0.1'
+        : '0.0.1';
+    versionEl.textContent = `${version} (Manifest V3)`;
+  }
 }
 
 function setupTabs() {

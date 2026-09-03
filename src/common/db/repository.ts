@@ -3,6 +3,7 @@ import { IDBForm, IDBField } from '../types/schema';
 import { ExtensionSettings, DEFAULT_SETTINGS } from '../types/config';
 import { FormSnapshot } from '../types/messages';
 import { vault } from '../crypto/vault';
+import { getExtensionVersion } from '../utils/version';
 import Dexie from 'dexie';
 
 /**
@@ -556,7 +557,7 @@ export class LazarusRepository {
     const settings = await this.getSettings();
 
     return {
-      version: '4.0.0',
+      version: getExtensionVersion(),
       exportedAt: Date.now(),
       settings,
       domains,

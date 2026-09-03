@@ -196,7 +196,7 @@ describe('Background Storage & Message Router Tests', () => {
     // EXPORT_DATA
     const exportRes = await chrome.runtime.sendMessage({ type: 'EXPORT_DATA' });
     expect(exportRes.success).toBe(true);
-    expect(exportRes.data.version).toBe('4.0.0');
+    expect(exportRes.data.version).toBe(chrome.runtime.getManifest().version);
   });
 
   it('should manage vault operations and passwords', async () => {

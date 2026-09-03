@@ -1,11 +1,12 @@
 import { defineManifest } from '@crxjs/vite-plugin';
+import pkg from './package.json';
 
 const isFirefox = process.env.BROWSER !== 'chrome';
 
 export default defineManifest({
   manifest_version: 3,
   name: 'Lazarus: Form Recovery',
-  version: '0.0.1',
+  version: pkg.version,
   description:
     'Never lose form data, comments, or rich text drafts again. Secure, encrypted, and local form recovery.',
   icons: {

@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto';
 import { vi } from 'vitest';
+import pkg from '../package.json';
 
 globalThis.ResizeObserver = class ResizeObserver {
   observe = vi.fn();
@@ -54,6 +55,11 @@ globalThis.chrome = {
     },
     openOptionsPage: vi.fn(),
     getURL: vi.fn((path: string) => `chrome-extension://mock/${path}`),
+    getManifest: vi.fn(() => ({
+      version: pkg.version,
+      manifest_version: 3,
+      name: 'Lazarus: Form Recovery',
+    })),
     lastError: null,
   },
   commands: {
