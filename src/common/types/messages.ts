@@ -46,7 +46,8 @@ export type RuntimeMessage =
       type: 'UPDATE_CONTEXT_MENU';
       payload: { domain: string; formInstanceId?: string; fieldName?: string; fieldType?: string };
     }
-  | { type: 'RESTORE_FORM_TO_ACTIVE_TAB'; payload: { formId: string } };
+  | { type: 'RESTORE_FORM_TO_ACTIVE_TAB'; payload: { formId: string } }
+  | { type: 'OPEN_OPTIONS_PAGE' };
 
 export interface RuntimeResponse<T = any> {
   success: boolean;
