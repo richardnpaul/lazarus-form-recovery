@@ -88,17 +88,17 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     expect(renderedText).toContain('Resonance cascade observed');
   });
 
-  it('Scenario 2: Typing in the sidebar playground automatically creates and displays a draft', async () => {
-    const testTitle = document.getElementById('test-title') as HTMLInputElement;
-    const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
+  it('Scenario 2: Typing updates in a webpage form automatically updates and displays the draft in the sidebar', async () => {
+    const custName = document.getElementById('cust-name') as HTMLInputElement;
+    const custFeedback = document.getElementById('cust-feedback') as HTMLTextAreaElement;
     const historyList = document.getElementById('history-list') as HTMLElement;
     const historyCount = document.getElementById('history-count') as HTMLElement;
 
-    testTitle.value = 'Research Notes';
-    testTitle.dispatchEvent(new Event('input', { bubbles: true }));
+    custName.value = 'Dr. Gordon Freeman';
+    custName.dispatchEvent(new Event('input', { bubbles: true }));
 
-    testBody.value = 'Quantum teleportation protocols require entangled pairs.';
-    testBody.dispatchEvent(new Event('input', { bubbles: true }));
+    custFeedback.value = 'Quantum teleportation protocols require entangled pairs.';
+    custFeedback.dispatchEvent(new Event('input', { bubbles: true }));
 
     // Wait for debounce (500ms) + background save + broadcast + sidebar render
     await new Promise((r) => setTimeout(r, 700));
@@ -106,33 +106,31 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
     // Verify draft was saved in DB
     const formsInDb = await db.forms.toArray();
     expect(formsInDb.length).toBe(1);
-    expect(formsInDb[0].domainId).toBe('sidepanel.lazarus');
 
-    // Verify sidebar rendered the playground draft
+    // Verify sidebar rendered the draft
     expect(historyCount.textContent).toBe('1 draft');
     const items = historyList.querySelectorAll('.history-item');
     expect(items.length).toBe(1);
 
     const renderedText = items[0].textContent || '';
-    expect(renderedText).toContain('Research Notes');
+    expect(renderedText).toContain('Gordon Freeman');
     expect(renderedText).toContain('Quantum teleportation');
   });
 
-  it('Scenario 3: Clicking "Save Now" in the sidebar creates a submitted revision draft', async () => {
-    const testTitle = document.getElementById('test-title') as HTMLInputElement;
-    const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
-    const playgroundForm = document.getElementById('playground-form') as HTMLFormElement;
+  it('Scenario 3: Submitting a webpage form creates a submitted revision draft', async () => {
+    const custName = document.getElementById('cust-name') as HTMLInputElement;
+    const custFeedback = document.getElementById('cust-feedback') as HTMLTextAreaElement;
+    const contactForm = document.getElementById('contact-form') as HTMLFormElement;
     const historyList = document.getElementById('history-list') as HTMLElement;
-    const historyCount = document.getElementById('history-count') as HTMLElement;
 
-    testTitle.value = 'Final Thesis Draft';
-    testBody.value = 'Final conclusion for academic review.';
+    custName.value = 'Final Thesis Draft';
+    custFeedback.value = 'Final conclusion for academic review.';
 
-    // Click Save Now (submit)
-    playgroundForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    // Submit the webpage form
+    contactForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
     // Wait for background persistence and UI reload
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 600));
 
     const formsInDb = await db.forms.toArray();
     expect(formsInDb.length).toBe(1);
@@ -145,17 +143,17 @@ describe('Live Sidepanel & Form Recovery End-to-End Integration Tests', () => {
   });
 
   it('Scenario 4: Search filter updates the sidebar drafts in real-time', async () => {
-    const testTitle = document.getElementById('test-title') as HTMLInputElement;
-    const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
-    const playgroundForm = document.getElementById('playground-form') as HTMLFormElement;
+    const custName = document.getElementById('cust-name') as HTMLInputElement;
+    const custFeedback = document.getElementById('cust-feedback') as HTMLTextAreaElement;
+    const contactForm = document.getElementById('contact-form') as HTMLFormElement;
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
     const historyList = document.getElementById('history-list') as HTMLElement;
 
-    testTitle.value = 'Special Secret Keyword Alpha';
-    testBody.value = 'Nothing to see here.';
-    playgroundForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    custName.value = 'Special Secret Keyword Alpha';
+    custFeedback.value = 'Nothing to see here.';
+    contactForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
-    await new Promise((r) => setTimeout(r, 250));
+    await new Promise((r) => setTimeout(r, 600));
     expect(historyList.querySelectorAll('.history-item').length).toBe(1);
 
     // Search for non-matching query

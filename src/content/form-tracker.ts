@@ -6,7 +6,7 @@ import { escapeCss } from '../common/utils/dom';
 
 export class FormTracker {
   private autosaveTimer: any = null;
-  private readonly AUTOSAVE_DELAY = 500; // 500ms debounce
+  private readonly AUTOSAVE_DELAY = 300; // 300ms debounce
   private readonly EDITING_IDLE_TIME = 300000; // 5 minutes in ms
 
   // Last focused or right-clicked element
@@ -25,6 +25,47 @@ export class FormTracker {
   private onContextMenu = ((e: Event) => this.handleContextMenu(e as MouseEvent)) as EventListener;
   private onRuntimeMessageBound = this.handleRuntimeMessage.bind(this);
 
+  private onBlur = ((event: Event) => {
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
+    if (target && this.isTrackable(target)) {
+      if (this.autosaveTimer) {
+        clearTimeout(this.autosaveTimer);
+        this.autosaveTimer = null;
+        this.triggerAutosave(target);
+      }
+    }
+  }) as EventListener;
+
+  private onPaste = ((event: Event) => {
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
+    if (target && this.isTrackable(target)) {
+      this.handleInput(event);
+    }
+  }) as EventListener;
+
+  private onKeyDown = ((e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const target = (e.composedPath?.()[0] || e.target) as HTMLElement;
+      if (target && this.isTrackable(target)) {
+        if (this.autosaveTimer) {
+          clearTimeout(this.autosaveTimer);
+          this.autosaveTimer = null;
+        }
+        this.triggerAutosave(target);
+      }
+    }
+  }) as EventListener;
+
+  private onPageHide = (() => {
+    if (this.lastInteractedElement && this.isTrackable(this.lastInteractedElement)) {
+      if (this.autosaveTimer) {
+        clearTimeout(this.autosaveTimer);
+        this.autosaveTimer = null;
+      }
+      this.triggerAutosave(this.lastInteractedElement);
+    }
+  }).bind(this);
+
   constructor(private root: Document | HTMLElement = document) {}
 
   public start() {
@@ -33,9 +74,17 @@ export class FormTracker {
     this.root.addEventListener('compositionend', this.onCompositionEnd, true);
     this.root.addEventListener('change', this.onChange, true);
     this.root.addEventListener('focus', this.onFocus, true);
+    this.root.addEventListener('blur', this.onBlur, true);
+    this.root.addEventListener('paste', this.onPaste, true);
     this.root.addEventListener('submit', this.onSubmit, true);
     this.root.addEventListener('reset', this.onReset, true);
     this.root.addEventListener('contextmenu', this.onContextMenu, true);
+    this.root.addEventListener('keydown', this.onKeyDown, true);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', this.onPageHide, true);
+      window.addEventListener('pagehide', this.onPageHide, true);
+    }
 
     // Listen for background actions (e.g. from context menus)
     chrome.runtime.onMessage?.addListener(this.onRuntimeMessageBound);
@@ -46,9 +95,17 @@ export class FormTracker {
     this.root.removeEventListener('compositionend', this.onCompositionEnd, true);
     this.root.removeEventListener('change', this.onChange, true);
     this.root.removeEventListener('focus', this.onFocus, true);
+    this.root.removeEventListener('blur', this.onBlur, true);
+    this.root.removeEventListener('paste', this.onPaste, true);
     this.root.removeEventListener('submit', this.onSubmit, true);
     this.root.removeEventListener('reset', this.onReset, true);
     this.root.removeEventListener('contextmenu', this.onContextMenu, true);
+    this.root.removeEventListener('keydown', this.onKeyDown, true);
+
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('beforeunload', this.onPageHide, true);
+      window.removeEventListener('pagehide', this.onPageHide, true);
+    }
 
     chrome.runtime.onMessage?.removeListener(this.onRuntimeMessageBound);
 
@@ -86,7 +143,7 @@ export class FormTracker {
   }
 
   private handleFocus(event: Event) {
-    const target = event.target as HTMLElement;
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target) return;
 
     if (this.isTrackable(target)) {
@@ -96,7 +153,7 @@ export class FormTracker {
   }
 
   private handleContextMenu(event: MouseEvent) {
-    const target = event.target as HTMLElement;
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target) return;
 
     if (this.isTrackable(target)) {
@@ -125,7 +182,7 @@ export class FormTracker {
   }
 
   private handleInput(event: Event) {
-    const target = event.target as HTMLElement;
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target || !this.isTrackable(target)) return;
 
     this.lastInteractedElement = target;
@@ -143,7 +200,7 @@ export class FormTracker {
   }
 
   private handleReset(event: Event) {
-    const target = event.target as HTMLFormElement;
+    const target = (event.composedPath?.()[0] || event.target) as HTMLFormElement;
     if (!target || target.tagName !== 'FORM') return;
 
     // Capture snapshot right before form reset clears values
@@ -160,23 +217,30 @@ export class FormTracker {
   }
 
   private handleSubmit(event: Event) {
-    const target = event.target as HTMLFormElement;
-    if (!target || target.tagName !== 'FORM') return;
+    const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
+    if (!target) return;
 
     if (this.autosaveTimer) {
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = null;
     }
 
-    const editingTime = this.updateEditingTime(target.id || 'form_wrapper');
-    const formSnapshot = FieldExtractor.buildFormSnapshot(target, editingTime);
+    const formEl = target.tagName === 'FORM' ? (target as HTMLFormElement) : target.closest('form');
+    const snapshotTarget = formEl || target;
+    const formId = formEl
+      ? formEl.id || formEl.getAttribute('name') || 'form_wrapper'
+      : 'fake_form';
+    const editingTime = this.updateEditingTime(formId);
+    const formSnapshot = FieldExtractor.buildFormSnapshot(snapshotTarget, editingTime);
 
-    // Trigger full permanent save
-    const message: RuntimeMessage = {
-      type: 'SUBMIT_FORM',
-      payload: { form: formSnapshot },
-    };
-    chrome.runtime.sendMessage(message).catch(() => {});
+    if (formSnapshot.fields.length > 0) {
+      // Trigger full permanent save
+      const message: RuntimeMessage = {
+        type: 'SUBMIT_FORM',
+        payload: { form: formSnapshot },
+      };
+      chrome.runtime.sendMessage(message).catch(() => {});
+    }
   }
 
   private triggerAutosave(target: HTMLElement) {
@@ -186,12 +250,13 @@ export class FormTracker {
 
     const formSnapshot = FieldExtractor.buildFormSnapshot(target, editingTime);
 
-    const message: RuntimeMessage = {
-      type: 'SAVE_AUTOSAVE',
-      payload: { form: formSnapshot },
-    };
-
-    chrome.runtime.sendMessage(message).catch(() => {});
+    if (formSnapshot.fields.length > 0) {
+      const message: RuntimeMessage = {
+        type: 'SAVE_AUTOSAVE',
+        payload: { form: formSnapshot },
+      };
+      chrome.runtime.sendMessage(message).catch(() => {});
+    }
   }
 
   /**

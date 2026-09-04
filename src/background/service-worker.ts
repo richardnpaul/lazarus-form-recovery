@@ -4,18 +4,58 @@ import { setupContextMenus } from './context-menus';
 import { handleRuntimeMessage } from './message-router';
 import { sessionStorageManager } from './storage-manager';
 
-// Initialize alarms and context menus immediately on load and on install / startup
+// Setup side panel behavior for Chrome (open on action click)
+export function setupSidePanelBehavior() {
+  if (typeof chrome !== 'undefined' && (chrome as any).sidePanel?.setPanelBehavior) {
+    (chrome as any).sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  }
+}
+
+// Initialize alarms, context menus, and side panel behavior
 setupAlarms();
 setupContextMenus();
+setupSidePanelBehavior();
 
 chrome.runtime.onInstalled.addListener(() => {
   setupAlarms();
   setupContextMenus();
+  setupSidePanelBehavior();
 });
 
 chrome.runtime.onStartup?.addListener(() => {
   setupAlarms();
   setupContextMenus();
+  setupSidePanelBehavior();
+});
+
+// Toolbar action click listener (Firefox sidebar toggle & Chrome fallback)
+chrome.action?.onClicked?.addListener(async (tab) => {
+  const browserApi =
+    typeof (globalThis as any).browser !== 'undefined' ? (globalThis as any).browser : chrome;
+  if (browserApi?.sidebarAction?.toggle) {
+    try {
+      await browserApi.sidebarAction.toggle();
+      return;
+    } catch {
+      // Fall through to open
+    }
+  }
+  if (browserApi?.sidebarAction?.open) {
+    try {
+      await browserApi.sidebarAction.open();
+      return;
+    } catch (err) {
+      console.error('Failed to open sidebarAction:', err);
+    }
+  }
+
+  if (browserApi?.sidePanel?.open && tab?.windowId) {
+    try {
+      await browserApi.sidePanel.open({ windowId: tab.windowId });
+    } catch (err) {
+      console.error('Failed to open sidePanel:', err);
+    }
+  }
 });
 
 // Central Runtime Message Listener

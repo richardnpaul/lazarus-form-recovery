@@ -57,12 +57,14 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
       0
     );
 
+    const effectiveNow = Math.max(now, (latestRevision?.lastModified || 0) + 1);
+
     const decision = FormRevisionPolicy.evaluateRevisionDecision(
       latestRevision,
       maxRevisionNumber,
       domainId,
       formInstanceId,
-      now,
+      effectiveNow,
       true, // isFinalSubmit = true
       false
     );
@@ -80,7 +82,7 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
       title: formSnapshot.title || domain,
       encryption: formEncMode,
       editingTime: formSnapshot.editingTime || 0,
-      lastModified: now,
+      lastModified: effectiveNow,
       status: 0,
     };
     await this.repository.saveFormRecord(formRecord);
@@ -108,7 +110,7 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
           type: fieldType,
           value: encValue,
           encryption: fieldEncMode,
-          lastModified: now,
+          lastModified: effectiveNow,
           status: 0,
         });
       }

@@ -44,6 +44,32 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
       // Unhandled command
       await commandListeners[0][0]('unknown_command');
     }
+
+    // 5. action.onClicked (Firefox sidebar toggle & Chrome sidePanel fallback)
+    const actionListeners = (chrome.action?.onClicked?.addListener as any)?.mock?.calls || [];
+    if (actionListeners.length > 0) {
+      // Test with browser.sidebarAction.toggle
+      (globalThis as any).browser = {
+        sidebarAction: {
+          toggle: vi.fn().mockResolvedValue(undefined),
+          open: vi.fn().mockResolvedValue(undefined),
+        },
+      };
+      await actionListeners[0][0]({ windowId: 10 });
+      expect((globalThis as any).browser.sidebarAction.toggle).toHaveBeenCalled();
+
+      // Test fallback to open if toggle rejects
+      (globalThis as any).browser.sidebarAction.toggle.mockRejectedValueOnce(
+        new Error('ToggleError')
+      );
+      await actionListeners[0][0]({ windowId: 10 });
+      expect((globalThis as any).browser.sidebarAction.open).toHaveBeenCalled();
+
+      // Test Chrome sidePanel.open fallback
+      delete (globalThis as any).browser;
+      await actionListeners[0][0]({ windowId: 10 });
+      expect(chrome.sidePanel.open).toHaveBeenCalledWith({ windowId: 10 });
+    }
   });
 
   it('handles onMessage async responses and errors', async () => {
