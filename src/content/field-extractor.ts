@@ -54,7 +54,12 @@ export class FieldExtractor {
     }
 
     const tag = element.tagName;
-    let name = element.getAttribute('name') || element.id || '';
+    let name =
+      element.getAttribute('name') ||
+      element.id ||
+      element.getAttribute('aria-label') ||
+      element.getAttribute('placeholder') ||
+      '';
     let type = tag.toLowerCase();
     let value = '';
 

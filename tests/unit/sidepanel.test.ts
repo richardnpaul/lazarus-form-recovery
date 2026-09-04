@@ -16,8 +16,8 @@ const SIDEPANEL_HTML = `
     <div id="diff-content"></div>
   </section>
   <div class="filter-chips">
-    <button class="filter-chip is-active" data-filter="this_site" id="chip-this-site">This Site</button>
-    <button class="filter-chip" data-filter="all">All Sites</button>
+    <button class="filter-chip is-active" data-filter="all" id="chip-all-sites">All Sites</button>
+    <button class="filter-chip" data-filter="this_site" id="chip-this-site">This Site</button>
     <button class="filter-chip" data-filter="today">Today</button>
     <button class="filter-chip" data-filter="7days">Last 7 Days</button>
     <button class="filter-chip" data-filter="30days">Last 30 Days</button>
@@ -104,8 +104,8 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     await new Promise((r) => setTimeout(r, 60));
 
     const historyList = document.getElementById('history-list');
-    // Default filter is 'this_site' (example.com), so only 1 form matches
-    expect(historyList?.querySelectorAll('.history-item').length).toBe(1);
+    // Default filter is 'all', so both forms (example.com and other-domain.org) match
+    expect(historyList?.querySelectorAll('.history-item').length).toBe(2);
 
     // Active domain banner checks
     const siteDomainEl = document.getElementById('site-domain');
@@ -162,11 +162,11 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     });
     await new Promise((r) => setTimeout(r, 60));
 
-    // 5. Filter chips: All Sites shows both forms
+    // 5. Filter chips: Switch to 'This Site' (filterChips[1])
     const filterChips = document.querySelectorAll('.filter-chips .filter-chip');
-    (filterChips[1] as HTMLButtonElement).click(); // 'all'
+    (filterChips[1] as HTMLButtonElement).click(); // 'this_site'
     await new Promise((r) => setTimeout(r, 60));
-    expect(historyList?.querySelectorAll('.history-item').length).toBe(2);
+    expect(historyList?.querySelectorAll('.history-item').length).toBe(1);
 
     (filterChips[2] as HTMLButtonElement).click(); // 'today'
     await new Promise((r) => setTimeout(r, 40));
@@ -174,9 +174,9 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     await new Promise((r) => setTimeout(r, 40));
     (filterChips[4] as HTMLButtonElement).click(); // '30days'
     await new Promise((r) => setTimeout(r, 40));
-    (filterChips[0] as HTMLButtonElement).click(); // 'this_site'
+    (filterChips[0] as HTMLButtonElement).click(); // 'all'
     await new Promise((r) => setTimeout(r, 40));
-    expect(historyList?.querySelectorAll('.history-item').length).toBe(1);
+    expect(historyList?.querySelectorAll('.history-item').length).toBe(2);
 
     // 6. Search input
     const searchInput = document.getElementById('search-input') as HTMLInputElement;

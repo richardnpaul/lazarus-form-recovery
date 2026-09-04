@@ -1,11 +1,18 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { formatTimeAgo, computeSimpleDiff } from '../common/utils/text';
 
-let currentFilter: 'this_site' | 'all' | 'today' | '7days' | '30days' = 'this_site';
+let currentFilter: 'all' | 'this_site' | 'today' | '7days' | '30days' = 'all';
 let currentDomain = '';
 let currentUrl = '';
 let searchDebounce: any = null;
 let heartbeatInterval: any = null;
+
+function normalizeDomain(domain: string): string {
+  return (domain || '')
+    .replace(/^www\./i, '')
+    .trim()
+    .toLowerCase();
+}
 
 export async function resolveActiveTab(): Promise<void> {
   const siteDomainEl = document.getElementById('site-domain');
@@ -14,7 +21,14 @@ export async function resolveActiveTab(): Promise<void> {
   const domainToggleEl = document.getElementById('domain-toggle') as HTMLInputElement;
 
   try {
-    const tabs = await chrome.tabs?.query?.({ active: true, currentWindow: true });
+    let tabs = await chrome.tabs?.query?.({ active: true, currentWindow: true });
+    if (!tabs || tabs.length === 0) {
+      tabs = await chrome.tabs?.query?.({ active: true, lastFocusedWindow: true });
+    }
+    if (!tabs || tabs.length === 0) {
+      tabs = await chrome.tabs?.query?.({ active: true });
+    }
+
     const activeTab = tabs?.[0];
     if (activeTab?.url) {
       currentUrl = activeTab.url;
@@ -105,11 +119,17 @@ function applyFilter(items: any[]): any[] {
 
   if (currentFilter === 'this_site') {
     if (!currentDomain) return items;
-    const normDomain = currentDomain.toLowerCase();
+    const normCurrent = normalizeDomain(currentDomain);
     return items.filter((item) => {
-      const formDomain = (item.form?.domainId || '').toLowerCase();
+      const formDomain = normalizeDomain(item.form?.domainId || '');
       const formUrl = (item.form?.url || '').toLowerCase();
-      return formDomain === normDomain || (formUrl && formUrl.includes(normDomain));
+      return (
+        formDomain === normCurrent ||
+        (formDomain &&
+          normCurrent &&
+          (formDomain.includes(normCurrent) || normCurrent.includes(formDomain))) ||
+        (formUrl && normCurrent && formUrl.includes(normCurrent))
+      );
     });
   }
 
@@ -131,20 +151,37 @@ function renderEmpty() {
 
   historyCount.textContent = '0 drafts';
 
-  const heading =
-    currentFilter === 'this_site' && currentDomain
-      ? `No saved form data for ${escapeHtml(currentDomain)}`
-      : 'No saved form data found';
-
-  const subtext =
-    currentFilter === 'this_site' && currentDomain
-      ? `Form drafts saved on this site will appear here. Switch to "All Sites" to view drafts saved across all domains.`
-      : `Visit any webpage and fill in forms to see Lazarus automatically preserve your drafts.`;
+  if (currentFilter === 'this_site' && currentDomain) {
+    historyList.innerHTML = `
+      <div class="empty-history">
+        <p style="margin-bottom: 6px; font-weight: 600;">No saved form data for ${escapeHtml(currentDomain)}</p>
+        <p style="color: var(--lz-text-muted); margin-bottom: 12px;">Drafts are saved as you type on this site.</p>
+        <button class="action-btn" id="view-all-sites-btn" style="padding: 6px 12px; font-size: 11px;">View All Sites</button>
+      </div>
+    `;
+    const viewAllBtn = document.getElementById('view-all-sites-btn');
+    if (viewAllBtn) {
+      viewAllBtn.onclick = () => {
+        const chips = document.querySelectorAll<HTMLElement>('.filter-chips .filter-chip');
+        chips.forEach((c) => {
+          if (c.getAttribute('data-filter') === 'all') {
+            c.classList.add('is-active');
+          } else {
+            c.classList.remove('is-active');
+          }
+        });
+        currentFilter = 'all';
+        const searchInput = document.getElementById('search-input') as HTMLInputElement;
+        loadHistory(searchInput?.value || '');
+      };
+    }
+    return;
+  }
 
   historyList.innerHTML = `
     <div class="empty-history">
-      <p style="margin-bottom: 6px; font-weight: 600;">${heading}</p>
-      <p style="color: var(--lz-text-muted);">${subtext}</p>
+      <p style="margin-bottom: 6px; font-weight: 600;">No saved form data found</p>
+      <p style="color: var(--lz-text-muted);">Visit any webpage and fill in forms to see Lazarus automatically preserve your drafts.</p>
     </div>
   `;
 }
@@ -415,7 +452,8 @@ export function initSidepanel() {
   }
 
   if (heartbeatInterval) clearInterval(heartbeatInterval);
-  heartbeatInterval = setInterval(() => {
+  heartbeatInterval = setInterval(async () => {
+    await resolveActiveTab();
     const activeId = document.activeElement?.id;
     if (activeId !== 'search-input') {
       loadHistory(searchInput?.value || '');
@@ -430,7 +468,21 @@ export function initSidepanel() {
 
 // Active Tab Listeners: detect active tab navigation and tab switching
 if (typeof chrome !== 'undefined' && chrome.tabs) {
-  chrome.tabs.onActivated?.addListener?.(async () => {
+  chrome.tabs.onActivated?.addListener?.(async (activeInfo) => {
+    if (activeInfo?.tabId) {
+      try {
+        const tab = await chrome.tabs.get(activeInfo.tabId);
+        if (tab?.url) {
+          try {
+            const parsed = new URL(tab.url);
+            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+              currentDomain = parsed.hostname;
+              currentUrl = tab.url;
+            }
+          } catch {}
+        }
+      } catch {}
+    }
     await resolveActiveTab();
     if (currentFilter === 'this_site') {
       const searchInput = document.getElementById('search-input') as HTMLInputElement;
@@ -438,16 +490,32 @@ if (typeof chrome !== 'undefined' && chrome.tabs) {
     }
   });
 
-  chrome.tabs.onUpdated?.addListener?.(async (tabId, changeInfo) => {
-    if (changeInfo.url || changeInfo.status === 'complete') {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (tabs?.[0]?.id === tabId) {
-        await resolveActiveTab();
-        if (currentFilter === 'this_site') {
-          const searchInput = document.getElementById('search-input') as HTMLInputElement;
-          loadHistory(searchInput?.value || '');
-        }
+  chrome.tabs.onUpdated?.addListener?.(async (_tabId, changeInfo, tab) => {
+    if (changeInfo.url || changeInfo.status === 'complete' || (tab && tab.url)) {
+      if (tab?.url && tab.active) {
+        try {
+          const parsed = new URL(tab.url);
+          if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+            currentDomain = parsed.hostname;
+            currentUrl = tab.url;
+          }
+        } catch {}
       }
+      await resolveActiveTab();
+      if (currentFilter === 'this_site') {
+        const searchInput = document.getElementById('search-input') as HTMLInputElement;
+        loadHistory(searchInput?.value || '');
+      }
+    }
+  });
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('focus', async () => {
+    await resolveActiveTab();
+    if (currentFilter === 'this_site') {
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      loadHistory(searchInput?.value || '');
     }
   });
 }
