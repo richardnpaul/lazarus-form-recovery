@@ -97,15 +97,18 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
     if (alarmListeners.length > 0) {
       const alarmHandler = alarmListeners[0][0];
       // 1. Alarm with cleanedCount > 0
-      vi.spyOn(repository, 'cleanupExpiredForms').mockResolvedValueOnce(5);
+      const cleanupSpy = vi.spyOn(repository, 'cleanupExpiredForms').mockResolvedValueOnce(5);
       await alarmHandler({ name: 'cleanup-expired-forms' });
+      expect(cleanupSpy).toHaveBeenCalledTimes(1);
 
       // 2. Alarm with error
       vi.spyOn(repository, 'cleanupExpiredForms').mockRejectedValueOnce(new Error('CleanupFailed'));
       await alarmHandler({ name: 'cleanup-expired-forms' });
+      expect(cleanupSpy).toHaveBeenCalledTimes(2);
 
       // 3. Non-matching alarm name
       await alarmHandler({ name: 'unknown-alarm' });
+      expect(cleanupSpy).toHaveBeenCalledTimes(2);
     }
   });
 });

@@ -16,12 +16,17 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:mutation": "stryker run",
+    "test:mutation:smoke": "node scripts/verify-mutation-efficacy.mjs",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\"",
+    "postinstall": "node scripts/patch-stryker-vitest.mjs"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.7.1",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/chrome": "^0.2.8",
     "@types/node": "^26.4.1",
     "@vitest/coverage-v8": "^5.0.0",

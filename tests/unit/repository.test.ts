@@ -213,5 +213,93 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
       const afterWipe = await repository.getDomainHistory('wipe-me.com');
       expect(afterWipe.length).toBe(0);
     });
+
+    it('evaluates isDomainEnabled against user blocklist patterns and wildcards', async () => {
+      // Clean baseline
+      expect(await repository.isDomainEnabled('example.com')).toBe(true);
+
+      // Disable domain explicitly
+      await repository.disableDomain('blocked-site.com');
+      expect(await repository.isDomainEnabled('blocked-site.com')).toBe(false);
+      expect(await repository.isDomainEnabled('allowed-site.com')).toBe(true);
+
+      // Wildcard pattern support
+      await repository.updateSettings({ disabledDomains: ['*.bank.internal', 'secret.corp'] });
+      expect(await repository.isDomainEnabled('portal.bank.internal')).toBe(false);
+      expect(await repository.isDomainEnabled('secret.corp')).toBe(false);
+      expect(await repository.isDomainEnabled('public.corp')).toBe(true);
+    });
+
+    it('cleans up forms older than the configured expiration interval', async () => {
+      const now = Date.now();
+      const dayMs = 24 * 60 * 60 * 1000;
+
+      await repository.updateSettings({ expireFormsInterval: 5 });
+
+      // Expired form (10 days old, exceeds 5 days cutoff)
+      await db.forms.put({
+        id: 'expired-repo-form',
+        domainId: 'old.org',
+        url: 'https://old.org/form',
+        formInstanceId: 'f_old',
+        revisionId: 'r_old',
+        revisionNumber: 1,
+        title: 'Old Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: now - 10 * dayMs,
+        status: 0,
+      });
+      await db.fields.put({
+        id: 'expired-repo-field',
+        formId: 'expired-repo-form',
+        domainId: 'old.org',
+        revisionId: 'r_old',
+        name: 'old_input',
+        type: 'text',
+        value: 'Old data',
+        encryption: 'none',
+        lastModified: now - 10 * dayMs,
+        status: 0,
+      });
+
+      // Fresh form (1 day old)
+      await db.forms.put({
+        id: 'fresh-repo-form',
+        domainId: 'fresh.org',
+        url: 'https://fresh.org/form',
+        formInstanceId: 'f_fresh',
+        revisionId: 'r_fresh',
+        revisionNumber: 1,
+        title: 'Fresh Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: now - 1 * dayMs,
+        status: 0,
+      });
+      await db.fields.put({
+        id: 'fresh-repo-field',
+        formId: 'fresh-repo-form',
+        domainId: 'fresh.org',
+        revisionId: 'r_fresh',
+        name: 'fresh_input',
+        type: 'text',
+        value: 'Fresh data',
+        encryption: 'none',
+        lastModified: now - 1 * dayMs,
+        status: 0,
+      });
+
+      const deletedCount = await repository.cleanupExpiredForms();
+      expect(deletedCount).toBe(1);
+
+      const remainingForms = await db.forms.toArray();
+      expect(remainingForms.length).toBe(1);
+      expect(remainingForms[0].id).toBe('fresh-repo-form');
+
+      const remainingFields = await db.fields.toArray();
+      expect(remainingFields.length).toBe(1);
+      expect(remainingFields[0].id).toBe('fresh-repo-field');
+    });
   });
 });

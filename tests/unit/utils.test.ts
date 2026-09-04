@@ -207,4 +207,16 @@ describe('PII Utilities (src/common/utils/pii.ts)', () => {
       '4532015112830367'
     );
   });
+
+  it('should validate and redact valid credit card numbers', () => {
+    // Valid test card numbers
+    expect(isValidLuhn('4532015112830366')).toBe(true);
+    expect(isValidLuhn('4532-0151-1283-0366')).toBe(true);
+    expect(isValidLuhn('4242424242424242')).toBe(true);
+
+    // Redacts valid credit card in text
+    expect(scrubSensitiveData('My card is 4532-0151-1283-0366 here')).toBe(
+      'My card is [REDACTED CREDIT CARD] here'
+    );
+  });
 });
