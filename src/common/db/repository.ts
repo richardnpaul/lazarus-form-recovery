@@ -310,6 +310,9 @@ export class LazarusRepository {
         .sortBy('lastModified');
     }
 
+    // Sort newest first (DESC)
+    fields.sort((a, b) => b.lastModified - a.lastModified);
+
     const decryptedList = await Promise.all(
       fields.map(async (f) => {
         let val = f.value;
@@ -440,31 +443,52 @@ export class LazarusRepository {
     const lowerQuery = query.toLowerCase().trim();
 
     if (!lowerQuery) {
-      const forms = await db.forms.where('status').equals(0).reverse().sortBy('lastModified');
+      const forms = await db.forms.where('status').equals(0).sortBy('lastModified');
+      forms.sort((a, b) => b.lastModified - a.lastModified);
 
       return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
     }
 
-    // 1. Search in Forms by title or url
+    // 1. Search in Forms by title, domain, or decrypted URL
     const allForms = await db.forms.where('status').equals(0).toArray();
     const matchingFormIds = new Set<string>();
 
     for (const form of allForms) {
+      let url = form.url || '';
+      if (form.encryption === 'hybrid-aes-gcm') {
+        try {
+          url = await vault.decrypt(form.url, form.encryption);
+        } catch {
+          url = '';
+        }
+      }
+
       if (
         form.title?.toLowerCase().includes(lowerQuery) ||
-        form.domainId?.toLowerCase().includes(lowerQuery)
+        form.domainId?.toLowerCase().includes(lowerQuery) ||
+        url.toLowerCase().includes(lowerQuery)
       ) {
         matchingFormIds.add(form.id);
       }
     }
 
-    // 2. Search in Fields by name or plaintext value
+    // 2. Search in Fields by name or decrypted value
     const allFields = await db.fields.where('status').equals(0).toArray();
     for (const field of allFields) {
       if (field.name?.toLowerCase().includes(lowerQuery)) {
         matchingFormIds.add(field.formId);
-      } else if (field.encryption === 'none' && field.value?.toLowerCase().includes(lowerQuery)) {
-        matchingFormIds.add(field.formId);
+      } else {
+        let val = field.value || '';
+        if (field.encryption && field.encryption !== 'none') {
+          try {
+            val = await vault.decrypt(field.value, field.encryption);
+          } catch {
+            val = '';
+          }
+        }
+        if (val.toLowerCase().includes(lowerQuery)) {
+          matchingFormIds.add(field.formId);
+        }
       }
     }
 
@@ -480,7 +504,8 @@ export class LazarusRepository {
    * Retrieves all forms across domains.
    */
   public async getAllHistory(limit = 50): Promise<any[]> {
-    const forms = await db.forms.where('status').equals(0).reverse().sortBy('lastModified');
+    const forms = await db.forms.where('status').equals(0).sortBy('lastModified');
+    forms.sort((a, b) => b.lastModified - a.lastModified);
 
     return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }

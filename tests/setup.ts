@@ -139,8 +139,14 @@ globalThis.chrome = {
       }),
     },
   },
+  action: {
+    onClicked: {
+      addListener: vi.fn(),
+    },
+  },
   sidePanel: {
     open: vi.fn(async () => {}),
+    setPanelBehavior: vi.fn(async () => {}),
   },
   tabs: {
     query: vi.fn(async () => [{ id: 1, windowId: 100 }]),

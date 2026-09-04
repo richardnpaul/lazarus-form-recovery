@@ -1,10 +1,81 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { formatTimeAgo, computeSimpleDiff } from '../common/utils/text';
 
-let currentFilter: 'all' | 'today' | '7days' | '30days' = 'all';
+let currentFilter: 'this_site' | 'all' | 'today' | '7days' | '30days' = 'this_site';
+let currentDomain = '';
+let currentUrl = '';
 let searchDebounce: any = null;
-let playgroundDebounce: any = null;
 let heartbeatInterval: any = null;
+
+export async function resolveActiveTab(): Promise<void> {
+  const siteDomainEl = document.getElementById('site-domain');
+  const siteStatusEl = document.getElementById('site-status');
+  const siteBeaconEl = document.getElementById('site-beacon');
+  const domainToggleEl = document.getElementById('domain-toggle') as HTMLInputElement;
+
+  try {
+    const tabs = await chrome.tabs?.query?.({ active: true, currentWindow: true });
+    const activeTab = tabs?.[0];
+    if (activeTab?.url) {
+      currentUrl = activeTab.url;
+      try {
+        const parsed = new URL(activeTab.url);
+        if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+          currentDomain = parsed.hostname;
+        } else {
+          currentDomain = '';
+        }
+      } catch {
+        currentDomain = '';
+      }
+    } else {
+      currentDomain = '';
+      currentUrl = '';
+    }
+  } catch (err) {
+    console.warn('Could not query active tab:', err);
+    currentDomain = '';
+    currentUrl = '';
+  }
+
+  if (siteDomainEl) {
+    siteDomainEl.textContent = currentDomain || 'No active website';
+    siteDomainEl.title = currentUrl || '';
+  }
+
+  if (!currentDomain) {
+    if (siteStatusEl) siteStatusEl.textContent = 'Non-web page';
+    if (siteBeaconEl) siteBeaconEl.classList.add('is-disabled');
+    if (domainToggleEl) {
+      domainToggleEl.disabled = true;
+      domainToggleEl.checked = false;
+    }
+    return;
+  }
+
+  if (domainToggleEl) domainToggleEl.disabled = false;
+
+  try {
+    const res: RuntimeResponse = await chrome.runtime.sendMessage({
+      type: 'IS_DOMAIN_ENABLED',
+      payload: { domain: currentDomain },
+    });
+    const isEnabled = res?.success ? res.data?.enabled !== false : true;
+    if (domainToggleEl) domainToggleEl.checked = isEnabled;
+    if (siteBeaconEl) {
+      if (isEnabled) {
+        siteBeaconEl.classList.remove('is-disabled');
+      } else {
+        siteBeaconEl.classList.add('is-disabled');
+      }
+    }
+    if (siteStatusEl) {
+      siteStatusEl.textContent = isEnabled ? 'Tracking active' : 'Tracking paused';
+    }
+  } catch {
+    if (siteStatusEl) siteStatusEl.textContent = 'Tracking active';
+  }
+}
 
 export async function loadHistory(query = '') {
   const historyList = document.getElementById('history-list') as HTMLElement;
@@ -18,7 +89,7 @@ export async function loadHistory(query = '') {
   try {
     const res: RuntimeResponse = await chrome.runtime.sendMessage(message);
     if (res?.success && Array.isArray(res.data)) {
-      const filtered = applyDateFilter(res.data);
+      const filtered = applyFilter(res.data);
       renderHistory(filtered);
     } else {
       renderEmpty();
@@ -29,8 +100,18 @@ export async function loadHistory(query = '') {
   }
 }
 
-function applyDateFilter(items: any[]): any[] {
+function applyFilter(items: any[]): any[] {
   if (currentFilter === 'all') return items;
+
+  if (currentFilter === 'this_site') {
+    if (!currentDomain) return items;
+    const normDomain = currentDomain.toLowerCase();
+    return items.filter((item) => {
+      const formDomain = (item.form?.domainId || '').toLowerCase();
+      const formUrl = (item.form?.url || '').toLowerCase();
+      return formDomain === normDomain || (formUrl && formUrl.includes(normDomain));
+    });
+  }
 
   const now = Date.now();
   let maxAgeMs = 24 * 60 * 60 * 1000;
@@ -49,10 +130,21 @@ function renderEmpty() {
   if (!historyList || !historyCount) return;
 
   historyCount.textContent = '0 drafts';
+
+  const heading =
+    currentFilter === 'this_site' && currentDomain
+      ? `No saved form data for ${escapeHtml(currentDomain)}`
+      : 'No saved form data found';
+
+  const subtext =
+    currentFilter === 'this_site' && currentDomain
+      ? `Form drafts saved on this site will appear here. Switch to "All Sites" to view drafts saved across all domains.`
+      : `Visit any webpage and fill in forms to see Lazarus automatically preserve your drafts.`;
+
   historyList.innerHTML = `
     <div class="empty-history">
-      <p style="margin-bottom: 6px; font-weight: 600;">No saved form data found</p>
-      <p style="color: var(--lz-text-muted);">Type in the test box above or visit any webpage to see Lazarus automatically preserve your inputs.</p>
+      <p style="margin-bottom: 6px; font-weight: 600;">${heading}</p>
+      <p style="color: var(--lz-text-muted);">${subtext}</p>
     </div>
   `;
 }
@@ -99,7 +191,11 @@ function renderHistory(items: any[]) {
     const titleText = form.title || 'Untitled Form';
 
     const revBadge = form.revisionNumber
-      ? `<span class="filter-chip is-active" style="padding: 1px 6px; font-size: 10px;">Rev ${form.revisionNumber}${form.isFinalSubmit ? ' • Submitted' : ''}</span>`
+      ? `<span class="rev-badge" style="padding: 1px 6px; font-size: 10px; background: var(--lz-accent-subtle); color: var(--lz-accent-primary); border-radius: 4px; font-weight: 600;">Rev ${form.revisionNumber}${form.isFinalSubmit ? ' • Submitted' : ''}</span>`
+      : '';
+
+    const urlDisplay = form.url
+      ? `<div style="font-size: 10px; color: var(--lz-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 250px;" title="${escapeAttr(form.url)}">${escapeHtml(form.url)}</div>`
       : '';
 
     itemEl.innerHTML = `
@@ -110,6 +206,7 @@ function renderHistory(items: any[]) {
             ${revBadge}
           </div>
           <div style="font-size: 11px; color: var(--lz-text-secondary);">${escapeHtml(titleText)}</div>
+          ${urlDisplay}
         </div>
         <div class="item-time">${timeAgo}</div>
       </div>
@@ -117,7 +214,7 @@ function renderHistory(items: any[]) {
         ${fieldsHtml || '<div style="color: var(--lz-text-muted); font-size: 11px;">No visible fields</div>'}
       </div>
       <div class="item-actions">
-        <button class="action-btn restore-playground-btn" data-formid="${escapeAttr(form.id)}">Fill Test Box</button>
+        <button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">Copy All</button>
         <button class="action-btn delete delete-form-btn" data-formid="${escapeAttr(form.id)}">Delete</button>
       </div>
     `;
@@ -147,27 +244,21 @@ function renderHistory(items: any[]) {
       });
     });
 
-    // Restore to Playground
-    const restoreBtn = itemEl.querySelector('.restore-playground-btn');
-    restoreBtn?.addEventListener('click', () => {
-      const testTitle = document.getElementById('test-title') as HTMLInputElement;
-      const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
-      if (testTitle && testBody) {
-        fields.forEach((f: any) => {
-          if (f.name === 'subject' || f.name?.toLowerCase().includes('title')) {
-            testTitle.value = f.value;
-          } else if (
-            f.name === 'notes' ||
-            f.type === 'textarea' ||
-            f.name?.toLowerCase().includes('body')
-          ) {
-            testBody.value = f.value;
-          } else if (!testTitle.value) {
-            testTitle.value = f.value;
-          } else {
-            testBody.value += (testBody.value ? '\n' : '') + f.value;
-          }
-        });
+    // Copy all fields
+    const copyAllBtn = itemEl.querySelector('.copy-all-btn');
+    copyAllBtn?.addEventListener('click', async (e) => {
+      const btnEl = e.currentTarget as HTMLElement;
+      const originalText = btnEl?.textContent || 'Copy All';
+      const allText = fields
+        .filter((f: any) => f.value && f.value.trim().length > 0)
+        .map((f: any) => `${f.name || 'field'}: ${f.value}`)
+        .join('\n\n');
+      await navigator.clipboard.writeText(allText);
+      if (btnEl) {
+        btnEl.textContent = 'Copied All!';
+        setTimeout(() => {
+          btnEl.textContent = originalText;
+        }, 1200);
       }
     });
 
@@ -248,42 +339,6 @@ function escapeAttr(str: string): string {
   return str.replace(/"/g, '&quot;');
 }
 
-export function triggerPlaygroundAutosave(isSubmit = false) {
-  const testTitle = document.getElementById('test-title') as HTMLInputElement;
-  const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  if (!testTitle || !testBody) return;
-
-  const titleVal = testTitle.value;
-  const bodyVal = testBody.value;
-
-  if (!titleVal.trim() && !bodyVal.trim()) return;
-
-  const message: RuntimeMessage = {
-    type: isSubmit ? 'SUBMIT_FORM' : 'SAVE_AUTOSAVE',
-    payload: {
-      form: {
-        formInstanceId: 'sidepanel-playground',
-        url: window.location.href,
-        domain: 'sidepanel.lazarus',
-        title: 'Sidepanel Playground Form',
-        editingTime: 10,
-        fields: [
-          { name: 'subject', type: 'text', value: titleVal },
-          { name: 'notes', type: 'textarea', value: bodyVal },
-        ],
-      },
-    },
-  };
-
-  chrome.runtime
-    .sendMessage(message)
-    .then(() => {
-      loadHistory(searchInput?.value || '');
-    })
-    .catch(() => {});
-}
-
 export function initSidepanel() {
   const historyList = document.getElementById('history-list');
   if (!historyList) return;
@@ -291,14 +346,9 @@ export function initSidepanel() {
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
   const closeDiffBtn = document.getElementById('close-diff-btn') as HTMLButtonElement;
   const diffViewer = document.getElementById('diff-viewer') as HTMLElement;
-  const togglePlaygroundTitle = document.getElementById('toggle-playground-title') as HTMLElement;
-  const playgroundForm = document.getElementById('playground-form') as HTMLFormElement;
-  const testTitle = document.getElementById('test-title') as HTMLInputElement;
-  const testBody = document.getElementById('test-body') as HTMLTextAreaElement;
-  const clearPlaygroundBtn = document.getElementById('clear-playground-btn') as HTMLButtonElement;
   const clearHistoryBtn = document.getElementById('clear-history-btn') as HTMLAnchorElement;
   const openOptionsBtn = document.getElementById('open-options-btn') as HTMLAnchorElement;
-  const filterChips = document.querySelectorAll<HTMLElement>('.filter-chip');
+  const filterChips = document.querySelectorAll<HTMLElement>('.filter-chips .filter-chip');
 
   if (closeDiffBtn && diffViewer) {
     closeDiffBtn.onclick = () => diffViewer.classList.remove('is-visible');
@@ -322,34 +372,6 @@ export function initSidepanel() {
     };
   }
 
-  if (playgroundForm) {
-    playgroundForm.oninput = () => {
-      if (playgroundDebounce) window.clearTimeout(playgroundDebounce);
-      playgroundDebounce = window.setTimeout(() => {
-        triggerPlaygroundAutosave(false);
-      }, 500);
-    };
-
-    playgroundForm.onsubmit = (e) => {
-      e.preventDefault();
-      triggerPlaygroundAutosave(true);
-    };
-  }
-
-  if (clearPlaygroundBtn && testTitle && testBody) {
-    clearPlaygroundBtn.onclick = () => {
-      testTitle.value = '';
-      testBody.value = '';
-    };
-  }
-
-  if (togglePlaygroundTitle && playgroundForm) {
-    togglePlaygroundTitle.onclick = () => {
-      const isHidden = playgroundForm.style.display === 'none';
-      playgroundForm.style.display = isHidden ? 'block' : 'none';
-    };
-  }
-
   if (clearHistoryBtn) {
     clearHistoryBtn.onclick = async (e) => {
       e.preventDefault();
@@ -367,15 +389,67 @@ export function initSidepanel() {
     };
   }
 
+  const domainToggle = document.getElementById('domain-toggle') as HTMLInputElement;
+  if (domainToggle) {
+    domainToggle.onchange = async () => {
+      if (!currentDomain) return;
+      const willEnable = domainToggle.checked;
+      if (!willEnable) {
+        const confirmed = confirm(`Pause Lazarus form recovery on ${currentDomain}?`);
+        if (!confirmed) {
+          domainToggle.checked = true;
+          return;
+        }
+        await chrome.runtime.sendMessage({
+          type: 'DISABLE_DOMAIN',
+          payload: { domain: currentDomain, wipeExisting: false },
+        });
+      } else {
+        await chrome.runtime.sendMessage({
+          type: 'ENABLE_DOMAIN',
+          payload: { domain: currentDomain },
+        });
+      }
+      await resolveActiveTab();
+    };
+  }
+
   if (heartbeatInterval) clearInterval(heartbeatInterval);
   heartbeatInterval = setInterval(() => {
     const activeId = document.activeElement?.id;
-    if (activeId !== 'search-input' && activeId !== 'test-title' && activeId !== 'test-body') {
+    if (activeId !== 'search-input') {
       loadHistory(searchInput?.value || '');
     }
   }, 2500);
 
-  loadHistory();
+  // Initialize active tab domain and load drafts
+  resolveActiveTab().finally(() => {
+    loadHistory();
+  });
+}
+
+// Active Tab Listeners: detect active tab navigation and tab switching
+if (typeof chrome !== 'undefined' && chrome.tabs) {
+  chrome.tabs.onActivated?.addListener?.(async () => {
+    await resolveActiveTab();
+    if (currentFilter === 'this_site') {
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      loadHistory(searchInput?.value || '');
+    }
+  });
+
+  chrome.tabs.onUpdated?.addListener?.(async (tabId, changeInfo) => {
+    if (changeInfo.url || changeInfo.status === 'complete') {
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tabs?.[0]?.id === tabId) {
+        await resolveActiveTab();
+        if (currentFilter === 'this_site') {
+          const searchInput = document.getElementById('search-input') as HTMLInputElement;
+          loadHistory(searchInput?.value || '');
+        }
+      }
+    }
+  });
 }
 
 // Live Reactive Sync listener (registers once)

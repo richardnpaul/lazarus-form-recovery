@@ -19,6 +19,21 @@
       </div>
     </header>
 
+    <!-- Active Site Banner -->
+    <section class="site-banner" id="site-banner">
+      <div class="site-info">
+        <span class="site-dot" id="site-beacon"></span>
+        <div class="site-details">
+          <span class="site-domain" id="site-domain">Checking current tab...</span>
+          <span class="site-status" id="site-status">Detecting...</span>
+        </div>
+      </div>
+      <label class="switch" title="Toggle Lazarus tracking on this domain">
+        <input type="checkbox" id="domain-toggle" checked />
+        <span class="slider"></span>
+      </label>
+    </section>
+
     <!-- Diff Viewer Modal Card (shown when user clicks "Diff") -->
     <section class="diff-viewer" id="diff-viewer">
       <div class="diff-header">
@@ -26,43 +41,6 @@
         <button class="action-btn" id="close-diff-btn">Close ✕</button>
       </div>
       <div class="diff-body" id="diff-content"></div>
-    </section>
-
-    <!-- Interactive Test Playground (Collapsible) -->
-    <section class="playground-card">
-      <div class="card-title" id="toggle-playground-title">
-        <span>⚡ Test Recovery Playground</span>
-        <span style="font-size: 10px; font-weight: normal; color: var(--lz-text-muted)"
-          >Autosaves as you type ▾</span
-        >
-      </div>
-      <form id="playground-form">
-        <div class="form-group">
-          <label for="test-title">Subject / Title</label>
-          <input
-            type="text"
-            id="test-title"
-            name="subject"
-            class="form-input"
-            placeholder="Type a subject..."
-          />
-        </div>
-        <div class="form-group">
-          <label for="test-body">Draft Notes / Comments</label>
-          <textarea
-            id="test-body"
-            name="notes"
-            class="form-textarea"
-            placeholder="Type any thoughts or form content here..."
-          ></textarea>
-        </div>
-        <div class="btn-row">
-          <button type="submit" class="btn btn-primary">Save Now</button>
-          <button type="button" id="clear-playground-btn" class="btn btn-secondary">
-            Clear Inputs
-          </button>
-        </div>
-      </form>
     </section>
 
     <!-- Search Filter -->
@@ -77,7 +55,10 @@
 
     <!-- Filter Chips -->
     <div class="filter-chips">
-      <button class="filter-chip is-active" data-filter="all">All</button>
+      <button class="filter-chip is-active" data-filter="this_site" id="chip-this-site">
+        This Site
+      </button>
+      <button class="filter-chip" data-filter="all">All Sites</button>
       <button class="filter-chip" data-filter="today">Today</button>
       <button class="filter-chip" data-filter="7days">Last 7 Days</button>
       <button class="filter-chip" data-filter="30days">Last 30 Days</button>

@@ -25,7 +25,6 @@ export default defineManifest({
         type: 'module',
       },
   action: {
-    default_popup: 'src/popup/popup.html',
     default_icon: {
       '16': 'icons/icon-16.png',
       '32': 'icons/icon-32.png',
@@ -41,6 +40,7 @@ export default defineManifest({
         sidebar_action: {
           default_panel: 'src/sidepanel/sidepanel.html',
           default_title: 'Lazarus: Form Recovery',
+          open_at_install: false,
         },
       }
     : {
@@ -51,7 +51,10 @@ export default defineManifest({
   browser_specific_settings: {
     gecko: {
       id: 'lazarus-form-recovery@personal-code',
-      strict_min_version: '109.0',
+      strict_min_version: '115.0',
+      data_collection_permissions: {
+        required: ['none'],
+      },
     },
   },
   permissions: isFirefox
@@ -61,7 +64,7 @@ export default defineManifest({
   content_scripts: [
     {
       matches: ['<all_urls>'],
-      js: ['src/content/content-script.ts'],
+      js: ['src/content/content-script.iife.ts'],
       all_frames: true,
       match_about_blank: true,
       run_at: 'document_idle',

@@ -179,6 +179,10 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
       const matchFieldName = await repository.searchHistory('user_bio');
       expect(matchFieldName.length).toBe(1);
 
+      // Search by partial URL path
+      const matchUrl = await repository.searchHistory('/edit');
+      expect(matchUrl.length).toBe(1);
+
       // Search by field value
       const matchVal = await repository.searchHistory('SpecialKeyword');
       expect(matchVal.length).toBe(1);
