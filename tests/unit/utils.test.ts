@@ -5,7 +5,12 @@ import {
   sanitizePreview,
   computeSimpleDiff,
 } from '../../src/common/utils/text';
-import { escapeCss, getElementSelector, computeButtonPosition } from '../../src/common/utils/dom';
+import {
+  escapeCss,
+  getElementSelector,
+  computeButtonPosition,
+  queryAllDeep,
+} from '../../src/common/utils/dom';
 import { isValidLuhn, scrubSensitiveData } from '../../src/common/utils/pii';
 
 describe('Text Utilities (src/common/utils/text.ts)', () => {
@@ -93,6 +98,29 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
 
     const detached = document.createElement('p');
     expect(getElementSelector(detached)).toBe('p');
+  });
+
+  it('should traverse open shadow roots using queryAllDeep', () => {
+    const container = document.createElement('div');
+    const directInput = document.createElement('input');
+    directInput.id = 'direct';
+    container.appendChild(directInput);
+
+    const customEl = document.createElement('div');
+    if (customEl.attachShadow) {
+      const shadow = customEl.attachShadow({ mode: 'open' });
+      const shadowInput = document.createElement('input');
+      shadowInput.id = 'shadow';
+      shadow.appendChild(shadowInput);
+    }
+    container.appendChild(customEl);
+
+    const results = queryAllDeep(container, 'input');
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(results.some((el) => el.id === 'direct')).toBe(true);
+    if (customEl.shadowRoot) {
+      expect(results.some((el) => el.id === 'shadow')).toBe(true);
+    }
   });
 
   it('should compute button positions with internal and external placements and clamping', () => {

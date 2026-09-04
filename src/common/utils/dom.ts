@@ -85,3 +85,28 @@ export function computeButtonPosition(
 
   return { x: Math.round(btnX), y: Math.round(btnY), placement };
 }
+
+/**
+ * Traverses DOM and open Shadow DOM roots to find all matching elements.
+ */
+export function queryAllDeep(root: ParentNode, selector: string): HTMLElement[] {
+  const results: HTMLElement[] = [];
+  try {
+    const matched = root.querySelectorAll(selector);
+    matched.forEach((el) => {
+      if (el instanceof HTMLElement) results.push(el);
+    });
+  } catch {}
+
+  try {
+    const all = root.querySelectorAll('*');
+    all.forEach((el) => {
+      const shadow = (el as HTMLElement).shadowRoot;
+      if (shadow) {
+        results.push(...queryAllDeep(shadow, selector));
+      }
+    });
+  } catch {}
+
+  return results;
+}

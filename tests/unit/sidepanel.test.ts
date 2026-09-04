@@ -10,11 +10,6 @@ const SIDEPANEL_HTML = `
   <main id="history-list" class="history-list"></main>
   <span id="history-count">Loading...</span>
   <input type="search" id="search-input">
-  <section id="diff-viewer" class="diff-viewer">
-    <span id="diff-title"></span>
-    <button id="close-diff-btn">Close</button>
-    <div id="diff-content"></div>
-  </section>
   <div class="filter-chips">
     <button class="filter-chip is-active" data-filter="all" id="chip-all-sites">All Sites</button>
     <button class="filter-chip" data-filter="this_site" id="chip-this-site">This Site</button>
@@ -137,18 +132,7 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     copyBtn?.click();
     expect(navigator.clipboard.writeText).toHaveBeenCalled();
 
-    // 2. Diff button
-    const diffBtn = historyList?.querySelector('.diff-field-btn') as HTMLButtonElement;
-    diffBtn?.click();
-    const diffViewer = document.getElementById('diff-viewer');
-    expect(diffViewer?.classList.contains('is-visible')).toBe(true);
-
-    // Close diff viewer
-    const closeDiffBtn = document.getElementById('close-diff-btn') as HTMLButtonElement;
-    closeDiffBtn?.click();
-    expect(diffViewer?.classList.contains('is-visible')).toBe(false);
-
-    // 3. Copy All button
+    // 2. Copy All button
     const copyAllBtn = historyList?.querySelector('.copy-all-btn') as HTMLButtonElement;
     copyAllBtn?.click();
     expect(navigator.clipboard.writeText).toHaveBeenCalled();

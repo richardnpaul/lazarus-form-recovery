@@ -1,5 +1,5 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
-import { formatTimeAgo, computeSimpleDiff } from '../common/utils/text';
+import { formatTimeAgo } from '../common/utils/text';
 
 let currentFilter: 'all' | 'this_site' | 'today' | '7days' | '30days' = 'all';
 let currentDomain = '';
@@ -214,10 +214,7 @@ function renderHistory(items: any[]) {
         <div class="field-row">
           <span class="field-label" title="${escapeHtml(f.name)}">${escapeHtml(f.name || 'field')}:</span>
           <span class="field-value">${escapeHtml(f.value)}</span>
-          <div style="display: flex; gap: 4px;">
-            <button class="action-btn copy-field-btn" data-value="${escapeAttr(f.value)}">Copy</button>
-            <button class="action-btn diff-field-btn" data-name="${escapeAttr(f.name)}" data-value="${escapeAttr(f.value)}">Diff</button>
-          </div>
+          <button class="action-btn copy-field-btn" data-value="${escapeAttr(f.value)}">Copy</button>
         </div>
       `
       )
@@ -272,15 +269,6 @@ function renderHistory(items: any[]) {
       });
     });
 
-    // Diff field click
-    itemEl.querySelectorAll('.diff-field-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const fieldName = (e.currentTarget as HTMLElement).getAttribute('data-name') || '';
-        const currentVal = (e.currentTarget as HTMLElement).getAttribute('data-value') || '';
-        openDiffViewer(fieldName, currentVal, items);
-      });
-    });
-
     // Copy all fields
     const copyAllBtn = itemEl.querySelector('.copy-all-btn');
     copyAllBtn?.addEventListener('click', async (e) => {
@@ -317,53 +305,6 @@ function renderHistory(items: any[]) {
   });
 }
 
-function openDiffViewer(fieldName: string, currentVal: string, allItems: any[]) {
-  const diffViewer = document.getElementById('diff-viewer') as HTMLElement;
-  const diffTitle = document.getElementById('diff-title') as HTMLElement;
-  const diffContent = document.getElementById('diff-content') as HTMLElement;
-  if (!diffViewer || !diffTitle || !diffContent) return;
-
-  diffViewer.classList.add('is-visible');
-  diffTitle.textContent = `Diff: ${fieldName}`;
-
-  let prevVal = '';
-  for (const item of allItems) {
-    const f = (item.fields || []).find((fld: any) => fld.name === fieldName);
-    if (f && f.value !== currentVal) {
-      prevVal = f.value;
-      break;
-    }
-  }
-
-  if (!prevVal) {
-    diffContent.innerHTML = `
-      <div style="font-size: 11px; color: var(--lz-text-muted); padding: 8px;">
-        No previous version found to compare against. Current value:<br>
-        <pre style="margin-top: 6px; white-space: pre-wrap; font-family: monospace;">${escapeHtml(currentVal)}</pre>
-      </div>
-    `;
-    return;
-  }
-
-  const diffChunks = computeSimpleDiff(prevVal, currentVal);
-  diffContent.innerHTML = `
-    <div style="margin-bottom: 6px; font-size: 11px; color: var(--lz-text-secondary);">
-      Comparing against previous revision:
-    </div>
-    <div class="diff-split">
-      ${diffChunks
-        .map((chunk) => {
-          if (chunk.type === 'added')
-            return `<span class="diff-add">${escapeHtml(chunk.value)}</span>`;
-          if (chunk.type === 'removed')
-            return `<span class="diff-del">${escapeHtml(chunk.value)}</span>`;
-          return escapeHtml(chunk.value);
-        })
-        .join('')}
-    </div>
-  `;
-}
-
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
@@ -381,15 +322,9 @@ export function initSidepanel() {
   if (!historyList) return;
 
   const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const closeDiffBtn = document.getElementById('close-diff-btn') as HTMLButtonElement;
-  const diffViewer = document.getElementById('diff-viewer') as HTMLElement;
   const clearHistoryBtn = document.getElementById('clear-history-btn') as HTMLAnchorElement;
   const openOptionsBtn = document.getElementById('open-options-btn') as HTMLAnchorElement;
   const filterChips = document.querySelectorAll<HTMLElement>('.filter-chips .filter-chip');
-
-  if (closeDiffBtn && diffViewer) {
-    closeDiffBtn.onclick = () => diffViewer.classList.remove('is-visible');
-  }
 
   filterChips.forEach((chip) => {
     chip.onclick = () => {

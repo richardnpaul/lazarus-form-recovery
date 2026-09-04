@@ -126,6 +126,34 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(sentMessages[0].payload.form.fields[0].name).toBe('Search GitHub');
     });
 
+    it('flushes pending autosave immediately upon blur', () => {
+      const input = document.createElement('input');
+      input.name = 'address_line';
+      input.value = '123 Main Street';
+      document.body.appendChild(input);
+
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect(sentMessages.length).toBe(0);
+
+      // User tabs away or clicks out
+      input.dispatchEvent(new Event('blur', { bubbles: true }));
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
+      expect(sentMessages[0].payload.form.fields[0].value).toBe('123 Main Street');
+    });
+
+    it('handles paste events as autosave triggers', () => {
+      const input = document.createElement('input');
+      input.name = 'pasted_token';
+      input.value = 'secret_token_12345';
+      document.body.appendChild(input);
+
+      input.dispatchEvent(new Event('paste', { bubbles: true }));
+      vi.advanceTimersByTime(300);
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload.form.fields[0].value).toBe('secret_token_12345');
+    });
+
     it('tracks active editing time and resets on idle gaps > 5 mins', () => {
       const form = document.createElement('form');
       form.id = 'time-tracker-form';

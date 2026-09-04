@@ -166,5 +166,64 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
       const field = FieldExtractor.extractField(select);
       expect(field?.value).toBe('ts,rust');
     });
+
+    it('should generate action-aware form identifiers when id/name are absent', () => {
+      const form = document.createElement('form');
+      form.setAttribute('action', '/search?q=test');
+      const textarea = document.createElement('textarea');
+      textarea.name = 'q';
+      textarea.value = 'google query';
+      form.appendChild(textarea);
+      document.body.appendChild(form);
+
+      const snapshot = FieldExtractor.buildFormSnapshot(textarea);
+      expect(snapshot.formInstanceId).toBe('form_search');
+      expect(snapshot.fields.length).toBe(1);
+      expect(snapshot.fields[0].value).toBe('google query');
+    });
+
+    it('should generate non-colliding index-aware names for unnamed inputs in containers', () => {
+      const container = document.createElement('div');
+      container.className = 'form-container';
+
+      const wrap1 = document.createElement('div');
+      const in1 = document.createElement('input');
+      in1.type = 'text';
+      in1.value = 'First Part';
+      wrap1.appendChild(in1);
+
+      const wrap2 = document.createElement('div');
+      const in2 = document.createElement('input');
+      in2.type = 'text';
+      in2.value = 'Second Part';
+      wrap2.appendChild(in2);
+
+      container.appendChild(wrap1);
+      container.appendChild(wrap2);
+      document.body.appendChild(container);
+
+      const fields = FieldExtractor.extractAllFields(container);
+      expect(fields.length).toBe(2);
+      expect(fields[0].name).not.toBe(fields[1].name);
+      expect(fields[0].value).toBe('First Part');
+      expect(fields[1].value).toBe('Second Part');
+    });
+
+    it('should resolve nested child elements inside contenteditable to the root content', () => {
+      const editor = document.createElement('div');
+      editor.setAttribute('contenteditable', 'true');
+      editor.id = 'rich-editor';
+      const p = document.createElement('p');
+      p.innerHTML = 'Hello from <span>inner rich text</span>';
+      editor.appendChild(p);
+      document.body.appendChild(editor);
+
+      // Typing event target is the inner span
+      const span = p.querySelector('span') as HTMLElement;
+      const snapshot = FieldExtractor.buildFormSnapshot(span);
+      expect(snapshot.fields.length).toBe(1);
+      expect(snapshot.fields[0].name).toBe('rich-editor');
+      expect(snapshot.fields[0].value).toContain('inner rich text');
+    });
   });
 });

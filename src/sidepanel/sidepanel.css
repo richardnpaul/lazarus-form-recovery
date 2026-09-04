@@ -341,60 +341,6 @@ input:checked + .slider:before {
   border-color: var(--lz-status-danger);
 }
 
-/* Diff Viewer Modal / Card */
-.diff-viewer {
-  display: none;
-  background: var(--lz-bg-surface);
-  border: 1px solid var(--lz-border-subtle);
-  border-radius: var(--lz-radius-md);
-  padding: 12px;
-  margin-bottom: 12px;
-  box-shadow: var(--lz-shadow-lg);
-}
-
-.diff-viewer.is-visible {
-  display: block;
-}
-
-.diff-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--lz-border-subtle);
-}
-
-.diff-title {
-  font-weight: 700;
-  font-size: var(--lz-font-size-xs);
-  color: var(--lz-accent-primary);
-}
-
-.diff-body {
-  font-family: var(--lz-font-mono);
-  font-size: 12px;
-  line-height: 1.5;
-  background: var(--lz-bg-canvas);
-  padding: 8px;
-  border-radius: var(--lz-radius-sm);
-  max-height: 140px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.diff-added {
-  background-color: hsla(142, 71%, 45%, 0.2);
-  color: var(--lz-status-success);
-}
-
-.diff-removed {
-  background-color: hsla(0, 84%, 60%, 0.2);
-  color: var(--lz-status-danger);
-  text-decoration: line-through;
-}
-
 /* Empty state */
 .empty-history {
   padding: 30px 16px;

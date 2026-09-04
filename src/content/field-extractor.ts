@@ -1,7 +1,7 @@
 import { FieldSnapshot, FormSnapshot } from '../common/types/messages';
 import { findRichTextAdapter } from './rich-text';
 import { scrubSensitiveData } from '../common/utils/pii';
-import { getElementSelector } from '../common/utils/dom';
+import { getElementSelector, queryAllDeep } from '../common/utils/dom';
 
 export interface ExtractorOptions {
   savePasswords?: boolean;
@@ -95,6 +95,23 @@ export class FieldExtractor {
     }
 
     if (!name) {
+      const container =
+        element.closest('form, [role="form"], section, main, article, .form-container, body') ||
+        element.parentElement;
+      if (container) {
+        const allInputs = Array.from(
+          container.querySelectorAll(
+            'input, textarea, select, [contenteditable="true"], .ql-editor, .ProseMirror, [data-lexical-editor="true"]'
+          )
+        );
+        const idx = allInputs.indexOf(element);
+        if (idx >= 0) {
+          name = `${type}_${idx + 1}`;
+        }
+      }
+    }
+
+    if (!name) {
       name = element.id || getElementSelector(element);
     }
 
@@ -119,12 +136,25 @@ export class FieldExtractor {
     options: ExtractorOptions = {}
   ): FieldSnapshot[] {
     const fields: FieldSnapshot[] = [];
-    const elements = container.querySelectorAll(
+
+    // If container itself is a trackable field (e.g. contenteditable root), extract it
+    if (this.isTrackable(container, options.savePasswords)) {
+      const selfSnapshot = this.extractField(container, options);
+      if (
+        selfSnapshot &&
+        (selfSnapshot.value.trim().length > 0 || selfSnapshot.type === 'checkbox')
+      ) {
+        fields.push(selfSnapshot);
+      }
+    }
+
+    const elements = queryAllDeep(
+      container,
       'input, textarea, select, [contenteditable="true"], .ql-editor, .ProseMirror, [data-lexical-editor="true"]'
     );
 
     elements.forEach((el) => {
-      if (el instanceof HTMLElement) {
+      if (el instanceof HTMLElement && el !== container) {
         const snapshot = this.extractField(el, options);
         if (snapshot && (snapshot.value.trim().length > 0 || snapshot.type === 'checkbox')) {
           fields.push(snapshot);
@@ -148,21 +178,34 @@ export class FieldExtractor {
     let fields: FieldSnapshot[] = [];
 
     if (formElement) {
-      formInstanceId = formElement.id || formElement.getAttribute('name') || 'form_wrapper';
+      formInstanceId =
+        formElement.id || formElement.getAttribute('name') || getFormActionIdentifier(formElement);
       fields = this.extractAllFields(formElement, options);
     } else {
-      // Orphaned input: check parent container or use target
+      // Check if target is inside an editable root
+      const editableRoot = target.closest(
+        '[contenteditable="true"], [contenteditable=""], .ql-editor, .ProseMirror, [data-lexical-editor="true"]'
+      ) as HTMLElement;
+
       const container =
         (target.closest(
           'section, main, article, .form-container, div[role="form"]'
         ) as HTMLElement) ||
+        editableRoot ||
         target.parentElement ||
         target;
       formInstanceId = container.id || `fake_form_${getElementSelector(container)}`;
       fields = this.extractAllFields(container, options);
-      if (fields.length === 0) {
-        const single = this.extractField(target, options);
-        if (single) fields.push(single);
+    }
+
+    // Target-preservation safety net: ensure actively edited target is in snapshot if it has content
+    const targetSnapshot = this.extractField(target, options);
+    if (targetSnapshot && targetSnapshot.value.trim().length > 0) {
+      const alreadyIncluded = fields.some(
+        (f) => f.name === targetSnapshot.name || f.selector === targetSnapshot.selector
+      );
+      if (!alreadyIncluded) {
+        fields.push(targetSnapshot);
       }
     }
 
@@ -175,4 +218,22 @@ export class FieldExtractor {
       fields,
     };
   }
+}
+
+function getFormActionIdentifier(form: HTMLFormElement): string {
+  const action = form.getAttribute('action');
+  if (action) {
+    try {
+      const base = typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
+      const path = new URL(action, base).pathname;
+      const clean = path.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/^_+|_+$/g, '');
+      if (clean) return `form_${clean}`;
+    } catch {}
+  }
+  if (typeof document !== 'undefined') {
+    const forms = Array.from(document.querySelectorAll('form'));
+    const idx = forms.indexOf(form);
+    if (idx >= 0) return `form_${idx + 1}`;
+  }
+  return 'form_wrapper';
 }
