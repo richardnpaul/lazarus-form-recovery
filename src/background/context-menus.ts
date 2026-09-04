@@ -18,6 +18,21 @@ let currentCache: ContextMenuCache = {
   fieldTexts: [],
 };
 
+export function isFirefox(): boolean {
+  if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
+    if (chrome.runtime.getURL('').startsWith('moz-extension://')) {
+      return true;
+    }
+  }
+  if (typeof (chrome as any)?.sidebarAction !== 'undefined') {
+    return true;
+  }
+  if (typeof navigator !== 'undefined' && navigator.userAgent) {
+    return navigator.userAgent.toLowerCase().includes('firefox');
+  }
+  return false;
+}
+
 export function setupContextMenus() {
   if (!chrome.contextMenus) return;
 
@@ -27,6 +42,17 @@ export function setupContextMenus() {
 }
 
 function buildBaseContextMenus() {
+  // Firefox toolbar action context menu:
+  // Chromium browsers natively provide an "Options" context menu entry when options_ui is defined.
+  // Firefox does not provide a native "Options" entry, so we register one conditionally for Firefox.
+  if (isFirefox()) {
+    chrome.contextMenus.create({
+      id: 'lazarus-action-options',
+      title: '⚙️ Options',
+      contexts: ['action'],
+    });
+  }
+
   // Root Menu
   chrome.contextMenus.create({
     id: 'lazarus-root',
@@ -81,6 +107,14 @@ function buildBaseContextMenus() {
     id: 'lazarus-open-sidebar',
     parentId: 'lazarus-root',
     title: '📊 Browse Revisions in Sidebar',
+    contexts: ['editable'],
+  });
+
+  // Action: Open Settings / Options
+  chrome.contextMenus.create({
+    id: 'lazarus-open-options',
+    parentId: 'lazarus-root',
+    title: '⚙️ Settings / Options',
     contexts: ['editable'],
   });
 
@@ -209,27 +243,40 @@ function rebuildSubmenus() {
 
 // Click Listener
 export async function handleContextMenuClick(info: any, tab?: any) {
-  if (!tab?.id || !tab.url) return;
-
   try {
-    const url = new URL(tab.url);
-    const domain = url.hostname;
     const itemId = String(info.menuItemId);
 
-    if (itemId === 'lazarus-save-now') {
-      // Send message to content script to force snapshot
-      chrome.tabs.sendMessage(tab.id, { action: 'FORCE_SAVE_NOW' }).catch(() => {});
+    // Settings / Options handler (toolbar addon right-click or in-page root menu)
+    if (itemId === 'lazarus-action-options' || itemId === 'lazarus-open-options') {
+      if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+      } else if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+        chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html') });
+      }
       return;
     }
 
-    if (itemId === 'lazarus-open-sidebar') {
-      if (chrome.sidePanel?.open && tab.windowId) {
+    // Sidebar handler
+    if (itemId === 'lazarus-action-sidebar' || itemId === 'lazarus-open-sidebar') {
+      if (chrome.sidePanel?.open && tab?.windowId) {
         await chrome.sidePanel.open({ windowId: tab.windowId });
       } else if (typeof (chrome as any)?.sidebarAction?.open === 'function') {
         (chrome as any).sidebarAction.open();
       } else {
         chrome.tabs.create({ url: chrome.runtime.getURL('src/sidepanel/sidepanel.html') });
       }
+      return;
+    }
+
+    // Actions below require an active tab and webpage URL
+    if (!tab?.id || !tab.url) return;
+
+    const url = new URL(tab.url);
+    const domain = url.hostname;
+
+    if (itemId === 'lazarus-save-now') {
+      // Send message to content script to force snapshot
+      chrome.tabs.sendMessage(tab.id, { action: 'FORCE_SAVE_NOW' }).catch(() => {});
       return;
     }
 

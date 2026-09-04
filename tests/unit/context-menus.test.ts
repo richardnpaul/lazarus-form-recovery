@@ -11,9 +11,34 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
     vi.restoreAllMocks();
   });
 
-  it('sets up base context menus', () => {
+  it('sets up base context menus in Chrome (omitting duplicate action item)', () => {
+    // Default mock has chrome-extension:// URL
     setupContextMenus();
-    expect(chrome.contextMenus.create).toHaveBeenCalled();
+    expect(chrome.contextMenus.create).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'lazarus-action-options',
+      })
+    );
+    expect(chrome.contextMenus.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'lazarus-open-options',
+        contexts: ['editable'],
+      })
+    );
+  });
+
+  it('sets up action options context menu in Firefox', () => {
+    const spy = vi
+      .spyOn(chrome.runtime, 'getURL')
+      .mockImplementation((p: string) => `moz-extension://uuid-mock/${p}`);
+    setupContextMenus();
+    expect(chrome.contextMenus.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'lazarus-action-options',
+        contexts: ['action'],
+      })
+    );
+    spy.mockRestore();
   });
 
   it('updates dynamic context menus with revisions and snippets', async () => {
@@ -110,6 +135,22 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       action: 'RESTORE_FIELD_TEXT',
       payload: { value: 'Snippet Text' },
     });
+
+    // Options / Settings handler (toolbar action or in-page root menu)
+    await handleContextMenuClick({ menuItemId: 'lazarus-action-options' });
+    expect(chrome.runtime.openOptionsPage).toHaveBeenCalled();
+
+    await handleContextMenuClick({ menuItemId: 'lazarus-open-options' }, mockTab);
+    expect(chrome.runtime.openOptionsPage).toHaveBeenCalledTimes(2);
+
+    // Options fallback to tabs.create when openOptionsPage is undefined
+    const origOpenOptions = chrome.runtime.openOptionsPage;
+    delete (chrome.runtime as any).openOptionsPage;
+    await handleContextMenuClick({ menuItemId: 'lazarus-action-options' });
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'chrome-extension://mock/src/options/options.html',
+    });
+    chrome.runtime.openOptionsPage = origOpenOptions;
 
     // Error in click handler (malformed URL)
     await handleContextMenuClick(

@@ -301,6 +301,21 @@ describe('Background Storage & Message Router Tests', () => {
     const clearRes = await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
     expect(clearRes.success).toBe(true);
 
+    // OPEN_OPTIONS_PAGE
+    const optionsRes = await chrome.runtime.sendMessage({ type: 'OPEN_OPTIONS_PAGE' });
+    expect(optionsRes.success).toBe(true);
+    expect(chrome.runtime.openOptionsPage).toHaveBeenCalled();
+
+    // OPEN_OPTIONS_PAGE fallback to tabs.create
+    const origOpenOptions = chrome.runtime.openOptionsPage;
+    delete (chrome.runtime as any).openOptionsPage;
+    const fallbackRes = await handleRuntimeMessage({ type: 'OPEN_OPTIONS_PAGE' }, {} as any);
+    expect(fallbackRes.success).toBe(true);
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'chrome-extension://mock/src/options/options.html',
+    });
+    chrome.runtime.openOptionsPage = origOpenOptions;
+
     // Unknown message type
     const unknownRes = await handleRuntimeMessage({ type: 'UNKNOWN_TYPE' } as any, {});
     expect(unknownRes.success).toBe(false);
