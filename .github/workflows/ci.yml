@@ -1,0 +1,81 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pre-commit:
+    name: Pre-Commit Checks (Format & Typecheck)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Setup Node.js
+        uses: actions/setup-node@94196ee1d15439c1b6651cd87ef14e88ec435966
+        with:
+          node-version: '26'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Code Formatting
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+  test:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Setup Node.js
+        uses: actions/setup-node@94196ee1d15439c1b6651cd87ef14e88ec435966
+        with:
+          node-version: '26'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Tests with Coverage
+        run: npm run test:coverage
+
+  mutation-test:
+    name: Mutation Testing (Stryker)
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Setup Node.js
+        uses: actions/setup-node@94196ee1d15439c1b6651cd87ef14e88ec435966
+        with:
+          node-version: '26'
+          cache: 'npm'
+
+      - name: Cache Stryker incremental report
+        uses: actions/cache@3edfce9056124e459a23f683a21433670d47daca
+        with:
+          path: reports/stryker-incremental.json
+          key: ${{ runner.os }}-stryker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-stryker-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Semantic Mutation Smoke Tests
+        run: npm run test:mutation:smoke
+
+      - name: Run Full Mutation Tests
+        # Run full mutation testing on main branch or on pull requests
+        run: npm run test:mutation
