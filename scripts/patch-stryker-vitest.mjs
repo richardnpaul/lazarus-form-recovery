@@ -26,6 +26,8 @@ if (existsSync(runnerPath)) {
       'project.config.testNamePattern = undefined;'
     );
     writeFileSync(runnerPath, content, 'utf8');
-    console.log('[Stryker Vitest 5 Patch] Applied compatibility fix to @stryker-mutator/vitest-runner.');
+    console.log(
+      '[Stryker Vitest 5 Patch] Applied compatibility fix to @stryker-mutator/vitest-runner.'
+    );
   }
 }

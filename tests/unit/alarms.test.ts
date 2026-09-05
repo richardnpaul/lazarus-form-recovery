@@ -101,14 +101,25 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
       await alarmHandler({ name: 'cleanup-expired-forms' });
       expect(cleanupSpy).toHaveBeenCalledTimes(1);
 
-      // 2. Alarm with error
-      vi.spyOn(repository, 'cleanupExpiredForms').mockRejectedValueOnce(new Error('CleanupFailed'));
+      // 1b. Alarm with cleanedCount === 0
+      cleanupSpy.mockResolvedValueOnce(0);
       await alarmHandler({ name: 'cleanup-expired-forms' });
       expect(cleanupSpy).toHaveBeenCalledTimes(2);
 
+      // 2. Alarm with error
+      vi.spyOn(repository, 'cleanupExpiredForms').mockRejectedValueOnce(new Error('CleanupFailed'));
+      await alarmHandler({ name: 'cleanup-expired-forms' });
+      expect(cleanupSpy).toHaveBeenCalledTimes(3);
+
       // 3. Non-matching alarm name
       await alarmHandler({ name: 'unknown-alarm' });
-      expect(cleanupSpy).toHaveBeenCalledTimes(2);
+      expect(cleanupSpy).toHaveBeenCalledTimes(3);
     }
+
+    // 4. setupAlarms when chrome.alarms is missing
+    const origAlarms = chrome.alarms;
+    delete (chrome as any).alarms;
+    expect(() => setupAlarms()).not.toThrow();
+    (chrome as any).alarms = origAlarms;
   });
 });

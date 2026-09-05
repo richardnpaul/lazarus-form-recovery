@@ -14,7 +14,6 @@ import { resolve } from 'node:path';
 
 const ROOT_DIR = resolve(process.cwd());
 
-
 const MUTANTS = [
   {
     id: 'MUTANT_01_PII_LUHN',
@@ -66,7 +65,8 @@ const MUTANTS = [
     subsystem: 'Domain Blocklist Storage',
     description: 'Invert isDomainEnabled in repository (allow blocked domains)',
     filePath: 'src/common/db/repository.ts',
-    originalSnippet: 'if (matchesDomainPattern(hostname, pattern)) {\n        return false;\n      }',
+    originalSnippet:
+      'if (matchesDomainPattern(hostname, pattern)) {\n        return false;\n      }',
     mutatedSnippet: 'if (matchesDomainPattern(hostname, pattern)) {\n        return true;\n      }',
     targetTest: 'tests/unit/repository.test.ts',
   },
@@ -75,8 +75,10 @@ const MUTANTS = [
     subsystem: 'Data Retention & Expiry',
     description: 'Invert cleanupExpiredForms retention cutoff (query forms above cutoff)',
     filePath: 'src/common/db/repository.ts',
-    originalSnippet: "const expiredForms = await db.forms.where('lastModified').below(cutoff).toArray();",
-    mutatedSnippet: "const expiredForms = await db.forms.where('lastModified').above(cutoff).toArray();",
+    originalSnippet:
+      "const expiredForms = await db.forms.where('lastModified').below(cutoff).toArray();",
+    mutatedSnippet:
+      "const expiredForms = await db.forms.where('lastModified').above(cutoff).toArray();",
     targetTest: 'tests/unit/repository.test.ts',
   },
   {
@@ -102,8 +104,10 @@ const MUTANTS = [
     subsystem: 'Sidepanel History UI',
     description: 'Bypass this_site domain filter chip in sidepanel applyFilter',
     filePath: 'src/sidepanel/sidepanel.ts',
-    originalSnippet: "function applyFilter(items: any[]): any[] {\n  if (currentFilter === 'all') return items;\n\n  if (currentFilter === 'this_site') {",
-    mutatedSnippet: "function applyFilter(items: any[]): any[] {\n  if (currentFilter === 'all') return items;\n\n  if (currentFilter === 'disabled_this_site') {",
+    originalSnippet:
+      "function applyFilter(items: any[]): any[] {\n  if (currentFilter === 'all') return items;\n\n  if (currentFilter === 'this_site') {",
+    mutatedSnippet:
+      "function applyFilter(items: any[]): any[] {\n  if (currentFilter === 'all') return items;\n\n  if (currentFilter === 'disabled_this_site') {",
     targetTest: 'tests/unit/sidepanel.test.ts',
   },
   {
@@ -111,8 +115,10 @@ const MUTANTS = [
     subsystem: 'Session Storage Manager',
     description: 'Disable chrome.storage.session removal in clearTabAutosaves',
     filePath: 'src/background/storage-manager.ts',
-    originalSnippet: 'if (keysToRemove.length > 0) {\n        await chrome.storage.session.remove(keysToRemove);\n      }',
-    mutatedSnippet: 'if (false && keysToRemove.length > 0) {\n        await chrome.storage.session.remove(keysToRemove);\n      }',
+    originalSnippet:
+      'if (keysToRemove.length > 0) {\n        await chrome.storage.session.remove(keysToRemove);\n      }',
+    mutatedSnippet:
+      'if (false && keysToRemove.length > 0) {\n        await chrome.storage.session.remove(keysToRemove);\n      }',
     targetTest: 'tests/unit/storage-manager.test.ts',
   },
   {
@@ -161,10 +167,18 @@ process.on('SIGTERM', () => {
 });
 
 async function main() {
-  console.log(`\n${BOLD}${CYAN}==============================================================${RESET}`);
-  console.log(`${BOLD}${CYAN}   Lazarus Form Recovery - Test Efficacy & Mutation Testing   ${RESET}`);
-  console.log(`${BOLD}${CYAN}==============================================================${RESET}\n`);
-  console.log(`${GRAY}Target Mutants: ${MUTANTS.length} semantic regressions across core subsystems${RESET}\n`);
+  console.log(
+    `\n${BOLD}${CYAN}==============================================================${RESET}`
+  );
+  console.log(
+    `${BOLD}${CYAN}   Lazarus Form Recovery - Test Efficacy & Mutation Testing   ${RESET}`
+  );
+  console.log(
+    `${BOLD}${CYAN}==============================================================${RESET}\n`
+  );
+  console.log(
+    `${GRAY}Target Mutants: ${MUTANTS.length} semantic regressions across core subsystems${RESET}\n`
+  );
 
   const results = [];
 
@@ -240,8 +254,7 @@ async function main() {
   let errorCount = 0;
 
   for (const r of results) {
-    const statusColor =
-      r.status === 'KILLED' ? GREEN : r.status === 'SURVIVED' ? RED : YELLOW;
+    const statusColor = r.status === 'KILLED' ? GREEN : r.status === 'SURVIVED' ? RED : YELLOW;
     const paddedStatus = `[${r.status}]`.padEnd(12);
     console.log(
       `${statusColor}${paddedStatus}${RESET} ${BOLD}${r.mutant.id}${RESET} (${r.mutant.subsystem})`

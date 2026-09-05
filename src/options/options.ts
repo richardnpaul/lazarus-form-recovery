@@ -52,7 +52,7 @@ const btnConfirmWipe = document.getElementById('btn-confirm-wipe') as HTMLButton
 let currentSettings: ExtensionSettings | null = null;
 let currentVaultStatus: VaultStatus | null = null;
 
-async function init() {
+export async function init() {
   setupTabs();
   renderDiagnostics();
   await loadSettings();
