@@ -17,10 +17,41 @@ const messageListeners: Array<
 > = [];
 const contextMenuClickListeners: Array<(info: any, tab: any) => void> = [];
 
+const installedListeners: Array<() => void> = [];
+const startupListeners: Array<() => void> = [];
+const commandListeners: Array<(command: string) => any> = [];
+const actionClickedListeners: Array<(tab: any) => any> = [];
+const tabRemovedListeners: Array<(tabId: number) => any> = [];
+const tabActivatedListeners: Array<(activeInfo: any) => any> = [];
+const tabUpdatedListeners: Array<(tabId: number, changeInfo: any, tab: any) => any> = [];
+
 const mockStorage: Record<string, any> = {};
 const mockSessionStorage: Record<string, any> = {};
 
 globalThis.chrome = {
+  _testTriggers: {
+    installed: async () => {
+      for (const fn of [...installedListeners]) await fn();
+    },
+    startup: async () => {
+      for (const fn of [...startupListeners]) await fn();
+    },
+    command: async (command: string) => {
+      for (const fn of [...commandListeners]) await fn(command);
+    },
+    actionClick: async (tab: any) => {
+      for (const fn of [...actionClickedListeners]) await fn(tab);
+    },
+    tabRemoved: async (tabId: number) => {
+      for (const fn of [...tabRemovedListeners]) await fn(tabId);
+    },
+    tabActivated: async (activeInfo: any) => {
+      for (const fn of [...tabActivatedListeners]) await fn(activeInfo);
+    },
+    tabUpdated: async (tabId: number, changeInfo: any, tab: any) => {
+      for (const fn of [...tabUpdatedListeners]) await fn(tabId, changeInfo, tab);
+    },
+  },
   runtime: {
     sendMessage: vi.fn((message: any) => {
       return new Promise((resolve) => {
@@ -48,10 +79,14 @@ globalThis.chrome = {
       hasListeners: vi.fn(() => messageListeners.length > 0),
     },
     onInstalled: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        installedListeners.push(fn);
+      }),
     },
     onStartup: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        startupListeners.push(fn);
+      }),
     },
     openOptionsPage: vi.fn(),
     getURL: vi.fn((path: string) => `chrome-extension://mock/${path}`),
@@ -64,7 +99,9 @@ globalThis.chrome = {
   },
   commands: {
     onCommand: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        commandListeners.push(fn);
+      }),
     },
   },
   alarms: {
@@ -141,7 +178,9 @@ globalThis.chrome = {
   },
   action: {
     onClicked: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        actionClickedListeners.push(fn);
+      }),
     },
   },
   sidePanel: {
@@ -149,14 +188,29 @@ globalThis.chrome = {
     setPanelBehavior: vi.fn(async () => {}),
   },
   tabs: {
-    query: vi.fn(async () => [{ id: 1, windowId: 100 }]),
+    query: vi.fn(async () => [{ id: 1, windowId: 100, active: true, url: 'https://example.com' }]),
+    get: vi.fn(async (tabId: number) => ({
+      id: tabId,
+      windowId: 100,
+      active: true,
+      url: 'https://example.com',
+    })),
     sendMessage: vi.fn(async () => ({ success: true })),
     create: vi.fn(async () => ({ id: 2 })),
     onRemoved: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        tabRemovedListeners.push(fn);
+      }),
     },
     onActivated: {
-      addListener: vi.fn(),
+      addListener: vi.fn((fn: any) => {
+        tabActivatedListeners.push(fn);
+      }),
+    },
+    onUpdated: {
+      addListener: vi.fn((fn: any) => {
+        tabUpdatedListeners.push(fn);
+      }),
     },
   },
 } as unknown as typeof chrome;

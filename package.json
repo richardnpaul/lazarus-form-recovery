@@ -26,6 +26,7 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.7.1",
     "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/typescript-checker": "^10.0.0",
     "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/chrome": "^0.2.8",
     "@types/node": "^26.4.1",
@@ -33,7 +34,7 @@
     "fake-indexeddb": "^6.2.5",
     "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
-    "typescript": "^7.0.2",
+    "typescript": "^5.8.2",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"
   },

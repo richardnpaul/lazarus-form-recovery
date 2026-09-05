@@ -1,23 +1,16 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "packageManager": "npm",
-  "reporters": [
-    "html",
-    "clear-text",
-    "progress"
-  ],
+  "reporters": ["html", "clear-text", "progress"],
   "testRunner": "vitest",
+  "checkers": ["typescript"],
   "coverageAnalysis": "off",
   "concurrency": 8,
   "timeoutMS": 10000,
   "incremental": true,
-  "tsconfigFile": "nonexistent-tsconfig.json",
+  "tsconfigFile": "tsconfig.json",
   "vitest": {
     "related": false
   },
-  "mutate": [
-    "src/**/*.ts",
-    "!src/**/*.d.ts",
-    "!src/vite-env.d.ts"
-  ]
+  "mutate": ["src/**/*.ts", "!src/**/*.d.ts", "!src/vite-env.d.ts"]
 }

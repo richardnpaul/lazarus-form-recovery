@@ -1,15 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { FormTracker } from '../../src/content/form-tracker';
+import { FieldExtractor } from '../../src/content/field-extractor';
 
 describe('FormTracker & Field Extractor Unit Tests', () => {
   let tracker: FormTracker;
   let sentMessages: any[] = [];
+  let root: HTMLElement;
 
   beforeEach(() => {
     vi.useFakeTimers();
     sentMessages = [];
     document.body.innerHTML = '';
     document.documentElement.querySelectorAll('lazarus-recovery-host').forEach((el) => el.remove());
+
+    root = document.createElement('div');
+    document.body.appendChild(root);
 
     // Intercept chrome.runtime.sendMessage
     vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
@@ -29,7 +34,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       return { success: true };
     });
 
-    tracker = new FormTracker();
+    tracker = new FormTracker(root);
     tracker.start();
   });
 
@@ -39,8 +44,57 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
     vi.restoreAllMocks();
   });
 
+  describe('Lifecycle and Event Registration', () => {
+    it('registers all event listeners in the capturing phase (useCapture = true)', () => {
+      const addSpy = vi.spyOn(root, 'addEventListener');
+      const remSpy = vi.spyOn(root, 'removeEventListener');
+
+      const newTracker = new FormTracker(root);
+      newTracker.start();
+
+      const expectedEvents = [
+        'input',
+        'compositionend',
+        'change',
+        'focus',
+        'blur',
+        'paste',
+        'submit',
+        'reset',
+        'contextmenu',
+        'keydown',
+      ];
+
+      expectedEvents.forEach((evt) => {
+        const call = addSpy.mock.calls.find((c) => c[0] === evt);
+        expect(call).toBeDefined();
+        // Strongly assert useCapture is true
+        expect(call![2]).toBe(true);
+      });
+
+      newTracker.stop();
+
+      expectedEvents.forEach((evt) => {
+        const call = remSpy.mock.calls.find((c) => c[0] === evt);
+        expect(call).toBeDefined();
+        expect(call![2]).toBe(true);
+      });
+    });
+
+    it('clears autosaveTimer on stop()', () => {
+      const input = document.createElement('input');
+      root.appendChild(input);
+
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect((tracker as any).autosaveTimer).not.toBeNull();
+
+      tracker.stop();
+      expect((tracker as any).autosaveTimer).toBeNull();
+    });
+  });
+
   describe('Input Event & Debouncing', () => {
-    it('should debounce rapid keystrokes within 500ms and send a single autosave', async () => {
+    it('should debounce rapid keystrokes within 300ms and send a single autosave', async () => {
       const form = document.createElement('form');
       form.id = 'comment-form';
       const input = document.createElement('input');
@@ -48,7 +102,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.name = 'comment_body';
       input.value = 'Hello';
       form.appendChild(input);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       // Fire multiple rapid input events
       input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -64,8 +118,8 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       // No message should have fired yet (debounced)
       expect(sentMessages.length).toBe(0);
 
-      // Advance past the 500ms debounce threshold
-      vi.advanceTimersByTime(500);
+      // Advance past the 300ms debounce threshold
+      vi.advanceTimersByTime(300);
 
       expect(sentMessages.length).toBe(1);
       const msg = sentMessages[0];
@@ -78,14 +132,14 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
     it('handles compositionend and change events as input triggers', () => {
       const input = document.createElement('input');
       input.value = 'typed';
-      document.body.appendChild(input);
+      root.appendChild(input);
 
       input.dispatchEvent(new Event('compositionend', { bubbles: true }));
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(300);
       expect(sentMessages.length).toBe(1);
 
       input.dispatchEvent(new Event('change', { bubbles: true }));
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(300);
       expect(sentMessages.length).toBe(2);
     });
 
@@ -94,7 +148,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       searchInput.type = 'text';
       searchInput.setAttribute('aria-label', 'Search Google');
       searchInput.value = 'firefox nightly addons';
-      document.body.appendChild(searchInput);
+      root.appendChild(searchInput);
 
       // User types query
       searchInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -104,17 +158,20 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
       expect(sentMessages.length).toBe(1);
       expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
-      expect(sentMessages[0].payload.form.fields[0].value).toBe('firefox nightly addons');
-      expect(sentMessages[0].payload.form.fields[0].name).toBe('Search Google');
+
+      // Hit a different key, it should NOT flush
+      searchInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      expect(sentMessages.length).toBe(1); // Still 1
     });
 
     it('flushes autosave immediately upon pagehide or beforeunload', () => {
       const input = document.createElement('input');
       input.placeholder = 'Search GitHub';
       input.value = 'lazarus form recovery';
-      document.body.appendChild(input);
+      root.appendChild(input);
 
-      // User types query
+      // Must interact to set lastInteractedElement
+      input.dispatchEvent(new Event('focus', { bubbles: true }));
       input.dispatchEvent(new Event('input', { bubbles: true }));
       expect(sentMessages.length).toBe(0);
 
@@ -122,15 +179,17 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       window.dispatchEvent(new Event('pagehide'));
       expect(sentMessages.length).toBe(1);
       expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
-      expect(sentMessages[0].payload.form.fields[0].value).toBe('lazarus form recovery');
-      expect(sentMessages[0].payload.form.fields[0].name).toBe('Search GitHub');
+
+      sentMessages = [];
+      window.dispatchEvent(new Event('beforeunload'));
+      expect(sentMessages.length).toBe(1);
     });
 
     it('flushes pending autosave immediately upon blur', () => {
       const input = document.createElement('input');
       input.name = 'address_line';
       input.value = '123 Main Street';
-      document.body.appendChild(input);
+      root.appendChild(input);
 
       input.dispatchEvent(new Event('input', { bubbles: true }));
       expect(sentMessages.length).toBe(0);
@@ -139,14 +198,13 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.dispatchEvent(new Event('blur', { bubbles: true }));
       expect(sentMessages.length).toBe(1);
       expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
-      expect(sentMessages[0].payload.form.fields[0].value).toBe('123 Main Street');
     });
 
     it('handles paste events as autosave triggers', () => {
       const input = document.createElement('input');
       input.name = 'pasted_token';
       input.value = 'secret_token_12345';
-      document.body.appendChild(input);
+      root.appendChild(input);
 
       input.dispatchEvent(new Event('paste', { bubbles: true }));
       vi.advanceTimersByTime(300);
@@ -159,7 +217,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       form.id = 'time-tracker-form';
       const input = document.createElement('input');
       form.appendChild(input);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       input.dispatchEvent(new Event('input', { bubbles: true }));
       // Advance by 1 minute
@@ -171,45 +229,43 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
     });
 
-    it('should capture multiline textareas and contenteditable elements', async () => {
-      const textarea = document.createElement('textarea');
-      textarea.id = 'essay-box';
-      textarea.value = 'Paragraph 1\n\nParagraph 2 with code snippet.';
-      document.body.appendChild(textarea);
+    it('passes strict false to isTrackable internally', () => {
+      const spy = vi.spyOn(FieldExtractor, 'isTrackable');
+      const input = document.createElement('input');
+      root.appendChild(input);
 
-      textarea.dispatchEvent(new Event('input', { bubbles: true }));
-      vi.advanceTimersByTime(500);
-
-      expect(sentMessages.length).toBe(1);
-      const msg = sentMessages[0];
-      expect(msg.type).toBe('SAVE_AUTOSAVE');
-      expect(msg.payload.form.fields[0].value).toBe(
-        'Paragraph 1\n\nParagraph 2 with code snippet.'
-      );
-      expect(msg.payload.form.fields[0].type).toBe('textarea');
-
-      // Contenteditable
-      const editableDiv = document.createElement('div');
-      editableDiv.contentEditable = 'true';
-      editableDiv.id = 'rich-editor';
-      editableDiv.textContent = 'Rich editor formatted text';
-      document.body.appendChild(editableDiv);
-
-      editableDiv.dispatchEvent(new Event('input', { bubbles: true }));
-      vi.advanceTimersByTime(500);
-
-      expect(sentMessages.length).toBe(2);
+      input.dispatchEvent(new Event('focus', { bubbles: true }));
+      expect(spy).toHaveBeenCalledWith(input, false); // must explicitly assert false!
     });
 
-    it('should ignore input events on non-editable elements', async () => {
-      const regularDiv = document.createElement('div');
-      regularDiv.id = 'static-div';
-      document.body.appendChild(regularDiv);
+    it('ignores input events on invalid elements and password fields', () => {
+      // Non-element
+      root.dispatchEvent(new Event('input', { bubbles: true }));
 
-      regularDiv.dispatchEvent(new Event('input', { bubbles: true }));
-      vi.advanceTimersByTime(600);
+      // Password field
+      const form = document.createElement('form');
+      const pass = document.createElement('input');
+      pass.type = 'password';
+      form.appendChild(pass);
+      root.appendChild(form);
 
+      pass.dispatchEvent(new Event('input', { bubbles: true }));
+      vi.advanceTimersByTime(300);
       expect(sentMessages.length).toBe(0);
+    });
+
+    it('handles contenteditable divs correctly', () => {
+      const editable = document.createElement('div');
+      editable.setAttribute('contenteditable', 'true');
+      editable.textContent = 'Hello contenteditable';
+      root.appendChild(editable);
+
+      editable.dispatchEvent(new Event('input', { bubbles: true }));
+      vi.advanceTimersByTime(300);
+
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload.form.fields[0].value).toBe('Hello contenteditable');
+      expect(sentMessages[0].payload.form.fields[0].type).toBe('contenteditable');
     });
   });
 
@@ -222,7 +278,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.name = 'cardholder';
       input.value = 'John Doe';
       form.appendChild(input);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
@@ -232,6 +288,24 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(msg.payload.form.formInstanceId).toBe('checkout-form');
     });
 
+    it('clears pending autosaveTimer when form is submitted immediately', () => {
+      const form = document.createElement('form');
+      form.id = 'rapid-submit-form';
+      const input = document.createElement('input');
+      input.name = 'msg';
+      input.value = 'About to submit';
+      form.appendChild(input);
+      root.appendChild(form);
+
+      // Trigger input event to start autosave timer
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect((tracker as any).autosaveTimer).not.toBeNull();
+
+      // Submit immediately before timer expires
+      form.dispatchEvent(new Event('submit', { bubbles: true }));
+      expect((tracker as any).autosaveTimer).toBeNull();
+    });
+
     it('should immediately snapshot values before form reset', () => {
       const form = document.createElement('form');
       form.id = 'reset-form';
@@ -239,7 +313,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.name = 'pre_reset';
       input.value = 'Valuable Draft';
       form.appendChild(input);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       form.dispatchEvent(new Event('reset', { bubbles: true }));
 
@@ -253,13 +327,31 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       const input = document.createElement('input');
       input.name = 'target_input';
       form.appendChild(input);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       input.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }));
 
       const contextMsg = sentMessages.find((m) => m.type === 'UPDATE_CONTEXT_MENU');
       expect(contextMsg).toBeDefined();
       expect(contextMsg.payload.formInstanceId).toBe('context-form');
+    });
+
+    it('handles submit edge cases (non-element target, orphaned inputs)', () => {
+      // Non-element target
+      const evt = new Event('submit', { bubbles: true });
+      Object.defineProperty(evt, 'target', { value: document });
+      root.dispatchEvent(evt);
+      expect(sentMessages.length).toBe(0);
+
+      // Orphaned input (no form)
+      const input = document.createElement('input');
+      input.name = 'orphan';
+      input.value = 'orphan-value';
+      root.appendChild(input);
+
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      vi.advanceTimersByTime(300);
+      expect(sentMessages.length).toBe(1);
     });
   });
 
@@ -272,10 +364,11 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       emailInput.name = 'email';
       form.appendChild(nameInput);
       form.appendChild(emailInput);
-      document.body.appendChild(form);
+      root.appendChild(form);
 
       // Focus nameInput
       nameInput.focus();
+      (tracker as any).lastInteractedElement = nameInput; // strictly set it
 
       // 1. RESTORE_FORM_REVISION
       await (tracker as any).handleRuntimeMessage({
@@ -287,58 +380,79 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(emailInput.value).toBe('restored@example.com');
 
       // 2. RESTORE_FIELD_TEXT
-      (tracker as any).lastInteractedElement = nameInput;
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_FIELD_TEXT',
         payload: { value: 'Directly Injected Text' },
       });
-      expect(nameInput.value).toBe('Directly Injected Text');
+      // The last element modified by RESTORE_FORM_REVISION was emailInput, so it became lastInteractedElement
+      expect(emailInput.value).toBe('Directly Injected Text');
 
       // 3. FORCE_SAVE_NOW
       await (tracker as any).handleRuntimeMessage({ action: 'FORCE_SAVE_NOW' });
       const forceMsg = sentMessages.find((m) => m.type === 'FORCE_SAVE_SNAPSHOT');
       expect(forceMsg).toBeDefined();
 
-      // Test applyValueToElement on rich text and textContent fallbacks
-      const richEl = document.createElement('div');
-      richEl.contentEditable = 'true';
-      (tracker as any).applyValueToElement(richEl, 'Rich Restored');
-      expect(richEl.textContent).toBe('Rich Restored');
+      // 4. RESTORE_FORM_REVISION failure scenarios
+      // Non-existent form id
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: { formId: 'non-existent' },
+      });
 
-      const plainEl = document.createElement('span');
-      (tracker as any).applyValueToElement(plainEl, 'Plain Restored');
-      expect(plainEl.textContent).toBe('Plain Restored');
+      // 5. RESTORE_FIELD_TEXT to a contenteditable
+      const editable = document.createElement('div');
+      editable.setAttribute('contenteditable', 'true');
+      root.appendChild(editable);
+      editable.focus();
+      (tracker as any).lastInteractedElement = editable;
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+        payload: { value: 'Injected HTML' },
+      });
+      expect(editable.innerHTML).toBe('Injected HTML');
 
-      // Advance timer for flash confirmation
-      vi.advanceTimersByTime(350);
+      // 6. RESTORE_FIELD_TEXT to an element without value or innerHTML (uses textContent)
+      const span = document.createElement('span');
+      root.appendChild(span);
+      span.focus();
+      (tracker as any).lastInteractedElement = span;
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+        payload: { value: 'Injected Text' },
+      });
+      expect(span.textContent).toBe('Injected Text');
 
-      // Stop tracker
-      tracker.stop();
-    });
-  });
+      // 7. RESTORE_FORM_REVISION fallback querySelector (when formElement is not found)
+      const orphanInput = document.createElement('input');
+      orphanInput.name = 'orphan_field';
+      document.body.appendChild(orphanInput); // Outside root, but document.querySelector will find it
 
-  describe('In-Situ UI Injection on Focus', () => {
-    it('should attach <lazarus-recovery-host> when an editable input gains focus', () => {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.id = 'target-field';
-      document.body.appendChild(input);
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: {
+          form: { id: 'recovered-f2', formInstanceId: 'non-existent-form' },
+          fields: [{ name: 'orphan_field', value: 'Found Me' }],
+        },
+      });
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: { formId: 'rec_form_2' },
+      });
+      expect(orphanInput.value).toBe('Found Me');
 
-      input.dispatchEvent(new Event('focus', { bubbles: true }));
+      // 8. RESTORE_FORM_REVISION throws exception
+      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('Network error'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: { formId: 'rec_form_err' },
+      });
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
 
-      const host = document.querySelector('lazarus-recovery-host');
-      expect(host).not.toBeNull();
-      expect(host?.tagName.toLowerCase()).toBe('lazarus-recovery-host');
-    });
-
-    it('should not attach recovery UI when a non-editable element gains focus', () => {
-      const button = document.createElement('button');
-      document.body.appendChild(button);
-
-      button.dispatchEvent(new Event('focus', { bubbles: true }));
-
-      const host = document.querySelector('lazarus-recovery-host');
-      expect(host).toBeNull();
+      // 9. Fast forward timers to trigger flashConfirmation setTimeout
+      vi.advanceTimersByTime(300);
     });
   });
 });

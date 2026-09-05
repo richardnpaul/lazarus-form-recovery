@@ -394,11 +394,19 @@ export function initSidepanel() {
       loadHistory(searchInput?.value || '');
     }
   }, 2500);
+  heartbeatInterval?.unref?.();
 
   // Initialize active tab domain and load drafts
   resolveActiveTab().finally(() => {
     loadHistory();
   });
+}
+
+export function stopSidepanelHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
 }
 
 // Active Tab Listeners: detect active tab navigation and tab switching
