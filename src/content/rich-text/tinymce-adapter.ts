@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { RichTextAdapter } from './adapter';
 
 export class TinyMceAdapter implements RichTextAdapter {
@@ -18,7 +19,7 @@ export class TinyMceAdapter implements RichTextAdapter {
   }
 
   public setValue(element: HTMLElement, value: string): void {
-    element.innerHTML = value;
+    element.innerHTML = DOMPurify.sanitize(value);
   }
 
   public getName(element: HTMLElement): string {

@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { RichTextAdapter } from './adapter';
 
 export class ProseMirrorAdapter implements RichTextAdapter {
@@ -24,7 +25,7 @@ export class ProseMirrorAdapter implements RichTextAdapter {
       ? element
       : (element.closest('.ProseMirror') as HTMLElement) || element;
     if (value.includes('<') && value.includes('>')) {
-      editor.innerHTML = value;
+      editor.innerHTML = DOMPurify.sanitize(value);
     } else {
       editor.textContent = value;
     }

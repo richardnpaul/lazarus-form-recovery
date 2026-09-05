@@ -6,8 +6,10 @@ import { sessionStorageManager } from './storage-manager';
 
 // Setup side panel behavior for Chrome (open on action click)
 export function setupSidePanelBehavior() {
-  if (typeof chrome !== 'undefined' && (chrome as any).sidePanel?.setPanelBehavior) {
-    (chrome as any).sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  if (typeof chrome !== 'undefined' && (chrome as any)['sidePanel']?.['setPanelBehavior']) {
+    (chrome as any)['sidePanel']
+      ['setPanelBehavior']({ openPanelOnActionClick: true })
+      .catch(() => {});
   }
 }
 
@@ -49,9 +51,9 @@ chrome.action?.onClicked?.addListener(async (tab) => {
     }
   }
 
-  if (browserApi?.sidePanel?.open && tab?.windowId) {
+  if (browserApi?.['sidePanel']?.['open'] && tab?.windowId) {
     try {
-      await browserApi.sidePanel.open({ windowId: tab.windowId });
+      await browserApi['sidePanel']['open']({ windowId: tab.windowId });
     } catch (err) {
       console.error('Failed to open sidePanel:', err);
     }

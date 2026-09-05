@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { computeButtonPosition } from '../../common/utils/dom';
 
 export class RecoveryButton {
@@ -12,11 +13,11 @@ export class RecoveryButton {
     this.button.className = 'lz-trigger-btn';
     this.button.setAttribute('aria-label', 'Lazarus Form Recovery');
     this.button.setAttribute('title', 'Recover form drafts (Lazarus)');
-    this.button.innerHTML = `
+    this.button.innerHTML = DOMPurify.sanitize(`
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
       </svg>
-    `;
+    `);
 
     this.button.addEventListener('click', (e) => {
       e.stopPropagation();

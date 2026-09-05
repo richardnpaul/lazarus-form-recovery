@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { formatTimeAgo } from '../common/utils/text';
 
@@ -152,13 +153,13 @@ function renderEmpty() {
   historyCount.textContent = '0 drafts';
 
   if (currentFilter === 'this_site' && currentDomain) {
-    historyList.innerHTML = `
+    historyList.innerHTML = DOMPurify.sanitize(`
       <div class="empty-history">
         <p style="margin-bottom: 6px; font-weight: 600;">No saved form data for ${escapeHtml(currentDomain)}</p>
         <p style="color: var(--lz-text-muted); margin-bottom: 12px;">Drafts are saved as you type on this site.</p>
         <button class="action-btn" id="view-all-sites-btn" style="padding: 6px 12px; font-size: 11px;">View All Sites</button>
       </div>
-    `;
+    `);
     const viewAllBtn = document.getElementById('view-all-sites-btn');
     if (viewAllBtn) {
       viewAllBtn.onclick = () => {
@@ -178,12 +179,12 @@ function renderEmpty() {
     return;
   }
 
-  historyList.innerHTML = `
+  historyList.innerHTML = DOMPurify.sanitize(`
     <div class="empty-history">
       <p style="margin-bottom: 6px; font-weight: 600;">No saved form data found</p>
       <p style="color: var(--lz-text-muted);">Visit any webpage and fill in forms to see Lazarus automatically preserve your drafts.</p>
     </div>
-  `;
+  `);
 }
 
 function renderHistory(items: any[]) {
@@ -232,7 +233,7 @@ function renderHistory(items: any[]) {
       ? `<div style="font-size: 10px; color: var(--lz-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 250px;" title="${escapeAttr(form.url)}">${escapeHtml(form.url)}</div>`
       : '';
 
-    itemEl.innerHTML = `
+    itemEl.innerHTML = DOMPurify.sanitize(`
       <div class="item-header">
         <div>
           <div style="display: flex; align-items: center; gap: 6px;">
@@ -251,7 +252,7 @@ function renderHistory(items: any[]) {
         <button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">Copy All</button>
         <button class="action-btn delete delete-form-btn" data-formid="${escapeAttr(form.id)}">Delete</button>
       </div>
-    `;
+    `);
 
     // Copy field click
     itemEl.querySelectorAll('.copy-field-btn').forEach((btn) => {

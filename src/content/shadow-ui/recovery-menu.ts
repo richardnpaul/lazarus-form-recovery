@@ -1,5 +1,6 @@
 import { formatTimeAgo, computeWordCount, sanitizePreview } from '../../common/utils/text';
 import { LivePreviewManager } from './live-preview';
+import DOMPurify from 'dompurify';
 import { RuntimeMessage } from '../../common/types/messages';
 
 export class RecoveryMenu {
@@ -82,7 +83,7 @@ export class RecoveryMenu {
   }
 
   private render() {
-    this.container.innerHTML = `
+    this.container.innerHTML = DOMPurify.sanitize(`
       <div class="lz-menu-header">
         <div class="lz-menu-title">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,13 +100,28 @@ export class RecoveryMenu {
         <!-- Rendered by renderList -->
       </ul>
       <div class="lz-menu-footer">
-        <button class="lz-restore-all-btn">Recover entire form</button>
-        <div class="lz-footer-links">
-          <button class="lz-icon-link lz-settings-btn" title="Extension Settings">⚙️</button>
-          <button class="lz-icon-link lz-disable-btn" title="Disable on this domain">🚫</button>
-        </div>
+        <button class="lz-footer-btn lz-restore-all-btn" title="Restore entire form">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+            <polyline points="16 6 12 2 8 6"></polyline>
+            <line x1="12" y1="2" x2="12" y2="15"></line>
+          </svg>
+          Form
+        </button>
+        <button class="lz-footer-btn lz-settings-btn" title="Lazarus settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+        <button class="lz-footer-btn lz-disable-btn" title="Disable on this site">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+          </svg>
+        </button>
       </div>
-    `;
+    `);
 
     // Bind Search
     const searchInput = this.container.querySelector('.lz-search-input') as HTMLInputElement;
@@ -156,12 +172,12 @@ export class RecoveryMenu {
     list.innerHTML = '';
 
     if (this.filteredItems.length === 0) {
-      list.innerHTML = `
+      list.innerHTML = DOMPurify.sanitize(`
         <div class="lz-empty-state">
-          No saved drafts matching this search.<br>
-          Drafts are automatically saved as you type!
+          <div style="font-weight: 500; margin-bottom: 4px;">No drafts found</div>
+          <div style="font-size: 11px; opacity: 0.8;">Try typing to save one</div>
         </div>
-      `;
+      `);
       return;
     }
 
@@ -174,13 +190,13 @@ export class RecoveryMenu {
       const wordCount = computeWordCount(item.value);
       const previewText = sanitizePreview(item.value, 70);
 
-      li.innerHTML = `
+      li.innerHTML = DOMPurify.sanitize(`
         <div class="lz-snippet-meta">
           <span>${formatTimeAgo(item.lastModified)}</span>
           <span class="lz-badge">${wordCount} words</span>
         </div>
         <p class="lz-snippet-preview">${escapeHtml(previewText || '(empty)')}</p>
-      `;
+      `);
 
       // Live Hover Preview
       li.addEventListener('mouseenter', () => {

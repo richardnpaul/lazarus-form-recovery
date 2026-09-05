@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { RuntimeResponse } from '../common/types/messages';
 import { ExtensionSettings, VaultStatus } from '../common/types/config';
 
@@ -269,19 +270,20 @@ btnSaveMasterPass.addEventListener('click', async () => {
 function renderDomainsTable(domains: string[]) {
   domainTableBody.innerHTML = '';
   if (domains.length === 0) {
-    domainTableBody.innerHTML =
-      '<tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>';
+    domainTableBody.innerHTML = DOMPurify.sanitize(
+      '<tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>'
+    );
     return;
   }
 
   domains.forEach((domain) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
+    tr.innerHTML = DOMPurify.sanitize(`
       <td style="font-family: var(--lz-font-mono); font-weight: 500;">${escapeHtml(domain)}</td>
       <td style="text-align: right;">
         <button class="btn btn-secondary unblock-btn" data-domain="${escapeAttr(domain)}" style="padding: 3px 8px; font-size: 11px;">Unblock</button>
       </td>
-    `;
+    `);
 
     tr.querySelector('.unblock-btn')?.addEventListener('click', async () => {
       await chrome.runtime.sendMessage({
