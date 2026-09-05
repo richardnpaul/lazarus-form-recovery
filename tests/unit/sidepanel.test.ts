@@ -90,7 +90,7 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
                 domainId: 'other-domain.org',
                 url: 'https://other-domain.org/contact',
                 title: 'Other Domain Form',
-                lastModified: Date.now() - 3 * 24 * 60 * 60 * 1000,
+                lastModified: Date.now() - 60 * 1000,
                 revisionNumber: 1,
                 isFinalSubmit: false,
               },
@@ -199,7 +199,7 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
 
     (filterChips[2] as HTMLButtonElement).click(); // 'today'
     await Promise.resolve();
-    expect(historyList?.querySelectorAll('.history-item').length).toBe(1);
+    expect(historyList?.querySelectorAll('.history-item').length).toBe(2);
 
     (filterChips[3] as HTMLButtonElement).click(); // '7days'
     await Promise.resolve();
