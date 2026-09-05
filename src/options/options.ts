@@ -1,4 +1,3 @@
-import DOMPurify from 'dompurify';
 import { RuntimeResponse } from '../common/types/messages';
 import { ExtensionSettings, VaultStatus } from '../common/types/config';
 
@@ -268,24 +267,38 @@ btnSaveMasterPass.addEventListener('click', async () => {
 
 // Disabled Domains Handlers
 function renderDomainsTable(domains: string[]) {
-  domainTableBody.innerHTML = '';
+  domainTableBody.replaceChildren();
   if (domains.length === 0) {
-    domainTableBody.innerHTML = DOMPurify.sanitize(
-      '<tr><td colspan="2" style="color: var(--lz-text-muted); text-align: center;">No disabled domains yet.</td></tr>'
-    );
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 2;
+    td.style.color = 'var(--lz-text-muted)';
+    td.style.textAlign = 'center';
+    td.textContent = 'No disabled domains yet.';
+    tr.appendChild(td);
+    domainTableBody.appendChild(tr);
     return;
   }
 
   domains.forEach((domain) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = DOMPurify.sanitize(`
-      <td style="font-family: var(--lz-font-mono); font-weight: 500;">${escapeHtml(domain)}</td>
-      <td style="text-align: right;">
-        <button class="btn btn-secondary unblock-btn" data-domain="${escapeAttr(domain)}" style="padding: 3px 8px; font-size: 11px;">Unblock</button>
-      </td>
-    `);
 
-    tr.querySelector('.unblock-btn')?.addEventListener('click', async () => {
+    const tdDomain = document.createElement('td');
+    tdDomain.style.fontFamily = 'var(--lz-font-mono)';
+    tdDomain.style.fontWeight = '500';
+    tdDomain.textContent = domain;
+
+    const tdAction = document.createElement('td');
+    tdAction.style.textAlign = 'right';
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary unblock-btn';
+    btn.dataset.domain = domain;
+    btn.style.padding = '3px 8px';
+    btn.style.fontSize = '11px';
+    btn.textContent = 'Unblock';
+
+    btn.addEventListener('click', async () => {
       await chrome.runtime.sendMessage({
         type: 'ENABLE_DOMAIN',
         payload: { domain },
@@ -293,6 +306,9 @@ function renderDomainsTable(domains: string[]) {
       await loadSettings();
     });
 
+    tdAction.appendChild(btn);
+    tr.appendChild(tdDomain);
+    tr.appendChild(tdAction);
     domainTableBody.appendChild(tr);
   });
 }
@@ -366,17 +382,5 @@ btnConfirmWipe.addEventListener('click', async () => {
     alert('All recorded history and drafts have been wiped.');
   }
 });
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function escapeAttr(str: string): string {
-  return str.replace(/"/g, '&quot;');
-}
 
 init();

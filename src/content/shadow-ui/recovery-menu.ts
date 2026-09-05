@@ -1,6 +1,6 @@
 import { formatTimeAgo, computeWordCount, sanitizePreview } from '../../common/utils/text';
 import { LivePreviewManager } from './live-preview';
-import DOMPurify from 'dompurify';
+import { safeSetHtml } from '../../common/utils/dom';
 import { RuntimeMessage } from '../../common/types/messages';
 
 export class RecoveryMenu {
@@ -83,7 +83,9 @@ export class RecoveryMenu {
   }
 
   private render() {
-    this.container.innerHTML = DOMPurify.sanitize(`
+    safeSetHtml(
+      this.container,
+      `
       <div class="lz-menu-header">
         <div class="lz-menu-title">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -121,7 +123,8 @@ export class RecoveryMenu {
           </svg>
         </button>
       </div>
-    `);
+    `
+    );
 
     // Bind Search
     const searchInput = this.container.querySelector('.lz-search-input') as HTMLInputElement;
@@ -169,15 +172,22 @@ export class RecoveryMenu {
     const list = this.container.querySelector('.lz-snippet-list') as HTMLUListElement;
     if (!list) return;
 
-    list.innerHTML = '';
+    list.replaceChildren();
 
     if (this.filteredItems.length === 0) {
-      list.innerHTML = DOMPurify.sanitize(`
-        <div class="lz-empty-state">
-          <div style="font-weight: 500; margin-bottom: 4px;">No drafts found</div>
-          <div style="font-size: 11px; opacity: 0.8;">Try typing to save one</div>
-        </div>
-      `);
+      const empty = document.createElement('div');
+      empty.className = 'lz-empty-state';
+      const line1 = document.createElement('div');
+      line1.style.fontWeight = '500';
+      line1.style.marginBottom = '4px';
+      line1.textContent = 'No drafts found';
+      const line2 = document.createElement('div');
+      line2.style.fontSize = '11px';
+      line2.style.opacity = '0.8';
+      line2.textContent = 'Try typing to save one';
+      empty.appendChild(line1);
+      empty.appendChild(line2);
+      list.appendChild(empty);
       return;
     }
 
@@ -190,13 +200,22 @@ export class RecoveryMenu {
       const wordCount = computeWordCount(item.value);
       const previewText = sanitizePreview(item.value, 70);
 
-      li.innerHTML = DOMPurify.sanitize(`
-        <div class="lz-snippet-meta">
-          <span>${formatTimeAgo(item.lastModified)}</span>
-          <span class="lz-badge">${wordCount} words</span>
-        </div>
-        <p class="lz-snippet-preview">${escapeHtml(previewText || '(empty)')}</p>
-      `);
+      const meta = document.createElement('div');
+      meta.className = 'lz-snippet-meta';
+      const timeSpan = document.createElement('span');
+      timeSpan.textContent = formatTimeAgo(item.lastModified);
+      const badge = document.createElement('span');
+      badge.className = 'lz-badge';
+      badge.textContent = `${wordCount} words`;
+      meta.appendChild(timeSpan);
+      meta.appendChild(badge);
+
+      const preview = document.createElement('p');
+      preview.className = 'lz-snippet-preview';
+      preview.textContent = previewText || '(empty)';
+
+      li.appendChild(meta);
+      li.appendChild(preview);
 
       // Live Hover Preview
       li.addEventListener('mouseenter', () => {
@@ -273,12 +292,4 @@ export class RecoveryMenu {
       }
     }
   }
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }

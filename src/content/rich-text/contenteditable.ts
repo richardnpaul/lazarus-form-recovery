@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import { safeSetHtml } from '../../common/utils/dom';
 import { RichTextAdapter } from './adapter';
 
 export class ContentEditableAdapter implements RichTextAdapter {
@@ -33,7 +33,7 @@ export class ContentEditableAdapter implements RichTextAdapter {
   public setValue(element: HTMLElement, value: string): void {
     const root = this.getRootElement(element);
     if (value.includes('<') && value.includes('>')) {
-      root.innerHTML = DOMPurify.sanitize(value);
+      safeSetHtml(root, value);
     } else {
       root.textContent = value;
     }

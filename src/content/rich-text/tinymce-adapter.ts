@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import { safeSetHtml } from '../../common/utils/dom';
 import { RichTextAdapter } from './adapter';
 
 export class TinyMceAdapter implements RichTextAdapter {
@@ -19,7 +19,7 @@ export class TinyMceAdapter implements RichTextAdapter {
   }
 
   public setValue(element: HTMLElement, value: string): void {
-    element.innerHTML = DOMPurify.sanitize(value);
+    safeSetHtml(element, value);
   }
 
   public getName(element: HTMLElement): string {
