@@ -78,4 +78,4 @@ jobs:
 
       - name: Run Full Mutation Tests
         # Run full mutation testing on main branch or on pull requests
-        run: npm run test:mutation
+        run: npm run test:mutation:ci

@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
+    "test:mutation:ci": "stryker run --concurrency 2",
     "test:mutation:smoke": "node scripts/verify-mutation-efficacy.mjs",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"src/**/*.{ts,css,html}\" \"tests/**/*.ts\"",
