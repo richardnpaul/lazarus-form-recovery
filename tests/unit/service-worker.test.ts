@@ -1,5 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { onRuntimeMessage, setupSidePanelBehavior } from '../../src/background/service-worker';
+import {
+  onRuntimeMessage,
+  setupSidePanelBehavior,
+  injectContentScriptIntoOpenTabs,
+} from '../../src/background/service-worker';
 import { sessionStorageManager } from '../../src/background/storage-manager';
 
 describe('Background Service Worker (src/background/service-worker.ts)', () => {
@@ -164,5 +168,47 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
     expect(panicRes?.success).toBe(false);
     expect(panicRes?.error).toBe('RouterPanic');
     routerSpy.mockRestore();
+  });
+
+  it('injects content scripts into open tabs upon extension initialization', async () => {
+    // 1. Successful injection into tabs
+    (chrome.tabs.query as any).mockResolvedValueOnce([
+      { id: 101, url: 'https://example.com' },
+      { id: 102, url: 'http://example.org' },
+      { id: undefined, url: 'https://no-id.com' },
+    ]);
+    (chrome.scripting.executeScript as any).mockResolvedValue([]);
+
+    await injectContentScriptIntoOpenTabs();
+
+    expect(chrome.scripting.executeScript).toHaveBeenCalledWith({
+      target: { tabId: 101, allFrames: true },
+      files: ['src/content/content-script.iife.js'],
+    });
+    expect(chrome.scripting.executeScript).toHaveBeenCalledWith({
+      target: { tabId: 102, allFrames: true },
+      files: ['src/content/content-script.iife.js'],
+    });
+
+    // 2. Tab rejection is caught cleanly
+    (chrome.tabs.query as any).mockResolvedValueOnce([{ id: 103, url: 'https://rejected.com' }]);
+    (chrome.scripting.executeScript as any).mockRejectedValueOnce(new Error('CannotAccessTab'));
+    await expect(injectContentScriptIntoOpenTabs()).resolves.not.toThrow();
+
+    // 3. Query error is logged and caught
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    (chrome.tabs.query as any).mockRejectedValueOnce(new Error('QueryFailed'));
+    await injectContentScriptIntoOpenTabs();
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[Lazarus] Content script injection failed:',
+      expect.any(Error)
+    );
+    warnSpy.mockRestore();
+
+    // 4. Missing chrome.scripting returns early
+    const origScripting = chrome.scripting;
+    delete (chrome as any).scripting;
+    await expect(injectContentScriptIntoOpenTabs()).resolves.not.toThrow();
+    (chrome as any).scripting = origScripting;
   });
 });

@@ -454,5 +454,41 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       // 9. Fast forward timers to trigger flashConfirmation setTimeout
       vi.advanceTimersByTime(300);
     });
+
+    it('handles RESTORE_LAST_FORM message by querying latest domain form', async () => {
+      const form = document.createElement('form');
+      const input = document.createElement('input');
+      input.name = 'email_addr';
+      form.appendChild(input);
+      root.appendChild(form);
+
+      (chrome.runtime.sendMessage as any)
+        .mockResolvedValueOnce({
+          success: true,
+          data: [{ form: { id: 'domain_latest_1' } }],
+        })
+        .mockResolvedValueOnce({
+          success: true,
+          data: {
+            form: { id: 'domain_latest_1' },
+            fields: [{ name: 'email_addr', value: 'restored@example.com' }],
+          },
+        });
+
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_LAST_FORM',
+      });
+
+      expect(input.value).toBe('restored@example.com');
+
+      // Error branch handled gracefully
+      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('RestoreLastFailed'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_LAST_FORM',
+      });
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to restore last form:', expect.any(Error));
+      consoleSpy.mockRestore();
+    });
   });
 });

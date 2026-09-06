@@ -29,6 +29,7 @@ export default defineConfig({
   plugins: [crx({ manifest }), firefoxManifestCompat()],
   build: {
     target: 'esnext',
+    modulePreload: false,
     rollupOptions: {
       input: {
         sidepanel: path.resolve('src/sidepanel/sidepanel.html'),

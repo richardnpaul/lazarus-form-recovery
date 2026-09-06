@@ -58,8 +58,8 @@ export default defineManifest({
     },
   },
   permissions: isFirefox
-    ? ['storage', 'alarms', 'contextMenus', 'tabs']
-    : ['storage', 'alarms', 'contextMenus', 'sidePanel', 'tabs'],
+    ? ['storage', 'alarms', 'contextMenus', 'tabs', 'scripting']
+    : ['storage', 'alarms', 'contextMenus', 'sidePanel', 'tabs', 'scripting'],
   host_permissions: ['<all_urls>'],
   content_scripts: [
     {

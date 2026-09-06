@@ -1,0 +1,97 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+
+/**
+ * Master 128px SVG specification for Lazarus Form Recovery
+ * - 128x128 base canvas
+ * - Black background container with smooth rounded corners
+ * - Inlaid rounded square outline (inlaid 4.5px from 128px limits)
+ * - Centered Egyptian Ankh with 10px breathing room (within 8-13px specification)
+ *   from the outline at top and bottom
+ * - Rich Egyptian gold gradient shared across both outline and Ankh
+ */
+export const masterSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Royal Gold Linear Gradient -->
+    <linearGradient id="ankhGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF97A" />
+      <stop offset="25%" stop-color="#FFDF3D" />
+      <stop offset="65%" stop-color="#FFBF22" />
+      <stop offset="100%" stop-color="#F0A500" />
+    </linearGradient>
+  </defs>
+
+  <!-- Black background container with concentric corner radius (rx=24) -->
+  <rect width="128" height="128" rx="24" fill="#000000" />
+
+  <!-- Inlaid rounded square outline:
+       Inlaid 4.5px from the 128px limits on all 4 sides.
+       Stroke width: 3.5px, center at (6.25, 6.25), outer edge at 4.5px, inner edge at 8.0px.
+       Concentric corner radius: rx=19.5 -->
+  <rect x="6.25" y="6.25" width="115.5" height="115.5" rx="19.5" fill="none" stroke="url(#ankhGold)" stroke-width="3.5" />
+
+  <!-- Centered Egyptian Ankh Symbol:
+       Top at y=18.0 (10.0px gap from top inner outline at y=8.0)
+       Bottom at y=110.0 (10.0px gap from bottom inner outline at y=120.0)
+       Total height = 92px, perfectly centered horizontally at x=64 -->
+  <path fill="url(#ankhGold)" fill-rule="evenodd" d="
+    M 64,18
+    C 75.8,18 84.5,26.8 84.5,38.0
+    C 84.5,46.5 79.5,53.5 72.5,57.2
+    L 93.5,57.2
+    C 94.6,57.2 95.5,58.1 95.5,59.2
+    L 95.5,65.8
+    C 95.5,66.9 94.6,67.8 93.5,67.8
+    L 70.5,67.8
+    L 74.5,109.0
+    C 74.5,109.6 74.0,110.0 73.4,110.0
+    L 54.6,110.0
+    C 54.0,110.0 53.5,109.6 53.5,109.0
+    L 57.5,67.8
+    L 34.5,67.8
+    C 33.4,67.8 32.5,66.9 32.5,65.8
+    L 32.5,59.2
+    C 32.5,58.1 33.4,57.2 34.5,57.2
+    L 55.5,57.2
+    C 48.5,53.5 43.5,46.5 43.5,38.0
+    C 43.5,26.8 52.2,18 64,18 Z
+
+    M 64,26.5
+    C 57.8,26.5 53.2,31.2 53.2,37.8
+    C 53.2,44.2 57.5,49.5 62.2,52.4
+    C 63.3,53.1 64.7,53.1 65.8,52.4
+    C 70.5,49.5 74.8,44.2 74.8,37.8
+    C 74.8,31.2 70.2,26.5 64,26.5 Z
+  " />
+</svg>`;
+
+const SIZES = [16, 32, 48, 64, 128];
+const TARGET_DIRS = ['icons', 'public/icons'];
+
+export function generateIconPack() {
+  const rootDir = process.cwd();
+  const tempSvgPath = path.join(rootDir, 'icons', 'icon-128.svg');
+
+  for (const dir of TARGET_DIRS) {
+    const fullDir = path.join(rootDir, dir);
+    if (!fs.existsSync(fullDir)) {
+      fs.mkdirSync(fullDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(fullDir, 'icon-128.svg'), masterSvg, 'utf-8');
+  }
+
+  for (const size of SIZES) {
+    for (const dir of TARGET_DIRS) {
+      const outPath = path.join(rootDir, dir, `icon-${size}.png`);
+      execSync(`rsvg-convert -w ${size} -h ${size} "${tempSvgPath}" -o "${outPath}"`);
+      console.log(`Generated: ${path.relative(rootDir, outPath)} (${size}x${size})`);
+    }
+  }
+
+  console.log('Icon pack generation complete!');
+}
+
+if (process.argv[1]?.endsWith('generate-icons.mjs')) {
+  generateIconPack();
+}
