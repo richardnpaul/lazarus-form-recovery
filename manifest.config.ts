@@ -1,5 +1,5 @@
 import { defineManifest } from '@crxjs/vite-plugin';
-import pkg from './package.json';
+import pkg from './package.json' with { type: 'json' };
 
 const isFirefox = process.env.BROWSER !== 'chrome';
 
@@ -51,7 +51,7 @@ export default defineManifest({
   browser_specific_settings: {
     gecko: {
       id: 'lazarus-form-recovery@personal-code',
-      strict_min_version: '115.0',
+      strict_min_version: '142.0',
       data_collection_permissions: {
         required: ['none'],
       },

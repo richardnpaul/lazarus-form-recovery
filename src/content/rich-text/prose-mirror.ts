@@ -1,3 +1,4 @@
+import { safeSetHtml } from '../../common/utils/dom';
 import { RichTextAdapter } from './adapter';
 
 export class ProseMirrorAdapter implements RichTextAdapter {
@@ -24,7 +25,7 @@ export class ProseMirrorAdapter implements RichTextAdapter {
       ? element
       : (element.closest('.ProseMirror') as HTMLElement) || element;
     if (value.includes('<') && value.includes('>')) {
-      editor.innerHTML = value;
+      safeSetHtml(editor, value);
     } else {
       editor.textContent = value;
     }

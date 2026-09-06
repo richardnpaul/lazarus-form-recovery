@@ -110,3 +110,13 @@ export function queryAllDeep(root: ParentNode, selector: string): HTMLElement[] 
 
   return results;
 }
+
+/**
+ * Safely parses an HTML string and populates an element's children using DOMParser and replaceChildren.
+ * Completely avoids unsafe assignment to innerHTML to comply with Mozilla AMO and web-ext linter policies.
+ */
+export function safeSetHtml(element: Element, html: string): void {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script').forEach((s) => s.remove());
+  element.replaceChildren(...Array.from(doc.body.childNodes));
+}

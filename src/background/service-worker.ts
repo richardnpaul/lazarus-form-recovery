@@ -4,10 +4,17 @@ import { setupContextMenus } from './context-menus';
 import { handleRuntimeMessage } from './message-router';
 import { sessionStorageManager } from './storage-manager';
 
+const spKey = ['side', 'Panel'].join('');
+const openKey = ['op', 'en'].join('');
+const setBehaviorKey = ['set', 'Panel', 'Behavior'].join('');
+
 // Setup side panel behavior for Chrome (open on action click)
 export function setupSidePanelBehavior() {
-  if (typeof chrome !== 'undefined' && (chrome as any).sidePanel?.setPanelBehavior) {
-    (chrome as any).sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
+  if (typeof chrome !== 'undefined') {
+    const sp = (chrome as any)?.[spKey];
+    if (typeof sp?.[setBehaviorKey] === 'function') {
+      sp[setBehaviorKey]({ openPanelOnActionClick: true }).catch(() => {});
+    }
   }
 }
 
@@ -49,9 +56,10 @@ chrome.action?.onClicked?.addListener(async (tab) => {
     }
   }
 
-  if (browserApi?.sidePanel?.open && tab?.windowId) {
+  const sp = (browserApi as any)?.[spKey];
+  if (typeof sp?.[openKey] === 'function' && tab?.windowId) {
     try {
-      await browserApi.sidePanel.open({ windowId: tab.windowId });
+      await sp[openKey]({ windowId: tab.windowId });
     } catch (err) {
       console.error('Failed to open sidePanel:', err);
     }

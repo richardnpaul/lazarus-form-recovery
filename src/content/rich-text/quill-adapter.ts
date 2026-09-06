@@ -1,3 +1,4 @@
+import { safeSetHtml } from '../../common/utils/dom';
 import { RichTextAdapter } from './adapter';
 
 export class QuillAdapter implements RichTextAdapter {
@@ -18,7 +19,7 @@ export class QuillAdapter implements RichTextAdapter {
     const editor = element.classList.contains('ql-editor')
       ? element
       : (element.querySelector('.ql-editor') as HTMLElement) || element;
-    editor.innerHTML = value;
+    safeSetHtml(editor, value);
   }
 
   public getName(element: HTMLElement): string {

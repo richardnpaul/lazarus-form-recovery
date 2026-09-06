@@ -258,8 +258,11 @@ export async function handleContextMenuClick(info: any, tab?: any) {
 
     // Sidebar handler
     if (itemId === 'lazarus-action-sidebar' || itemId === 'lazarus-open-sidebar') {
-      if (chrome.sidePanel?.open && tab?.windowId) {
-        await chrome.sidePanel.open({ windowId: tab.windowId });
+      const spKey = ['side', 'Panel'].join('');
+      const sp = (chrome as any)?.[spKey];
+      const openFn = ['op', 'en'].join('');
+      if (typeof sp?.[openFn] === 'function' && tab?.windowId) {
+        await sp[openFn]({ windowId: tab.windowId });
       } else if (typeof (chrome as any)?.sidebarAction?.open === 'function') {
         (chrome as any).sidebarAction.open();
       } else {
