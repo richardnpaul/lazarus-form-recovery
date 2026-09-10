@@ -2,6 +2,28 @@ import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { container } from '../core/container';
 import { updateDynamicContextMenus } from './context-menus';
 import { repository } from '../common/db/repository';
+import { FormRevisionPolicy } from '../core/domain/form-revision';
+
+/**
+ * Extracts and normalizes the sender's hostname if the message originated from a web tab.
+ * Returns null if the sender is not a web tab (e.g. extension internal pages like sidepanel,
+ * options page, background worker, or test mocks without tab information).
+ */
+export function getSenderDomain(sender?: chrome.runtime.MessageSender): string | null {
+  if (!sender) return null;
+  const urlStr = sender.tab?.url || sender.url;
+  if (!urlStr) return null;
+  try {
+    const parsed = new URL(urlStr);
+    // Only enforce for HTTP / HTTPS web content tabs
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return null;
+    }
+    return FormRevisionPolicy.normalizeDomain(parsed.hostname);
+  } catch {
+    return null;
+  }
+}
 
 export async function handleRuntimeMessage(
   message: RuntimeMessage,
@@ -15,6 +37,13 @@ export async function handleRuntimeMessage(
 
       case 'SAVE_AUTOSAVE': {
         const { form } = message.payload;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(form.domain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in SAVE_AUTOSAVE: payload domain "${form.domain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          form.domain = senderDomain;
+        }
         const result = await container.saveFormDraftUseCase.execute(form, sender.tab?.id, false);
         if (!result.success) {
           return { success: false, error: result.error || 'Domain is disabled' };
@@ -24,6 +53,13 @@ export async function handleRuntimeMessage(
 
       case 'SUBMIT_FORM': {
         const { form } = message.payload;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(form.domain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in SUBMIT_FORM: payload domain "${form.domain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          form.domain = senderDomain;
+        }
         const result = await container.submitFormUseCase.execute(form, sender.tab?.id);
         if (!result.success) {
           return { success: false, error: result.error || 'Domain is disabled' };
@@ -33,6 +69,13 @@ export async function handleRuntimeMessage(
 
       case 'FORCE_SAVE_SNAPSHOT': {
         const { form } = message.payload;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(form.domain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in FORCE_SAVE_SNAPSHOT: payload domain "${form.domain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          form.domain = senderDomain;
+        }
         const result = await container.saveFormDraftUseCase.execute(form, sender.tab?.id, true);
         if (!result.success) {
           return { success: false, error: result.error || 'Domain is disabled' };
@@ -42,14 +85,30 @@ export async function handleRuntimeMessage(
 
       case 'UPDATE_CONTEXT_MENU': {
         const { domain, formInstanceId, fieldName, fieldType } = message.payload;
-        await updateDynamicContextMenus(domain, formInstanceId, fieldName, fieldType);
+        let effectiveDomain = domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(domain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in UPDATE_CONTEXT_MENU: payload domain "${domain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
+        await updateDynamicContextMenus(effectiveDomain, formInstanceId, fieldName, fieldType);
         return { success: true };
       }
 
       case 'GET_RECOVERABLE_TEXT': {
         const { domain, fieldName, fieldType } = message.payload;
+        let effectiveDomain = domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(domain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in GET_RECOVERABLE_TEXT: payload domain "${domain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
         const items = await container.restoreFormUseCase.getRecoverableText(
-          domain,
+          effectiveDomain,
           fieldName,
           fieldType
         );
@@ -100,13 +159,29 @@ export async function handleRuntimeMessage(
       }
 
       case 'IS_DOMAIN_ENABLED': {
-        const enabled = await container.domainPolicyUseCase.isDomainEnabled(message.payload.domain);
+        let effectiveDomain = message.payload.domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(effectiveDomain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in IS_DOMAIN_ENABLED: payload domain "${effectiveDomain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
+        const enabled = await container.domainPolicyUseCase.isDomainEnabled(effectiveDomain);
         return { success: true, data: { enabled } };
       }
 
       case 'DISABLE_DOMAIN': {
+        let effectiveDomain = message.payload.domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(effectiveDomain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in DISABLE_DOMAIN: payload domain "${effectiveDomain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
         await container.domainPolicyUseCase.setDomainEnabled(
-          message.payload.domain,
+          effectiveDomain,
           false,
           message.payload.wipeExisting
         );
@@ -114,7 +189,15 @@ export async function handleRuntimeMessage(
       }
 
       case 'ENABLE_DOMAIN': {
-        await container.domainPolicyUseCase.setDomainEnabled(message.payload.domain, true);
+        let effectiveDomain = message.payload.domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(effectiveDomain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in ENABLE_DOMAIN: payload domain "${effectiveDomain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
+        await container.domainPolicyUseCase.setDomainEnabled(effectiveDomain, true);
         return { success: true };
       }
 
@@ -132,16 +215,32 @@ export async function handleRuntimeMessage(
       }
 
       case 'GET_DOMAIN_HISTORY': {
+        let effectiveDomain = message.payload.domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(effectiveDomain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in GET_DOMAIN_HISTORY: payload domain "${effectiveDomain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
         const items = await container.historyQueryUseCase.getDomainHistory(
-          message.payload.domain,
+          effectiveDomain,
           message.payload.limit
         );
         return { success: true, data: items };
       }
 
       case 'GET_FORM_REVISIONS': {
+        let effectiveDomain = message.payload.domain;
+        const senderDomain = getSenderDomain(sender);
+        if (senderDomain && FormRevisionPolicy.normalizeDomain(effectiveDomain) !== senderDomain) {
+          console.warn(
+            `[MessageRouter] Domain mismatch in GET_FORM_REVISIONS: payload domain "${effectiveDomain}" does not match sender tab domain "${senderDomain}". Overriding with sender domain.`
+          );
+          effectiveDomain = senderDomain;
+        }
         const items = await container.historyQueryUseCase.getFormRevisions(
-          message.payload.domain,
+          effectiveDomain,
           message.payload.formInstanceId
         );
         return { success: true, data: items };

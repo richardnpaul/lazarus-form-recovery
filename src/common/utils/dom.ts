@@ -112,11 +112,123 @@ export function queryAllDeep(root: ParentNode, selector: string): HTMLElement[] 
 }
 
 /**
+ * Blocklist of executable or high-risk tags that should never be injected into the DOM.
+ */
+const BLOCKED_TAGS = new Set([
+  'script',
+  'iframe',
+  'frame',
+  'frameset',
+  'object',
+  'embed',
+  'applet',
+  'base',
+  'meta',
+  'link',
+  'style',
+  'template',
+  'form',
+  'foreignobject',
+  'use',
+  'animate',
+  'set',
+  'animatemotion',
+  'animatetransform',
+  'discard',
+  'annotation-xml',
+]);
+
+/**
  * Safely parses an HTML string and populates an element's children using DOMParser and replaceChildren.
  * Completely avoids unsafe assignment to innerHTML to comply with Mozilla AMO and web-ext linter policies.
+ * Sanitizes against script execution, event handlers (on*), and dangerous URI schemes.
  */
 export function safeSetHtml(element: Element, html: string): void {
+  if (!element) return;
+  if (!html || typeof html !== 'string') {
+    element.replaceChildren();
+    return;
+  }
+
   const doc = new DOMParser().parseFromString(html, 'text/html');
-  doc.querySelectorAll('script').forEach((s) => s.remove());
+
+  // 1. Remove dangerous/executable tags across HTML, SVG, and MathML namespaces
+  const allElements = Array.from(doc.body.querySelectorAll('*'));
+  for (const el of allElements) {
+    if (!el.isConnected) continue;
+
+    const localName = (el.localName || el.tagName).toLowerCase();
+    if (BLOCKED_TAGS.has(localName)) {
+      el.remove();
+      continue;
+    }
+
+    // 2. Sanitize attributes across all remaining elements
+    const attrs = Array.from(el.attributes);
+    for (const attr of attrs) {
+      const name = attr.name.toLowerCase();
+
+      // Strip all on* event handler attributes (e.g. onerror, onload, onclick)
+      if (name.startsWith('on')) {
+        el.removeAttribute(attr.name);
+        continue;
+      }
+
+      // Strip srcdoc
+      if (name === 'srcdoc') {
+        el.removeAttribute(attr.name);
+        continue;
+      }
+
+      // Strip dangerous URL schemes from navigation/source/action attributes
+      if (
+        name === 'href' ||
+        name === 'src' ||
+        name === 'action' ||
+        name === 'formaction' ||
+        name === 'poster' ||
+        name === 'background' ||
+        name === 'xlink:href'
+      ) {
+        // Strip control characters, whitespace, and backslashes
+        const normalized = attr.value.replace(/[\x00-\x20\s\\]+/g, '').toLowerCase();
+
+        if (normalized.startsWith('javascript:') || normalized.startsWith('vbscript:')) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+
+        if (name === 'src') {
+          if (normalized.startsWith('data:')) {
+            // Only allow safe raster image data URLs (png, jpeg, jpg, webp, gif)
+            const isSafeImageData = /^data:image\/(png|jpeg|jpg|webp|gif);base64,/i.test(
+              normalized
+            );
+            if (!isSafeImageData) {
+              el.removeAttribute(attr.name);
+              continue;
+            }
+          }
+        } else if (normalized.startsWith('data:')) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+      }
+
+      // Strip dangerous CSS expressions in style attributes
+      if (name === 'style') {
+        const normalized = attr.value.replace(/[\x00-\x20\s\\]+/g, '').toLowerCase();
+        if (
+          normalized.includes('javascript:') ||
+          normalized.includes('expression(') ||
+          normalized.includes('behavior:')
+        ) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+      }
+    }
+  }
+
   element.replaceChildren(...Array.from(doc.body.childNodes));
 }
