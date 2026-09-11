@@ -1,6 +1,6 @@
 ---
 name: browser-extension-builder
-description: "Expert in building browser extensions that solve real problems - Chrome, Firefox, and cross-browser extensions. Covers extension architecture, manifest v3, content scripts, popup UIs, monetization strategies, and Chrome Web Store publishing. Use when: browser extension, chrome extension, firefox addon, extension, manifest v3."
+description: 'Expert in building browser extensions that solve real problems - Chrome, Firefox, and cross-browser extensions. Covers extension architecture, manifest v3, content scripts, popup UIs, monetization strategies, and Chrome Web Store publishing. Use when: browser extension, chrome extension, firefox addon, extension, manifest v3.'
 source: vibeship-spawner-skills (Apache 2.0)
 ---
 
@@ -37,24 +37,26 @@ Structure for modern browser extensions
 
 ### Project Structure
 ```
+
 extension/
-├── manifest.json      # Extension config
+├── manifest.json # Extension config
 ├── popup/
-│   ├── popup.html     # Popup UI
-│   ├── popup.css
-│   └── popup.js
+│ ├── popup.html # Popup UI
+│ ├── popup.css
+│ └── popup.js
 ├── content/
-│   └── content.js     # Runs on web pages
+│ └── content.js # Runs on web pages
 ├── background/
-│   └── service-worker.js  # Background logic
+│ └── service-worker.js # Background logic
 ├── options/
-│   ├── options.html   # Settings page
-│   └── options.js
+│ ├── options.html # Settings page
+│ └── options.js
 └── icons/
-    ├── icon16.png
-    ├── icon48.png
-    └── icon128.png
-```
+├── icon16.png
+├── icon48.png
+└── icon128.png
+
+````
 
 ### Manifest V3 Template
 ```json
@@ -81,15 +83,17 @@ extension/
   },
   "options_page": "options/options.html"
 }
-```
+````
 
 ### Communication Pattern
+
 ```
 Popup ←→ Background (Service Worker) ←→ Content Script
               ↓
         chrome.storage
 ```
-```
+
+````
 
 ### Content Scripts
 
@@ -121,9 +125,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   return true; // Keep channel open for async
 });
-```
+````
 
 ### Injecting UI
+
 ```javascript
 // Create floating UI on page
 function injectUI() {
@@ -148,16 +153,20 @@ injectUI();
 ```
 
 ### Permissions for Content Scripts
+
 ```json
 {
-  "content_scripts": [{
-    "matches": ["https://specific-site.com/*"],
-    "js": ["content.js"],
-    "run_at": "document_end"
-  }]
+  "content_scripts": [
+    {
+      "matches": ["https://specific-site.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ]
 }
 ```
-```
+
+````
 
 ### Storage and State
 
@@ -189,15 +198,17 @@ chrome.storage.onChanged.addListener((changes, area) => {
     console.log('key changed:', changes.key.newValue);
   }
 });
-```
+````
 
 ### Storage Limits
-| Type | Limit |
-|------|-------|
-| local | 5MB |
-| sync | 100KB total, 8KB per item |
+
+| Type  | Limit                     |
+| ----- | ------------------------- |
+| local | 5MB                       |
+| sync  | 100KB total, 8KB per item |
 
 ### Async/Await Pattern
+
 ```javascript
 // Modern async wrapper
 async function getStorage(keys) {
@@ -216,6 +227,7 @@ async function setStorage(data) {
 const { settings } = await getStorage(['settings']);
 await setStorage({ settings: { ...settings, theme: 'dark' } });
 ```
+
 ```
 
 ## Anti-Patterns
@@ -259,3 +271,4 @@ Update quickly when broken.
 ## Related Skills
 
 Works well with: `frontend`, `micro-saas-launcher`, `personal-tool-builder`
+```
