@@ -1,7 +1,12 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "packageManager": "npm",
-  "reporters": ["html", "clear-text", "progress"],
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": 58
+  },
   "testRunner": "vitest",
   "checkers": ["typescript"],
   "coverageAnalysis": "off",
