@@ -3,9 +3,10 @@ import themeCss from '../../common/styles/theme.css?inline';
 import { RecoveryButton } from './recovery-button';
 import { RecoveryMenu } from './recovery-menu';
 import { LivePreviewManager } from './live-preview';
-import { RuntimeMessage, RuntimeResponse } from '../../common/types/messages';
+import { RuntimeMessage } from '../../common/types/messages';
 import { findRichTextAdapter } from '../rich-text';
 import { escapeCss } from '../../common/utils/dom';
+import { isExtensionContextValid, safeSendMessage } from '../../common/utils/runtime';
 
 export class LazarusRecoveryHost extends HTMLElement {
   private shadow: ShadowRoot;
@@ -88,7 +89,7 @@ export class LazarusRecoveryHost extends HTMLElement {
 
     let items: any[] = [];
     try {
-      const res: RuntimeResponse = await chrome.runtime.sendMessage(msg);
+      const res: any = await safeSendMessage(msg);
       if (res?.success && Array.isArray(res.data)) {
         items = res.data;
       }
@@ -114,7 +115,7 @@ export class LazarusRecoveryHost extends HTMLElement {
     };
 
     try {
-      const res: RuntimeResponse = await chrome.runtime.sendMessage(msg);
+      const res: any = await safeSendMessage(msg);
       if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
         const latestForm = res.data[0];
         const fields = Array.isArray(latestForm.fields) ? latestForm.fields : [];
@@ -143,16 +144,47 @@ export class LazarusRecoveryHost extends HTMLElement {
   }
 }
 
-if (!customElements.get('lazarus-recovery-host')) {
-  customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
+if (
+  typeof window !== 'undefined' &&
+  typeof customElements !== 'undefined' &&
+  customElements !== null &&
+  typeof customElements.get === 'function' &&
+  !customElements.get('lazarus-recovery-host')
+) {
+  try {
+    customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
+  } catch {
+    // Already defined or restricted environment
+  }
 }
 
-export function attachRecoveryUI(target: HTMLElement): LazarusRecoveryHost {
-  let host = document.querySelector('lazarus-recovery-host') as LazarusRecoveryHost;
-  if (!host) {
-    host = document.createElement('lazarus-recovery-host') as LazarusRecoveryHost;
-    document.documentElement.appendChild(host);
+export function attachRecoveryUI(target: HTMLElement): LazarusRecoveryHost | null {
+  if (
+    !isExtensionContextValid() ||
+    typeof document === 'undefined' ||
+    !document.documentElement ||
+    typeof customElements === 'undefined' ||
+    customElements === null ||
+    typeof customElements.get !== 'function'
+  ) {
+    return null;
   }
-  host.positionNear(target);
-  return host;
+  try {
+    let host = document.querySelector('lazarus-recovery-host') as LazarusRecoveryHost;
+    if (!host) {
+      if (
+        typeof customElements.define === 'function' &&
+        !customElements.get('lazarus-recovery-host')
+      ) {
+        customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
+      }
+      host = document.createElement('lazarus-recovery-host') as LazarusRecoveryHost;
+      document.documentElement.appendChild(host);
+    }
+    host.positionNear(target);
+    return host;
+  } catch (err) {
+    console.warn('Failed to attach recovery UI:', err);
+    return null;
+  }
 }

@@ -53,6 +53,7 @@ globalThis.chrome = {
     },
   },
   runtime: {
+    id: 'mock-extension-id',
     sendMessage: vi.fn((message: any) => {
       return new Promise((resolve) => {
         let responded = false;
@@ -182,6 +183,9 @@ globalThis.chrome = {
         actionClickedListeners.push(fn);
       }),
     },
+  },
+  scripting: {
+    executeScript: vi.fn(async () => []),
   },
   sidePanel: {
     open: vi.fn(async () => {}),

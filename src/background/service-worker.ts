@@ -18,6 +18,28 @@ export function setupSidePanelBehavior() {
   }
 }
 
+// Programmatically inject content scripts into open tabs upon extension load/reload
+export async function injectContentScriptIntoOpenTabs() {
+  if (typeof chrome === 'undefined' || !chrome.scripting || !chrome.tabs) return;
+  try {
+    const tabs = await chrome.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] });
+    for (const tab of tabs) {
+      if (tab.id) {
+        chrome.scripting
+          .executeScript({
+            target: { tabId: tab.id, allFrames: true },
+            files: ['src/content/content-script.iife.js'],
+          })
+          .catch(() => {
+            // Tab cannot be scripted (e.g. chrome webstore or restricted origin)
+          });
+      }
+    }
+  } catch (err) {
+    console.warn('[Lazarus] Content script injection failed:', err);
+  }
+}
+
 // Initialize alarms, context menus, and side panel behavior
 setupAlarms();
 setupContextMenus();
@@ -27,12 +49,14 @@ chrome.runtime.onInstalled.addListener(() => {
   setupAlarms();
   setupContextMenus();
   setupSidePanelBehavior();
+  injectContentScriptIntoOpenTabs();
 });
 
 chrome.runtime.onStartup?.addListener(() => {
   setupAlarms();
   setupContextMenus();
   setupSidePanelBehavior();
+  injectContentScriptIntoOpenTabs();
 });
 
 // Toolbar action click listener (Firefox sidebar toggle & Chrome fallback)
@@ -89,7 +113,11 @@ chrome.tabs?.onRemoved?.addListener((tabId) => {
 chrome.commands?.onCommand?.addListener(async (command) => {
   if (command === 'recover_last_form') {
     try {
-      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      let tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      if (!tabs || tabs.length === 0) {
+        tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      }
+      const activeTab = tabs?.[0];
       if (activeTab?.id) {
         // Broadcast to content script
         chrome.tabs.sendMessage(activeTab.id, { action: 'RESTORE_LAST_FORM' }).catch(() => {});

@@ -1,7 +1,23 @@
 import { FormTracker } from './form-tracker';
+import { isExtensionContextValid } from '../common/utils/runtime';
 
-// Initialize the form tracking engine
-const tracker = new FormTracker();
-tracker.start();
+function initContentScript() {
+  if (!isExtensionContextValid()) {
+    return;
+  }
 
-console.log('Lazarus Form Recovery: Content script loaded and tracking forms.');
+  // Stop any previous tracker instance (e.g. before extension reload or re-injection)
+  const existingTracker = (window as any).__LAZARUS_TRACKER__;
+  if (existingTracker && typeof existingTracker.stop === 'function') {
+    try {
+      existingTracker.stop();
+    } catch {}
+  }
+
+  const tracker = new FormTracker();
+  tracker.start();
+  (window as any).__LAZARUS_TRACKER__ = tracker;
+  console.log('Lazarus Form Recovery: Content script loaded and tracking forms.');
+}
+
+initContentScript();

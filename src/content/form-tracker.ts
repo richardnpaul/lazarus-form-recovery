@@ -3,6 +3,7 @@ import { attachRecoveryUI } from './shadow-ui/shadow-host';
 import { FieldExtractor } from './field-extractor';
 import { findRichTextAdapter } from './rich-text';
 import { escapeCss } from '../common/utils/dom';
+import { isExtensionContextValid, safeSendMessage } from '../common/utils/runtime';
 
 export class FormTracker {
   private autosaveTimer: any = null;
@@ -26,6 +27,7 @@ export class FormTracker {
   private onRuntimeMessageBound = this.handleRuntimeMessage.bind(this);
 
   private onBlur = ((event: Event) => {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (target && this.isTrackable(target)) {
       if (this.autosaveTimer) {
@@ -37,6 +39,7 @@ export class FormTracker {
   }) as EventListener;
 
   private onPaste = ((event: Event) => {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (target && this.isTrackable(target)) {
       this.handleInput(event);
@@ -44,6 +47,7 @@ export class FormTracker {
   }) as EventListener;
 
   private onKeyDown = ((e: KeyboardEvent) => {
+    if (!this.ensureContextValid()) return;
     if (e.key === 'Enter') {
       const target = (e.composedPath?.()[0] || e.target) as HTMLElement;
       if (target && this.isTrackable(target)) {
@@ -57,6 +61,7 @@ export class FormTracker {
   }) as EventListener;
 
   private onPageHide = (() => {
+    if (!this.ensureContextValid()) return;
     if (this.lastInteractedElement && this.isTrackable(this.lastInteractedElement)) {
       if (this.autosaveTimer) {
         clearTimeout(this.autosaveTimer);
@@ -68,7 +73,21 @@ export class FormTracker {
 
   constructor(private root: Document | HTMLElement = document) {}
 
+  /**
+   * Validates that the extension context is still alive.
+   * If invalidated, automatically stops tracking and removes event listeners to prevent errors.
+   */
+  private ensureContextValid(): boolean {
+    if (!isExtensionContextValid()) {
+      this.stop();
+      return false;
+    }
+    return true;
+  }
+
   public start() {
+    if (!this.ensureContextValid()) return;
+
     // Use capture phase for DOM events
     this.root.addEventListener('input', this.onInput, true);
     this.root.addEventListener('compositionend', this.onCompositionEnd, true);
@@ -87,7 +106,9 @@ export class FormTracker {
     }
 
     // Listen for background actions (e.g. from context menus)
-    chrome.runtime.onMessage?.addListener(this.onRuntimeMessageBound);
+    try {
+      chrome.runtime.onMessage?.addListener(this.onRuntimeMessageBound);
+    } catch {}
   }
 
   public stop() {
@@ -107,12 +128,23 @@ export class FormTracker {
       window.removeEventListener('pagehide', this.onPageHide, true);
     }
 
-    chrome.runtime.onMessage?.removeListener(this.onRuntimeMessageBound);
+    try {
+      if (isExtensionContextValid()) {
+        chrome.runtime.onMessage?.removeListener(this.onRuntimeMessageBound);
+      }
+    } catch {}
 
     if (this.autosaveTimer) {
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = null;
     }
+
+    try {
+      const host = document.querySelector('lazarus-recovery-host');
+      if (host) {
+        host.remove();
+      }
+    } catch {}
   }
 
   private isTrackable(target: HTMLElement): boolean {
@@ -143,6 +175,7 @@ export class FormTracker {
   }
 
   private handleFocus(event: Event) {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target) return;
 
@@ -153,6 +186,7 @@ export class FormTracker {
   }
 
   private handleContextMenu(event: MouseEvent) {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target) return;
 
@@ -167,21 +201,20 @@ export class FormTracker {
       const fieldType = adapter ? adapter.name : target.tagName.toLowerCase();
 
       // Send to background to dynamically populate context submenus
-      chrome.runtime
-        .sendMessage({
-          type: 'UPDATE_CONTEXT_MENU',
-          payload: {
-            domain: window.location.hostname,
-            formInstanceId,
-            fieldName,
-            fieldType,
-          },
-        })
-        .catch(() => {});
+      safeSendMessage({
+        type: 'UPDATE_CONTEXT_MENU',
+        payload: {
+          domain: window.location.hostname,
+          formInstanceId,
+          fieldName,
+          fieldType,
+        },
+      });
     }
   }
 
   private handleInput(event: Event) {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target || !this.isTrackable(target)) return;
 
@@ -200,6 +233,7 @@ export class FormTracker {
   }
 
   private handleReset(event: Event) {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLFormElement;
     if (!target || target.tagName !== 'FORM') return;
 
@@ -212,11 +246,12 @@ export class FormTracker {
         type: 'SAVE_AUTOSAVE',
         payload: { form: formSnapshot },
       };
-      chrome.runtime.sendMessage(message).catch(() => {});
+      safeSendMessage(message);
     }
   }
 
   private handleSubmit(event: Event) {
+    if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
     if (!target) return;
 
@@ -239,11 +274,12 @@ export class FormTracker {
         type: 'SUBMIT_FORM',
         payload: { form: formSnapshot },
       };
-      chrome.runtime.sendMessage(message).catch(() => {});
+      safeSendMessage(message);
     }
   }
 
   private triggerAutosave(target: HTMLElement) {
+    if (!this.ensureContextValid()) return;
     const formElement = target.closest('form');
     const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
     const editingTime = this.updateEditingTime(formId);
@@ -255,7 +291,7 @@ export class FormTracker {
         type: 'SAVE_AUTOSAVE',
         payload: { form: formSnapshot },
       };
-      chrome.runtime.sendMessage(message).catch(() => {});
+      safeSendMessage(message);
     }
   }
 
@@ -263,7 +299,13 @@ export class FormTracker {
    * Handles commands sent from background (e.g. context menu selections)
    */
   private async handleRuntimeMessage(message: any) {
+    if (!this.ensureContextValid()) return;
     if (!message || typeof message !== 'object') return;
+
+    if (message.action === 'RESTORE_LAST_FORM') {
+      await this.restoreLastForm();
+      return;
+    }
 
     if (message.action === 'RESTORE_FORM_REVISION' && message.payload?.formId) {
       await this.restoreFormFromId(message.payload.formId);
@@ -281,9 +323,33 @@ export class FormTracker {
     }
   }
 
-  private async restoreFormFromId(formId: string) {
+  private async restoreLastForm() {
+    if (!this.ensureContextValid()) return;
     try {
-      const res = await chrome.runtime.sendMessage({
+      const domain =
+        (typeof window !== 'undefined' && window.location?.hostname) ||
+        (typeof window !== 'undefined' && window.location?.protocol === 'file:'
+          ? 'local file'
+          : 'unknown');
+      const res = await safeSendMessage({
+        type: 'GET_DOMAIN_HISTORY',
+        payload: { domain, limit: 1 },
+      });
+      if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
+        const latestItem = res.data[0];
+        if (latestItem?.form?.id) {
+          await this.restoreFormFromId(latestItem.form.id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to restore last form:', err);
+    }
+  }
+
+  private async restoreFormFromId(formId: string) {
+    if (!this.ensureContextValid()) return;
+    try {
+      const res = await safeSendMessage({
         type: 'GET_RECOVERABLE_FORM',
         payload: { formId },
       });
@@ -320,12 +386,14 @@ export class FormTracker {
   }
 
   private restoreActiveField(value: string) {
+    if (!this.ensureContextValid()) return;
     const target = this.lastInteractedElement || (document.activeElement as HTMLElement);
     if (!target) return;
     this.applyValueToElement(target, value);
   }
 
   private forceSaveCurrentForm() {
+    if (!this.ensureContextValid()) return;
     const target =
       this.lastInteractedElement ||
       (document.activeElement as HTMLElement) ||
@@ -337,15 +405,14 @@ export class FormTracker {
     const editingTime = this.updateEditingTime(formId);
     const formSnapshot = FieldExtractor.buildFormSnapshot(target as HTMLElement, editingTime);
 
-    chrome.runtime
-      .sendMessage({
-        type: 'FORCE_SAVE_SNAPSHOT',
-        payload: { form: formSnapshot },
-      })
-      .then(() => {
+    safeSendMessage({
+      type: 'FORCE_SAVE_SNAPSHOT',
+      payload: { form: formSnapshot },
+    }).then((res) => {
+      if (res !== null) {
         this.flashConfirmation(target as HTMLElement);
-      })
-      .catch(() => {});
+      }
+    });
   }
 
   private applyValueToElement(element: HTMLElement, value: string) {

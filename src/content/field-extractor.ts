@@ -209,11 +209,17 @@ export class FieldExtractor {
       }
     }
 
+    const domain =
+      (typeof window !== 'undefined' && window.location?.hostname) ||
+      (typeof window !== 'undefined' && window.location?.protocol === 'file:'
+        ? 'local file'
+        : 'unknown');
+
     return {
       formInstanceId,
       url: window.location.href,
-      domain: window.location.hostname,
-      title: document.title || window.location.hostname,
+      domain,
+      title: document.title || domain,
       editingTime,
       fields,
     };

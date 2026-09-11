@@ -2,6 +2,7 @@ import { formatTimeAgo, computeWordCount, sanitizePreview } from '../../common/u
 import { LivePreviewManager } from './live-preview';
 import { safeSetHtml } from '../../common/utils/dom';
 import { RuntimeMessage } from '../../common/types/messages';
+import { safeSendMessage, safeGetURL } from '../../common/utils/runtime';
 
 export class RecoveryMenu {
   private container: HTMLDivElement;
@@ -147,9 +148,12 @@ export class RecoveryMenu {
 
     this.container.querySelector('.lz-settings-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      chrome.runtime.sendMessage({ type: 'CHECK_VAULT_STATUS' });
+      safeSendMessage({ type: 'CHECK_VAULT_STATUS' });
       // Can't directly open options page from content script without message or openOptionsPage
-      window.open(chrome.runtime.getURL('src/options/options.html'), '_blank');
+      const optionsUrl = safeGetURL('src/options/options.html');
+      if (optionsUrl) {
+        window.open(optionsUrl, '_blank');
+      }
       this.hide();
     });
 
@@ -160,7 +164,7 @@ export class RecoveryMenu {
           type: 'DISABLE_DOMAIN',
           payload: { domain: window.location.hostname, wipeExisting: false },
         };
-        chrome.runtime.sendMessage(msg);
+        safeSendMessage(msg);
         this.hide();
       }
     });
