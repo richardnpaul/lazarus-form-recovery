@@ -11,7 +11,7 @@ repos:
       - id: check-json
         exclude: 'tsconfig.*\.json'
       - id: detect-private-key
-        exclude: '.gemini/skills/security-review/references/vuln-categories.md'
+        exclude: '.agents/skills/security-review/references/vuln-categories.md'
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
