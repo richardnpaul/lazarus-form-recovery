@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import pkg from '../../package.json';
 
 const OPTIONS_HTML = `
   <nav class="sidebar-nav">
@@ -128,7 +129,7 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       await new Promise((r) => setTimeout(r, 50));
 
       const versionEl = document.getElementById('diagnostic-version');
-      expect(versionEl?.textContent).toBe('0.0.1 (Manifest V3)');
+      expect(versionEl?.textContent).toBe(`${pkg.version} (Manifest V3)`);
 
       const prefSavePasswords = document.getElementById('pref-save-passwords') as HTMLInputElement;
       expect(prefSavePasswords.checked).toBe(true);

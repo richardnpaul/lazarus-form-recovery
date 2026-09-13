@@ -1,0 +1,131 @@
+name: Release & Publish Firefox Add-on
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: 'Force release even if tag already exists'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, Release & Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '26'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check version and release status
+        id: version_check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+
+          if git rev-parse "${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists in git history."
+            if [ "${{ github.event.inputs.force_release }}" = "true" ]; then
+              echo "force_release is true. Proceeding with release."
+              echo "should_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "No new version detected in package.json (version ${VERSION} already tagged)."
+              echo "should_release=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "New version detected: ${VERSION} (Tag: ${TAG})"
+            echo "should_release=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and Push Git Tag
+        if: steps.version_check.outputs.should_release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TAG="${{ steps.version_check.outputs.tag }}"
+          if ! git rev-parse "${TAG}" >/dev/null 2>&1; then
+            git tag -a "${TAG}" -m "Release ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+      - name: Package Firefox and Chrome distributions
+        if: steps.version_check.outputs.should_release == 'true'
+        run: |
+          npm run package:firefox
+          npm run package:chrome
+
+      - name: Bundle Source Code
+        if: steps.version_check.outputs.should_release == 'true'
+        run: |
+          mkdir -p packages
+          git archive --format=zip --prefix=lazarus-form-recovery/ -o packages/lazarus-form-recovery-source.zip HEAD
+
+      - name: Read Reviewer Instructions
+        if: steps.version_check.outputs.should_release == 'true'
+        id: reviewer_notes
+        run: |
+          NOTES=$(cat AMO_REVIEWER_INSTRUCTIONS.md)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        if: steps.version_check.outputs.should_release == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version_check.outputs.tag }}"
+          gh release create "${TAG}" \
+            packages/lazarus-form-recovery-firefox.xpi \
+            packages/lazarus-form-recovery-firefox.zip \
+            packages/lazarus-form-recovery-chrome.zip \
+            packages/lazarus-form-recovery-source.zip \
+            --title "Release ${TAG}" \
+            --generate-notes
+
+      - name: Check AMO Credentials
+        if: steps.version_check.outputs.should_release == 'true'
+        id: amo_secrets_check
+        env:
+          AMO_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          if [ -z "$AMO_ISSUER" ] || [ -z "$AMO_SECRET" ]; then
+            echo "::warning::AMO_JWT_ISSUER or AMO_JWT_SECRET secret is not configured in repository settings."
+            echo "::warning::Skipping Mozilla Add-ons upload. To enable AMO publishing, configure AMO_JWT_ISSUER and AMO_JWT_SECRET in GitHub Secrets."
+            echo "skip_amo=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip_amo=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish to Mozilla Add-ons (AMO)
+        if: steps.version_check.outputs.should_release == 'true' && steps.amo_secrets_check.outputs.skip_amo != 'true'
+        uses: wdzeng/firefox-addon@3184ee491b500e080885e046051366a4228c6e5d # v1.2.1
+        with:
+          addon-guid: 'lazarus-form-recovery@personal-code'
+          xpi-path: 'packages/lazarus-form-recovery-firefox.xpi'
+          source-file-path: 'packages/lazarus-form-recovery-source.zip'
+          jwt-issuer: ${{ secrets.AMO_JWT_ISSUER }}
+          jwt-secret: ${{ secrets.AMO_JWT_SECRET }}
+          approval-notes: ${{ steps.reviewer_notes.outputs.notes }}
