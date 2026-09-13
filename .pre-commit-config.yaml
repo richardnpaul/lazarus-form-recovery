@@ -1,7 +1,7 @@
 # See https://pre-commit.com for more information
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '\.(png|ico|svg)$'
@@ -11,6 +11,7 @@ repos:
       - id: check-json
         exclude: 'tsconfig.*\.json'
       - id: detect-private-key
+        exclude: '.agents/skills/security-review/references/vuln-categories.md'
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-shebang-scripts-are-executable
