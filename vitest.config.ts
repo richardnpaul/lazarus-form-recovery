@@ -25,8 +25,6 @@ export default defineConfig({
       ],
       exclude: [
         'src/vite-env.d.ts',
-        'src/background/index.ts',
-        'src/content/index.ts',
         'src/common/types/messages.ts',
         'src/common/types/schema.ts',
         'src/content/rich-text/adapter.ts',
