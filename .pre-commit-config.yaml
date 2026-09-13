@@ -38,7 +38,7 @@ repos:
         pass_filenames: false
 
       - id: vitest
-        name: Automated tests (141 tests)
+        name: Automated tests
         entry: npm test
         language: system
         pass_filenames: false
