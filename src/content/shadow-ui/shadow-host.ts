@@ -144,19 +144,21 @@ export class LazarusRecoveryHost extends HTMLElement {
   }
 }
 
-if (
-  typeof window !== 'undefined' &&
-  typeof customElements !== 'undefined' &&
-  customElements !== null &&
-  typeof customElements.get === 'function' &&
-  !customElements.get('lazarus-recovery-host')
-) {
-  try {
-    customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
-  } catch {
-    // Already defined or restricted environment
+export function defineRecoveryHostElement(): void {
+  if (
+    typeof customElements !== 'undefined' &&
+    typeof customElements.get === 'function' &&
+    !customElements.get('lazarus-recovery-host')
+  ) {
+    try {
+      customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
+    } catch {
+      // Already defined or restricted environment
+    }
   }
 }
+
+defineRecoveryHostElement();
 
 export function attachRecoveryUI(target: HTMLElement): LazarusRecoveryHost | null {
   if (
@@ -172,12 +174,7 @@ export function attachRecoveryUI(target: HTMLElement): LazarusRecoveryHost | nul
   try {
     let host = document.querySelector('lazarus-recovery-host') as LazarusRecoveryHost;
     if (!host) {
-      if (
-        typeof customElements.define === 'function' &&
-        !customElements.get('lazarus-recovery-host')
-      ) {
-        customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
-      }
+      defineRecoveryHostElement();
       host = document.createElement('lazarus-recovery-host') as LazarusRecoveryHost;
       document.documentElement.appendChild(host);
     }

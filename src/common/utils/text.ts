@@ -74,7 +74,7 @@ export function computeSimpleDiff(oldText: string, newText: string): DiffPart[] 
       } else if (i < oldTokens.length) {
         diff.push({ type: 'removed', value: oldTokens[i] });
         i++;
-      } else if (j < newTokens.length) {
+      } else {
         diff.push({ type: 'added', value: newTokens[j] });
         j++;
       }

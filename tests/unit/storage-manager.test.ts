@@ -53,6 +53,21 @@ describe('SessionStorageManager (src/background/storage-manager.ts)', () => {
     });
     await sessionStorageManager.clearTabAutosaves(101);
     expect(chrome.storage.session.remove).toHaveBeenCalledWith(['autosaves:101:f1']);
+
+    // 6. Clear tab autosaves when no keys match (keysToRemove.length === 0)
+    (chrome.storage.session.get as any).mockResolvedValueOnce({});
+    await sessionStorageManager.clearTabAutosaves(999);
+
+    // 7. Save ephemeral autosave with empty formInstanceId (fallback to 'default')
+    await sessionStorageManager.saveEphemeralAutosave(101, {
+      ...sampleSnapshot,
+      formInstanceId: '',
+    });
+    expect(chrome.storage.session.set).toHaveBeenCalledWith(
+      expect.objectContaining({
+        'autosaves:101:default': expect.any(Object),
+      })
+    );
   });
 
   it('handles storage errors and missing chrome.storage.session gracefully', async () => {

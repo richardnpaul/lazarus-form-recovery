@@ -118,6 +118,24 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       });
       expect(isFirefox()).toBe(false);
       Object.defineProperty(navigator, 'userAgent', { value: origUserAgent, configurable: true });
+
+      // Line 22: when chrome is undefined
+      const origChrome = (globalThis as any).chrome;
+      delete (globalThis as any).chrome;
+      expect(isFirefox()).toBe(false);
+      (globalThis as any).chrome = origChrome;
+
+      // Line 22: when chrome.runtime.getURL is undefined
+      const origGetUrl = chrome.runtime.getURL;
+      delete (chrome.runtime as any).getURL;
+      expect(isFirefox()).toBe(false);
+      (chrome.runtime as any).getURL = origGetUrl;
+
+      // Line 30: when navigator is undefined
+      const origNav = (globalThis as any).navigator;
+      delete (globalThis as any).navigator;
+      expect(isFirefox()).toBe(false);
+      (globalThis as any).navigator = origNav;
     });
 
     it('returns early when chrome.contextMenus is undefined', async () => {
@@ -127,6 +145,15 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       expect(() => setupContextMenus()).not.toThrow();
       await expect(updateDynamicContextMenus('example.com')).resolves.not.toThrow();
 
+      (chrome as any).contextMenus = origMenus;
+    });
+
+    it('handles module boot when chrome.contextMenus is missing', async () => {
+      vi.resetModules();
+      const origMenus = (chrome as any).contextMenus;
+      delete (chrome as any).contextMenus;
+      const mod = await import('../../src/background/context-menus');
+      expect(() => mod.setupContextMenus()).not.toThrow();
       (chrome as any).contextMenus = origMenus;
     });
   });
@@ -284,6 +311,12 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         url: 'chrome-extension://mock/src/options/options.html',
       });
 
+      // 3. both openOptionsPage and tabs.create missing
+      const origTabsCreate = chrome.tabs.create;
+      delete (chrome.tabs as any).create;
+      expect(() => handleContextMenuClick({ menuItemId: 'lazarus-action-options' })).not.toThrow();
+
+      (chrome.tabs as any).create = origTabsCreate;
       chrome.runtime.openOptionsPage = origOpenOptions;
     });
 
@@ -427,6 +460,42 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       await handleContextMenuClick({ menuItemId: 'lazarus-field-val-0' }, mockTab);
 
       expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(3);
+    });
+
+    it('handles dynamic context menus with default fieldType and default revisionNumber', async () => {
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([
+        {
+          form: {
+            id: 'rev_default_test',
+            revisionNumber: 0 as any, // tests revisionNumber || 1
+            isFinalSubmit: false,
+            lastModified: Date.now(),
+          },
+          fields: [],
+        },
+      ]);
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
+        {
+          id: '1',
+          formId: 'f',
+          name: 'myField',
+          type: 'text',
+          value: 'Snippet',
+          lastModified: Date.now(),
+        },
+      ]);
+
+      await updateDynamicContextMenus('sub.example.com', undefined, 'myField', undefined);
+      expect(repository.getRecoverableText).toHaveBeenCalledWith(
+        'sub.example.com',
+        'myField',
+        'text'
+      );
+    });
+
+    it('handles unrecognized context menu item id gracefully', async () => {
+      await handleContextMenuClick({ menuItemId: 'lazarus-unknown-id' }, mockTab);
+      expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
     });
   });
 });

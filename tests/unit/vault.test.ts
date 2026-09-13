@@ -126,6 +126,10 @@ describe('VaultManager Unit Tests', () => {
     vi.advanceTimersByTime(5 * 60 * 1000 + 1000);
     expect(vault.isUnlocked()).toBe(false);
 
+    // Line 157: autoLockMinutes <= 0 branch
+    vault.setAutoLockMinutes(0);
+    expect((vault as any).autoLockMinutes).toBe(0);
+
     vi.useRealTimers();
   });
 

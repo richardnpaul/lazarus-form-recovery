@@ -45,6 +45,18 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
       const plain = document.createElement('div');
       plain.textContent = 'Plain text';
       expect(adapter.getValue(plain)).toBe('Plain text');
+
+      // Test when innerHTML is empty but textContent is present
+      const textOnly = document.createElement('div');
+      Object.defineProperty(textOnly, 'innerHTML', { value: '', configurable: true });
+      textOnly.textContent = 'ProseMirror plain fallback';
+      expect(adapter.getValue(textOnly)).toBe('ProseMirror plain fallback');
+
+      // Test when both innerHTML and textContent are empty
+      const emptyEl = document.createElement('div');
+      Object.defineProperty(emptyEl, 'innerHTML', { value: '', configurable: true });
+      Object.defineProperty(emptyEl, 'textContent', { value: '', configurable: true });
+      expect(adapter.getValue(emptyEl)).toBe('');
     });
 
     it('sets value with HTML or plain text', () => {
@@ -61,6 +73,12 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
       el.appendChild(child);
       adapter.setValue(child, '<i>italic</i>');
       expect(el.innerHTML).toBe('<i>italic</i>');
+
+      // Test with element having data-slate-editor without .ProseMirror container
+      const slateEl = document.createElement('div');
+      slateEl.setAttribute('data-slate-editor', 'true');
+      adapter.setValue(slateEl, 'slate content');
+      expect(slateEl.textContent).toBe('slate content');
     });
 
     it('gets names with fallbacks', () => {
@@ -211,9 +229,25 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
       adapter.setValue(container, '<p>Quill Content</p>');
       expect(adapter.getValue(container)).toBe('<p>Quill Content</p>');
 
+      // Call setValue directly on element with ql-editor class
+      adapter.setValue(editor, '<p>Direct Editor Content</p>');
+      expect(adapter.getValue(editor)).toBe('<p>Direct Editor Content</p>');
+
       const standalone = document.createElement('div');
       adapter.setValue(standalone, 'text');
       expect(adapter.getValue(standalone)).toBe('text');
+
+      // Test when innerHTML is empty but textContent is present
+      const textOnly = document.createElement('div');
+      Object.defineProperty(textOnly, 'innerHTML', { value: '', configurable: true });
+      textOnly.textContent = 'Quill plain fallback';
+      expect(adapter.getValue(textOnly)).toBe('Quill plain fallback');
+
+      // Test when both innerHTML and textContent are empty
+      const emptyEl = document.createElement('div');
+      Object.defineProperty(emptyEl, 'innerHTML', { value: '', configurable: true });
+      Object.defineProperty(emptyEl, 'textContent', { value: '', configurable: true });
+      expect(adapter.getValue(emptyEl)).toBe('');
     });
 
     it('gets name from container or element', () => {

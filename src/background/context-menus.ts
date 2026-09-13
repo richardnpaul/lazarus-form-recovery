@@ -19,13 +19,13 @@ let currentCache: ContextMenuCache = {
 };
 
 export function isFirefox(): boolean {
-  if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
-    if (chrome.runtime.getURL('').startsWith('moz-extension://')) {
+  if (typeof chrome !== 'undefined') {
+    if (chrome.runtime?.getURL && chrome.runtime.getURL('').startsWith('moz-extension://')) {
       return true;
     }
-  }
-  if (typeof (chrome as any)?.sidebarAction !== 'undefined') {
-    return true;
+    if (typeof (chrome as any)?.sidebarAction !== 'undefined') {
+      return true;
+    }
   }
   if (typeof navigator !== 'undefined' && navigator.userAgent) {
     if (navigator.userAgent.toLowerCase().includes('firefox')) {

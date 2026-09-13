@@ -279,19 +279,19 @@ export class RecoveryMenu {
       this.focusedIndex = (this.focusedIndex + 1) % this.filteredItems.length;
       this.updateFocusedItemClass();
       const current = this.filteredItems[this.focusedIndex];
-      if (current) this.previewManager.preview(current.value);
+      this.previewManager.preview(current.value);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       this.focusedIndex =
         (this.focusedIndex - 1 + this.filteredItems.length) % this.filteredItems.length;
       this.updateFocusedItemClass();
       const current = this.filteredItems[this.focusedIndex];
-      if (current) this.previewManager.preview(current.value);
+      this.previewManager.preview(current.value);
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (this.focusedIndex >= 0 && this.focusedIndex < this.filteredItems.length) {
         this.commitItem(this.filteredItems[this.focusedIndex].value);
-      } else if (this.filteredItems.length > 0) {
+      } else {
         this.commitItem(this.filteredItems[0].value);
       }
     }

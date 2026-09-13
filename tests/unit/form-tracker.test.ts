@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { FormTracker } from '../../src/content/form-tracker';
 import { FieldExtractor } from '../../src/content/field-extractor';
+import * as runtimeUtils from '../../src/common/utils/runtime';
 
 describe('FormTracker & Field Extractor Unit Tests', () => {
   let tracker: FormTracker;
@@ -491,10 +492,15 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       consoleSpy.mockRestore();
     });
 
-    it('handles invalid context guards and null targets across all event listeners', async () => {
-      // 1. When context is invalid, all listeners early return cleanly
-      (tracker as any).ensureContextValid = vi.fn().mockReturnValue(false);
+    it('handles invalid context guards and auto-stop across all event listeners', async () => {
+      // 1. When context is invalid, ensureContextValid stops tracker and returns false
+      const isContextSpy = vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
+      const stopSpy = vi.spyOn(tracker, 'stop');
 
+      expect((tracker as any).ensureContextValid()).toBe(false);
+      expect(stopSpy).toHaveBeenCalled();
+
+      // All listeners early return cleanly when context is invalid
       (tracker as any).onBlur(new Event('blur'));
       (tracker as any).onPaste(new Event('paste'));
       (tracker as any).onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
@@ -512,44 +518,334 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       (tracker as any).forceSaveCurrentForm();
       (tracker as any).triggerAutosave(document.createElement('input'));
 
-      // 2. Restore ensureContextValid and test null / invalid targets
-      (tracker as any).ensureContextValid = () => true;
+      isContextSpy.mockRestore();
+    });
 
-      // Null target on handleFocus (line 180)
+    it('covers all event target composedPath fallbacks and null target guards', async () => {
+      const input = document.createElement('input');
+      input.value = 'composed-fallback';
+      root.appendChild(input);
+
+      // 1. Event without composedPath (fallback to event.target)
+      (tracker as any).handleInput({ target: input });
+      (tracker as any).onKeyDown({ key: 'Enter', target: input });
+      (tracker as any).handleContextMenu({ target: input });
+      (tracker as any).handleFocus({ target: input });
+      (tracker as any).onPaste({ target: input });
+
+      // 2. Null target across handlers
       (tracker as any).handleFocus({ target: null, composedPath: () => [] });
-
-      // Null target on handleContextMenu (line 191)
       (tracker as any).handleContextMenu({ target: null, composedPath: () => [] });
-
-      // Null or non-form target on handleReset (line 238)
       (tracker as any).handleReset({ target: null, composedPath: () => [] });
       const nonForm = document.createElement('div');
       (tracker as any).handleReset({ target: nonForm, composedPath: () => [nonForm] });
-
-      // Null target on handleSubmit (line 256)
       (tracker as any).handleSubmit({ target: null, composedPath: () => [] });
+      (tracker as any).handleInput({ target: null, composedPath: () => [] });
 
-      // Non-object message on handleRuntimeMessage (line 303)
+      // 3. onKeyDown Enter with active autosaveTimer and non-trackable target
+      (tracker as any).autosaveTimer = setTimeout(() => {}, 1000);
+      (tracker as any).onKeyDown({ key: 'Enter', target: input, composedPath: () => [input] });
+      expect((tracker as any).autosaveTimer).toBeNull();
+
+      const nonTrackable = document.createElement('div');
+      (tracker as any).onKeyDown({
+        key: 'Enter',
+        target: nonTrackable,
+        composedPath: () => [nonTrackable],
+      });
+
+      // 4. onPageHide with null or non-trackable lastInteractedElement
+      (tracker as any).lastInteractedElement = null;
+      (tracker as any).onPageHide();
+      (tracker as any).lastInteractedElement = nonTrackable;
+      (tracker as any).onPageHide();
+    });
+
+    it('covers contextmenu on rich text, named forms, unnamed elements, and non-trackable items', () => {
+      // 1. Target with rich text adapter
+      const quill = document.createElement('div');
+      quill.className = 'ql-editor';
+      quill.id = 'quill_target';
+      root.appendChild(quill);
+      (tracker as any).handleContextMenu(new MouseEvent('contextmenu', { bubbles: true }));
+      (tracker as any).handleContextMenu({ target: quill, composedPath: () => [quill] });
+
+      // 2. Form with name attribute (no id) and input with name
+      const formWithName = document.createElement('form');
+      formWithName.setAttribute('name', 'named_form');
+      const inputWithName = document.createElement('input');
+      inputWithName.name = 'user_field';
+      formWithName.appendChild(inputWithName);
+      root.appendChild(formWithName);
+      (tracker as any).handleContextMenu({
+        target: inputWithName,
+        composedPath: () => [inputWithName],
+      });
+
+      // 3. Form with neither id nor name, and input with neither id nor name
+      const plainForm = document.createElement('form');
+      const plainInput = document.createElement('input');
+      plainForm.appendChild(plainInput);
+      root.appendChild(plainForm);
+      (tracker as any).handleContextMenu({ target: plainInput, composedPath: () => [plainInput] });
+
+      // 4. Target is non-trackable
+      const div = document.createElement('div');
+      root.appendChild(div);
+      (tracker as any).handleContextMenu({ target: div, composedPath: () => [div] });
+    });
+
+    it('covers reset and submit on forms with name vs form_wrapper vs fake_form and 0 fields', () => {
+      // 1. Reset form with no id (uses form_wrapper)
+      const formNoId = document.createElement('form');
+      (tracker as any).handleReset({ target: formNoId, composedPath: () => [formNoId] });
+
+      // 2. Submit form with name attribute
+      const formWithName = document.createElement('form');
+      formWithName.setAttribute('name', 'submit_form_name');
+      const input = document.createElement('input');
+      input.name = 'data';
+      input.value = 'submit_val';
+      formWithName.appendChild(input);
+      root.appendChild(formWithName);
+      (tracker as any).handleSubmit({ target: formWithName, composedPath: () => [formWithName] });
+
+      // 3. Submit form with no id and no name (uses form_wrapper)
+      const formNoName = document.createElement('form');
+      const input2 = document.createElement('input');
+      input2.name = 'd2';
+      input2.value = 'v2';
+      formNoName.appendChild(input2);
+      root.appendChild(formNoName);
+      (tracker as any).handleSubmit({ target: formNoName, composedPath: () => [formNoName] });
+
+      // 4. Submit input outside form (uses fake_form)
+      const orphan = document.createElement('input');
+      orphan.value = 'orphan_val';
+      root.appendChild(orphan);
+      (tracker as any).handleSubmit({ target: orphan, composedPath: () => [orphan] });
+
+      // 5. Submit form with 0 fields
+      const emptyForm = document.createElement('form');
+      (tracker as any).handleSubmit({ target: emptyForm, composedPath: () => [emptyForm] });
+
+      // 6. Submit with active autosaveTimer
+      (tracker as any).autosaveTimer = setTimeout(() => {}, 1000);
+      (tracker as any).handleSubmit({ target: formWithName, composedPath: () => [formWithName] });
+      expect((tracker as any).autosaveTimer).toBeNull();
+    });
+
+    it('covers triggerAutosave on forms with no id, fake_form, and 0 fields', () => {
+      // 1. Form with no id
+      const form = document.createElement('form');
+      const input = document.createElement('input');
+      input.name = 'auto_in';
+      input.value = 'auto_val';
+      form.appendChild(input);
+      root.appendChild(form);
+      (tracker as any).triggerAutosave(input);
+
+      // 2. Orphan input outside form
+      const orphan = document.createElement('input');
+      orphan.value = 'orphan_auto';
+      root.appendChild(orphan);
+      (tracker as any).triggerAutosave(orphan);
+
+      // 3. Target with 0 fields
+      const emptyInput = document.createElement('input');
+      emptyInput.value = '';
+      (tracker as any).triggerAutosave(emptyInput);
+    });
+
+    it('covers runtime message edge cases and invalid payloads', async () => {
+      // 1. Non-object messages
       await (tracker as any).handleRuntimeMessage(null);
-      await (tracker as any).handleRuntimeMessage('not an object');
+      await (tracker as any).handleRuntimeMessage('string_msg');
 
-      // Empty fields array in restoreFormFromId (line 360)
+      // 2. RESTORE_FORM_REVISION missing formId
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: {},
+      });
+
+      // 3. RESTORE_FIELD_TEXT with non-string value
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+        payload: { value: 12345 },
+      });
+
+      // 4. Unrecognized action
+      await (tracker as any).handleRuntimeMessage({
+        action: 'UNKNOWN_CUSTOM_ACTION',
+      });
+    });
+
+    it('covers restoreLastForm domain fallbacks, empty items, and failed responses', async () => {
+      // 1. res.success is false
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      await (tracker as any).restoreLastForm();
+
+      // 2. res.data is not array
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: null });
+      await (tracker as any).restoreLastForm();
+
+      // 3. res.data is empty array
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
+      await (tracker as any).restoreLastForm();
+
+      // 4. latestItem has no form.id
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: [{ form: null }],
+      });
+      await (tracker as any).restoreLastForm();
+
+      // 5. file: protocol domain
+      const origLoc = window.location;
+      delete (window as any).location;
+      (window as any).location = { hostname: '', protocol: 'file:', href: 'file:///app.html' };
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
+      await (tracker as any).restoreLastForm();
+      (window as any).location = origLoc;
+    });
+
+    it('covers restoreFormFromId failure, missing targetForm, and missing element in doc', async () => {
+      // 1. res.success is false or no data
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      await (tracker as any).restoreFormFromId('rev_fail');
+
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: null });
+      await (tracker as any).restoreFormFromId('rev_null_data');
+
+      // 2. Empty fields array
       (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
         success: true,
         data: { fields: [] },
       });
-      await (tracker as any).restoreFormFromId('empty_form');
+      await (tracker as any).restoreFormFromId('rev_empty_fields');
 
-      // Null target on restoreActiveField (line 391)
+      // 3. targetForm is null (no form in document) and elements found via document.querySelector
+      document.body.innerHTML = '';
+      const input = document.createElement('input');
+      input.name = 'global_field';
+      document.body.appendChild(input);
+
+      (tracker as any).lastInteractedElement = null;
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: {
+          form: { id: 'f_global' },
+          fields: [
+            { name: 'global_field', value: 'Found Globally' },
+            { name: 'non_existent_field', value: 'NotFound' }, // covers if (el) false branch
+          ],
+        },
+      });
+      await (tracker as any).restoreFormFromId('rev_global');
+      expect(input.value).toBe('Found Globally');
+    });
+
+    it('covers forceSaveCurrentForm fallbacks and applyValueToElement non-input element', () => {
+      // 1. forceSaveCurrentForm: lastInteractedElement is null, activeElement is null, uses querySelector
+      document.body.innerHTML = '';
+      const form = document.createElement('form'); // no id -> form_wrapper
+      const ta = document.createElement('textarea');
+      ta.value = 'ta_val';
+      form.appendChild(ta);
+      document.body.appendChild(form);
+
       (tracker as any).lastInteractedElement = null;
       const origActive = document.activeElement;
       Object.defineProperty(document, 'activeElement', { value: null, configurable: true });
-      (tracker as any).restoreActiveField('val');
 
-      // Null target on forceSaveCurrentForm (line 401)
+      // Test with safeSendMessage resolving with non-null vs null
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
+      (tracker as any).forceSaveCurrentForm();
+
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce(null);
+      (tracker as any).forceSaveCurrentForm();
+
+      // Test with form having an explicit id
+      form.id = 'form_with_id';
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
+      (tracker as any).forceSaveCurrentForm();
+
+      // Test when target is NOT inside a form -> fake_form
+      document.body.innerHTML = '';
+      const standaloneInput = document.createElement('input');
+      standaloneInput.value = 'standalone';
+      document.body.appendChild(standaloneInput);
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
+      (tracker as any).forceSaveCurrentForm();
+
+      // When no form/input/textarea in document -> returns
       document.body.innerHTML = '';
       (tracker as any).forceSaveCurrentForm();
+
+      // 2. restoreActiveField when target is null
+      (tracker as any).restoreActiveField('val');
       Object.defineProperty(document, 'activeElement', { value: origActive, configurable: true });
+
+      // 3. applyValueToElement on plain div (non-input, non-adapter)
+      const plainDiv = document.createElement('div');
+      (tracker as any).applyValueToElement(plainDiv, 'div text content');
+      expect(plainDiv.textContent).toBe('div text content');
+
+      // 4. applyValueToElement on Quill editor
+      const quill = document.createElement('div');
+      quill.className = 'ql-editor';
+      (tracker as any).applyValueToElement(quill, '<p>quill html</p>');
+      expect(quill.innerHTML).toBe('<p>quill html</p>');
+    });
+
+    it('covers onBlur, onKeyDown, handleFocus, start/stop without window, and restoreLastForm custom protocol', async () => {
+      const input = document.createElement('input');
+      input.value = 'test_val';
+      root.appendChild(input);
+
+      // onBlur with event without composedPath and no active timer
+      (tracker as any).autosaveTimer = null;
+      (tracker as any).onBlur({ target: input });
+
+      // onKeyDown Enter with no active timer
+      (tracker as any).autosaveTimer = null;
+      (tracker as any).onKeyDown({ key: 'Enter', target: input });
+
+      // handleFocus on non-trackable element
+      const div = document.createElement('div');
+      root.appendChild(div);
+      (tracker as any).handleFocus({ target: div });
+
+      // start() and stop() when window is undefined
+      const origWindow = globalThis.window;
+      try {
+        delete (globalThis as any).window;
+        tracker.start();
+        tracker.stop();
+      } finally {
+        globalThis.window = origWindow;
+      }
+
+      // stop() when context is invalid
+      const ctxSpy = vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
+      tracker.stop();
+      ctxSpy.mockRestore();
+
+      // restoreLastForm when protocol is custom: (returns unknown)
+      const origLoc = window.location;
+      delete (window as any).location;
+      (window as any).location = { hostname: '', protocol: 'custom:', href: 'custom://app' };
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
+      await (tracker as any).restoreLastForm();
+
+      // restoreLastForm when window is undefined
+      try {
+        delete (globalThis as any).window;
+        await (tracker as any).restoreLastForm();
+      } finally {
+        globalThis.window = origWindow;
+        (window as any).location = origLoc;
+      }
     });
   });
 });

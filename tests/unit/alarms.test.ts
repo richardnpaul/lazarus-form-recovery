@@ -122,4 +122,13 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
     expect(() => setupAlarms()).not.toThrow();
     (chrome as any).alarms = origAlarms;
   });
+
+  it('handles missing chrome.alarms at module boot', async () => {
+    vi.resetModules();
+    const origAlarms = (chrome as any).alarms;
+    delete (chrome as any).alarms;
+    const { setupAlarms } = await import('../../src/background/alarms');
+    expect(() => setupAlarms()).not.toThrow();
+    (chrome as any).alarms = origAlarms;
+  });
 });

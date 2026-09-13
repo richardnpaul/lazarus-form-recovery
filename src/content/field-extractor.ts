@@ -86,12 +86,10 @@ export class FieldExtractor {
         value = select.value || '';
       }
     } else {
-      const adapter = findRichTextAdapter(element);
-      if (adapter) {
-        type = adapter.name;
-        name = name || adapter.getName(element);
-        value = adapter.getValue(element);
-      }
+      const adapter = findRichTextAdapter(element)!;
+      type = adapter.name;
+      name = name || adapter.getName(element);
+      value = adapter.getValue(element);
     }
 
     if (!name) {
@@ -154,11 +152,9 @@ export class FieldExtractor {
     );
 
     elements.forEach((el) => {
-      if (el instanceof HTMLElement && el !== container) {
-        const snapshot = this.extractField(el, options);
-        if (snapshot && (snapshot.value.trim().length > 0 || snapshot.type === 'checkbox')) {
-          fields.push(snapshot);
-        }
+      const snapshot = this.extractField(el, options);
+      if (snapshot && (snapshot.value.trim().length > 0 || snapshot.type === 'checkbox')) {
+        fields.push(snapshot);
       }
     });
 

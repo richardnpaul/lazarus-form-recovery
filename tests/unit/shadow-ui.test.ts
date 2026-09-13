@@ -2,7 +2,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RecoveryButton } from '../../src/content/shadow-ui/recovery-button';
 import { RecoveryMenu } from '../../src/content/shadow-ui/recovery-menu';
 import { LivePreviewManager } from '../../src/content/shadow-ui/live-preview';
-import { attachRecoveryUI, LazarusRecoveryHost } from '../../src/content/shadow-ui/shadow-host';
+import {
+  attachRecoveryUI,
+  LazarusRecoveryHost,
+  defineRecoveryHostElement,
+} from '../../src/content/shadow-ui/shadow-host';
+import * as runtimeUtils from '../../src/common/utils/runtime';
 
 describe('Shadow UI Components (src/content/shadow-ui/)', () => {
   beforeEach(() => {
@@ -529,6 +534,190 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(defineSpy).toHaveBeenCalledWith('lazarus-recovery-host', expect.any(Function));
       expect(host).not.toBeNull();
 
+      defineSpy.mockRestore();
+      getSpy.mockRestore();
+    });
+  });
+
+  describe('Comprehensive Shadow UI Branch Coverage', () => {
+    it('covers RecoveryButton click without handler and missing ResizeObserver', () => {
+      const origRO = globalThis.ResizeObserver;
+      try {
+        delete (globalThis as any).ResizeObserver;
+        const btn = new RecoveryButton();
+        // Line 36: click when onClickHandler is null
+        btn.getElement().click();
+
+        // Line 71: attachTo when resizeObserver is null
+        const input = document.createElement('input');
+        document.body.appendChild(input);
+        btn.attachTo(input);
+      } finally {
+        globalThis.ResizeObserver = origRO;
+      }
+    });
+
+    it('covers RecoveryMenu window.innerWidth=0, empty previewText, and footer callbacks null', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+
+      const menu = new RecoveryMenu(new LivePreviewManager());
+      const origWidth = window.innerWidth;
+      try {
+        Object.defineProperty(window, 'innerWidth', { value: 0, configurable: true });
+        Object.defineProperty(document.documentElement, 'clientWidth', {
+          value: 1024,
+          configurable: true,
+        });
+
+        // Line 57: viewportWidth fallback, Line 219: empty previewText
+        menu.show(input, [{ value: '   ', lastModified: 0 }], 100, 100);
+      } finally {
+        Object.defineProperty(window, 'innerWidth', { value: origWidth, configurable: true });
+      }
+
+      // Line 200: index === focusedIndex during renderList
+      (menu as any).focusedIndex = 0;
+      (menu as any).renderList();
+      const itemEl = menu.getElement().querySelector('.lz-snippet-item');
+      expect(itemEl?.classList.contains('is-focused')).toBe(true);
+
+      // Line 258: scrollIntoView missing or not a function
+      const firstItem = menu.getElement().querySelector('.lz-snippet-item') as any;
+      if (firstItem) {
+        firstItem.scrollIntoView = undefined;
+        (menu as any).updateFocusedItemClass();
+      }
+
+      // Line 143: click restore-all button when onRestoreEntireFormCallback is null
+      (menu as any).onRestoreEntireFormCallback = null;
+      const restoreAllBtn = menu.getElement().querySelector('.lz-restore-all-btn') as HTMLElement;
+      restoreAllBtn?.click();
+
+      // Line 154: click settings button when safeGetURL returns empty string
+      const urlSpy = vi.spyOn(runtimeUtils, 'safeGetURL').mockReturnValue('');
+      const settingsBtn = menu.getElement().querySelector('.lz-settings-btn') as HTMLElement;
+      settingsBtn?.click();
+      urlSpy.mockRestore();
+
+      // Line 247: commitItem without onCommitCallback
+      (menu as any).onCommitCallback = null;
+      (menu as any).commitItem('val');
+    });
+
+    it('covers RecoveryMenu handleKeyDown keys and fallback enter', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      const menu = new RecoveryMenu(new LivePreviewManager());
+      menu.show(
+        input,
+        [
+          { value: 'item1', lastModified: 0 },
+          { value: 'item2', lastModified: 0 },
+        ],
+        100,
+        100
+      );
+
+      // Line 290: key !== ArrowDown, ArrowUp, Enter
+      (menu as any).handleKeyDown(new KeyboardEvent('keydown', { key: 'Tab' }));
+
+      // Line 282, 289: ArrowDown and ArrowUp
+      (menu as any).handleKeyDown(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+      (menu as any).handleKeyDown(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
+
+      // Line 294: Enter when focusedIndex is -1 (takes else if filteredItems.length > 0)
+      (menu as any).focusedIndex = -1;
+      (menu as any).handleKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
+    });
+
+    it('covers LazarusRecoveryHost click outside when menu is closed and button click with null currentTarget', async () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      const host = attachRecoveryUI(input)!;
+
+      // Line 40: button click when menu is closed and currentTarget is null
+      (host as any).menu.hide();
+      (host as any).currentTarget = null;
+      const btn = (host as any).button.getElement();
+      await btn.click();
+
+      // Line 58: document click when menu is closed
+      expect((host as any).menu.isOpen()).toBe(false);
+      document.body.click();
+      expect((host as any).menu.isOpen()).toBe(false);
+
+      // Lines 77, 79: openMenuForTarget with rich text adapter (ql-editor)
+      const quill = document.createElement('div');
+      quill.className = 'ql-editor';
+      quill.id = 'ql_host';
+      document.body.appendChild(quill);
+      await (host as any).openMenuForTarget(quill);
+
+      // Line 93: openMenuForTarget when response is unsuccessful
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      await (host as any).openMenuForTarget(input);
+
+      // Lines 101, 102: btnLeft and btnTop when style.left and style.top are empty
+      (host as any).button.getElement().style.left = '';
+      (host as any).button.getElement().style.top = '';
+      await (host as any).openMenuForTarget(input);
+
+      // Line 119: restoreEntireForm when res.success is false or data is empty
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      await (host as any).restoreEntireForm(input);
+
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
+      await (host as any).restoreEntireForm(input);
+
+      // Line 121: restoreEntireForm when latestForm.fields is null
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: [{ form: { id: 'f1' }, fields: null }],
+      });
+      await (host as any).restoreEntireForm(input);
+
+      // Line 128, 132: restoreEntireForm when field input not found, or input is a div (not 'value' in input)
+      const form = document.createElement('form');
+      const divField = document.createElement('div');
+      divField.setAttribute('name', 'div_field');
+      form.appendChild(divField);
+      document.body.appendChild(form);
+
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: [
+          {
+            form: { id: 'f2' },
+            fields: [
+              { name: 'missing_field', value: '1' },
+              { name: 'div_field', value: '2' },
+            ],
+          },
+        ],
+      });
+      await (host as any).restoreEntireForm(divField);
+    });
+
+    it('covers defineRecoveryHostElement when already defined, missing customElements, or error thrown', () => {
+      // 1. When already defined (!customElements.get is false)
+      defineRecoveryHostElement();
+
+      // 2. When customElements is undefined
+      const origCE = (globalThis as any).customElements;
+      try {
+        delete (globalThis as any).customElements;
+        defineRecoveryHostElement();
+      } finally {
+        (globalThis as any).customElements = origCE;
+      }
+
+      // 3. When customElements.define throws
+      const defineSpy = vi.spyOn(customElements, 'define').mockImplementation(() => {
+        throw new Error('AlreadyRegistered');
+      });
+      const getSpy = vi.spyOn(customElements, 'get').mockReturnValue(undefined);
+      defineRecoveryHostElement();
       defineSpy.mockRestore();
       getSpy.mockRestore();
     });

@@ -103,6 +103,17 @@ describe('Runtime Utilities (src/common/utils/runtime.ts)', () => {
     it('re-throws non-invalidation errors for caller handling', async () => {
       (chrome.runtime.sendMessage as any).mockRejectedValue(new Error('DatabaseError'));
       await expect(safeSendMessage({ type: 'TEST' })).rejects.toThrow('DatabaseError');
+
+      // String rejection with context invalidation message (tests err fallback)
+      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(
+        'Could not establish connection. Receiving end does not exist.'
+      );
+      const strRes = await safeSendMessage({ type: 'TEST' });
+      expect(strRes).toBeNull();
+
+      // Null rejection (tests '' fallback)
+      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(null);
+      await expect(safeSendMessage({ type: 'TEST' })).rejects.toBeNull();
     });
 
     it('returns null when chrome.runtime.sendMessage returns undefined / non-thenable', async () => {

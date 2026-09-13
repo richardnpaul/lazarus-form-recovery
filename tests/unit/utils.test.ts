@@ -204,6 +204,23 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
     });
     const posLeftClamped = computeButtonPosition(target);
     expect(posLeftClamped.x).toBe(4);
+
+    // Clamps when window.innerWidth is 0 (falling back to documentElement.clientWidth)
+    const origWidth = window.innerWidth;
+    Object.defineProperty(window, 'innerWidth', { value: 0, configurable: true });
+    Object.defineProperty(document.documentElement, 'clientWidth', {
+      value: 800,
+      configurable: true,
+    });
+    const posFallback = computeButtonPosition(target);
+    expect(posFallback.x).toBe(4);
+    Object.defineProperty(window, 'innerWidth', { value: origWidth, configurable: true });
+
+    // queryAllDeep with non-HTMLElement (SVG)
+    const svgContainer = document.createElement('div');
+    svgContainer.innerHTML = '<svg class="item"><circle></circle></svg><div class="item"></div>';
+    const deepItems = queryAllDeep(svgContainer, '.item');
+    expect(deepItems.length).toBe(1);
   });
 });
 

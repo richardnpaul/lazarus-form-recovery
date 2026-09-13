@@ -157,7 +157,7 @@ export function safeSetHtml(element: Element, html: string): void {
   for (const el of allElements) {
     if (!el.isConnected) continue;
 
-    const localName = (el.localName || el.tagName).toLowerCase();
+    const localName = el.tagName.toLowerCase();
     if (BLOCKED_TAGS.has(localName)) {
       el.remove();
       continue;

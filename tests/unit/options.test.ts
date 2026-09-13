@@ -801,4 +801,155 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       expect(wipeModal.classList.contains('is-visible')).toBe(false);
     });
   });
+
+  describe('Options Full Branch Coverage', () => {
+    it('covers missing diagnostic-version element, manifest without version, and storage undefined', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      // Remove diagnostic-version to hit if (versionEl) false branch
+      document.getElementById('diagnostic-version')?.remove();
+
+      // Manifest without version to hit manifest?.version || '0.0.1'
+      vi.spyOn(chrome.runtime, 'getManifest').mockReturnValue({} as any);
+
+      // Navigator without storage to hit if (navigator.storage && navigator.storage.estimate) false branch
+      const origStorage = navigator.storage;
+      delete (navigator as any).storage;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      (navigator as any).storage = origStorage;
+    });
+
+    it('covers loadSettings failure and disabledDomains undefined', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      // 1. GET_SETTINGS fails
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') return { success: false, data: null };
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // 2. GET_SETTINGS returns null disabledDomains
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: {
+              savePasswords: false,
+              filterCreditCards: false,
+              expireFormsInterval: 10,
+              autoLockMinutes: 15,
+              encryptionMode: 'standard',
+              disabledDomains: null as any,
+            },
+          };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+    });
+
+    it('covers storage calculation with undefined usage, quota=0, and estimate error', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      // 1. Storage estimate with usage undefined and non-zero quota
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockResolvedValue({ usage: undefined, quota: 100 * 1024 * 1024 }),
+        },
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const label = document.getElementById('storage-estimate-label');
+      expect(label?.textContent).toContain('Using ~0.00 MB of 100 MB available storage quota');
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('0%');
+
+      // 1a. Storage estimate with usage defined and quota 0/undefined
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockResolvedValue({ usage: 2 * 1024 * 1024, quota: undefined }),
+        },
+      });
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-estimate-label')?.textContent).toContain(
+        '0 MB available storage quota'
+      );
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('0%');
+
+      // 1b. Storage estimate where usage > quota (clamped to 100%)
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi
+            .fn()
+            .mockResolvedValue({ usage: 200 * 1024 * 1024, quota: 100 * 1024 * 1024 }),
+        },
+      });
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('100%');
+
+      // 2. Storage estimate throws error
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockRejectedValue(new Error('StorageError')),
+        },
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-estimate-label')?.textContent).toBe(
+        'Storage estimate unavailable.'
+      );
+    });
+
+    it('covers export data failure and wipe confirm with non-DELETE text', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'EXPORT_DATA') return { success: false };
+        if (msg.type === 'GET_SETTINGS') {
+          return { success: true, data: { disabledDomains: [] } };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // Click export data when it fails
+      const btnExport = document.getElementById('btn-export-data') as HTMLButtonElement;
+      btnExport.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Click confirm wipe when value is not DELETE
+      const btnConfirm = document.getElementById('btn-confirm-wipe') as HTMLButtonElement;
+      const inputConfirm = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      inputConfirm.value = 'NOT_DELETE';
+      btnConfirm.disabled = false;
+      btnConfirm.click();
+      await new Promise((r) => setTimeout(r, 20));
+      expect(globalThis.alert).not.toHaveBeenCalled();
+    });
+  });
 });

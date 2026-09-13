@@ -3,6 +3,7 @@ import { safeSetHtml } from '../../src/common/utils/dom';
 import { handleRuntimeMessage, getSenderDomain } from '../../src/background/message-router';
 import { db } from '../../src/common/db/lazarus-db';
 import { RuntimeMessage } from '../../src/common/types/messages';
+import { container } from '../../src/core/container';
 
 describe('Security Hardening — safeSetHtml', () => {
   let target: HTMLElement;
@@ -448,6 +449,110 @@ describe('Security Hardening — Message Router Domain Spoofing Defense', () => 
       expect.stringContaining('Domain mismatch in GET_FORM_REVISIONS')
     );
 
+    // 6. GET_DOMAIN_HISTORY mismatch
+    await handleRuntimeMessage(
+      { type: 'GET_DOMAIN_HISTORY', payload: { domain: 'spoofed.com' } },
+      attackerSender
+    );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Domain mismatch in GET_DOMAIN_HISTORY')
+    );
+
+    // 7. GET_DOMAIN_HISTORY matching domain (no mismatch)
+    const matchingRes = await handleRuntimeMessage(
+      { type: 'GET_DOMAIN_HISTORY', payload: { domain: 'sender-tab.org' } },
+      attackerSender
+    );
+    expect(matchingRes.success).toBe(true);
+
     warnSpy.mockRestore();
+  });
+
+  it('handles error message fallbacks and open options page fallbacks in message router', async () => {
+    // 1. Fallback 'Domain is disabled' when saveFormDraftUseCase returns { success: false } without error property
+    const saveSpy = vi.spyOn(container.saveFormDraftUseCase, 'execute').mockResolvedValueOnce({
+      success: false,
+    } as any);
+    const saveRes = await handleRuntimeMessage(
+      {
+        type: 'SAVE_AUTOSAVE',
+        payload: {
+          form: {
+            formInstanceId: 'f1',
+            url: 'https://site.com',
+            domain: 'site.com',
+            title: 'T',
+            editingTime: 1,
+            fields: [],
+          },
+        },
+      },
+      {} as any
+    );
+    expect(saveRes.success).toBe(false);
+    expect(saveRes.error).toBe('Domain is disabled');
+
+    // 2. Fallback 'Domain is disabled' for SUBMIT_FORM
+    const submitSpy = vi.spyOn(container.submitFormUseCase, 'execute').mockResolvedValueOnce({
+      success: false,
+    } as any);
+    const submitRes = await handleRuntimeMessage(
+      {
+        type: 'SUBMIT_FORM',
+        payload: {
+          form: {
+            formInstanceId: 'f1',
+            url: 'https://site.com',
+            domain: 'site.com',
+            title: 'T',
+            editingTime: 1,
+            fields: [],
+          },
+        },
+      },
+      {} as any
+    );
+    expect(submitRes.success).toBe(false);
+    expect(submitRes.error).toBe('Domain is disabled');
+
+    // 3. Fallback 'Domain is disabled' for FORCE_SAVE_SNAPSHOT
+    saveSpy.mockResolvedValueOnce({ success: false } as any);
+    const forceRes = await handleRuntimeMessage(
+      {
+        type: 'FORCE_SAVE_SNAPSHOT',
+        payload: {
+          form: {
+            formInstanceId: 'f1',
+            url: 'https://site.com',
+            domain: 'site.com',
+            title: 'T',
+            editingTime: 1,
+            fields: [],
+          },
+        },
+      },
+      {} as any
+    );
+    expect(forceRes.success).toBe(false);
+    expect(forceRes.error).toBe('Domain is disabled');
+
+    saveSpy.mockRestore();
+    submitSpy.mockRestore();
+
+    // 4. OPEN_OPTIONS_PAGE when chrome.runtime.openOptionsPage is missing but chrome.tabs.create exists
+    const origOpen = chrome.runtime.openOptionsPage;
+    delete (chrome.runtime as any).openOptionsPage;
+    const openRes = await handleRuntimeMessage({ type: 'OPEN_OPTIONS_PAGE' }, {} as any);
+    expect(openRes.success).toBe(true);
+    expect(chrome.tabs.create).toHaveBeenCalled();
+
+    // 5. OPEN_OPTIONS_PAGE when neither openOptionsPage nor tabs.create exists
+    const origTabsCreate = chrome.tabs.create;
+    delete (chrome.tabs as any).create;
+    const openRes2 = await handleRuntimeMessage({ type: 'OPEN_OPTIONS_PAGE' }, {} as any);
+    expect(openRes2.success).toBe(true);
+
+    (chrome.runtime as any).openOptionsPage = origOpen;
+    (chrome.tabs as any).create = origTabsCreate;
   });
 });

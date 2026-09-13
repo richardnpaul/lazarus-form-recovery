@@ -710,5 +710,108 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
         ],
       });
     });
+
+    it('covers all defensive fallbacks for formInstanceId, revisionNumber, URLs, fields, and trimming', async () => {
+      // 1. Snapshot with empty formInstanceId, empty url, undefined editingTime, non-array fields
+      await repository.saveFormSnapshot({
+        formInstanceId: '' as any,
+        url: '' as any,
+        domain: 'fallback-test.com',
+        title: 'Fallback Form',
+        editingTime: undefined as any,
+        fields: undefined as any,
+      });
+
+      // 2. Snapshot with fields having empty name, empty type, empty value
+      await repository.saveFormSnapshot({
+        formInstanceId: 'f_field_fallbacks',
+        url: 'https://fallback-test.com',
+        domain: 'fallback-test.com',
+        title: 'Field Fallbacks',
+        editingTime: 5,
+        fields: [
+          { name: '' as any, type: '' as any, value: 'HasVal' },
+          { name: 'has_name', type: 'text', value: '' as any },
+        ],
+      });
+
+      // 3. Updating an existing revision where latestRevision has revisionId: '', revisionNumber: 0
+      await db.forms.put({
+        id: 'fallback-test.com_f_corrupt_rev_corrupt',
+        domainId: 'fallback-test.com',
+        url: '',
+        formInstanceId: 'f_corrupt',
+        revisionId: '',
+        revisionNumber: 0,
+        title: 'Corrupt',
+        encryption: 'none',
+        editingTime: 0,
+        lastModified: Date.now(),
+        status: 0,
+      });
+      await repository.saveFormSnapshot(
+        {
+          formInstanceId: 'f_corrupt',
+          url: 'https://fallback-test.com',
+          domain: 'fallback-test.com',
+          title: 'Corrupt Update',
+          editingTime: 2,
+          fields: [],
+        },
+        false
+      );
+
+      // 4. Trimming revisions when an old revision has isFinalSubmit: true (line 248 false branch)
+      for (let i = 1; i <= 12; i++) {
+        await repository.saveFormSnapshot(
+          {
+            formInstanceId: 'f_trim_test',
+            url: 'https://fallback-test.com',
+            domain: 'fallback-test.com',
+            title: `Trim ${i}`,
+            editingTime: i * 1000,
+            fields: [],
+          },
+          true
+        );
+      }
+
+      // 5. Querying form revisions where form has url: '' (line 457)
+      const revs = await repository.getFormRevisions('fallback-test.com', 'f_corrupt');
+      expect(revs.length).toBeGreaterThan(0);
+
+      // 6. Querying searchHistory with field having value: '' and non-matching name (line 481)
+      await db.fields.put({
+        id: 'empty_val_field',
+        formId: 'f_empty_val',
+        domainId: 'fallback-test.com',
+        revisionId: 'r',
+        name: 'non_matching_name',
+        type: 'text',
+        value: '',
+        encryption: 'none',
+        lastModified: Date.now(),
+        status: 0,
+      });
+      const searchResults = await repository.searchHistory('nomatch_query');
+      expect(searchResults.length).toBe(0);
+
+      // 7. getAllHistory with form having domainId: '' and revisionNumber: 0 (lines 632, 633)
+      await db.forms.put({
+        id: 'no_domain_form',
+        domainId: '',
+        url: 'https://fallback-test.com',
+        formInstanceId: 'f_no_domain',
+        revisionId: 'rev_nd',
+        revisionNumber: 0,
+        title: 'No Domain',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: Date.now(),
+        status: 0,
+      });
+      const allHist = await repository.getAllHistory();
+      expect(allHist.length).toBeGreaterThan(0);
+    });
   });
 });

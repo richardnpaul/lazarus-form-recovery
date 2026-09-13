@@ -23,6 +23,12 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
     delete (chrome as any).sidePanel;
     expect(() => setupSidePanelBehavior()).not.toThrow();
     (chrome as any).sidePanel = origSidePanel;
+
+    // 4. chrome itself is undefined (line 13 else branch)
+    const origChrome = (globalThis as any).chrome;
+    delete (globalThis as any).chrome;
+    expect(() => setupSidePanelBehavior()).not.toThrow();
+    (globalThis as any).chrome = origChrome;
   });
 
   it('handles lifecycle events: onInstalled and onStartup', async () => {
