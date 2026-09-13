@@ -7,11 +7,11 @@ export class RuntimeBroadcasterAdapter implements IEventBroadcasterPort {
   public broadcastFormSaved(payload: FormSavedEventPayload): void {
     try {
       chrome.runtime
-        ?.sendMessage?.({
+        .sendMessage({
           type: 'FORM_SAVED',
           payload,
         })
-        .catch?.(() => {});
+        .catch(() => {});
     } catch {
       // Ignored if no receiver is active
     }
@@ -20,10 +20,10 @@ export class RuntimeBroadcasterAdapter implements IEventBroadcasterPort {
   public broadcastRefresh(): void {
     try {
       chrome.runtime
-        ?.sendMessage?.({
+        .sendMessage({
           type: 'REFRESH_HISTORY',
         })
-        .catch?.(() => {});
+        .catch(() => {});
     } catch {
       // Ignored if no receiver is active
     }

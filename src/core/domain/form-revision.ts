@@ -173,8 +173,6 @@ export class FormRevisionPolicy {
     revisions: { id: string; lastModified: number }[],
     maxRevisions = this.MAX_REVISIONS_PER_FORM
   ): string[] {
-    if (revisions.length <= maxRevisions) return [];
-
     // Sort descending (newest first)
     const sorted = [...revisions].sort((a, b) => b.lastModified - a.lastModified);
     // Elements past maxRevisions are pruned

@@ -31,8 +31,6 @@ export class SessionStorageManager {
    * Retrieves ephemeral autosaves for a given tab.
    */
   public async getTabAutosaves(tabId: number): Promise<FormSnapshot[]> {
-    if (!chrome.storage?.session) return [];
-
     try {
       const all = await chrome.storage.session.get(null);
       const prefix = `autosaves:${tabId}:`;

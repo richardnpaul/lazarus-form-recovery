@@ -48,7 +48,7 @@ describe('Runtime Utilities (src/common/utils/runtime.ts)', () => {
       expect(isExtensionContextValid()).toBe(false);
     });
 
-    it('returns false when accessing chrome.runtime throws', () => {
+    it('returns false when accessing chrome.runtime throws context invalidated', () => {
       Object.defineProperty(globalThis.chrome, 'runtime', {
         get() {
           throw new Error('Extension context invalidated.');
@@ -56,6 +56,16 @@ describe('Runtime Utilities (src/common/utils/runtime.ts)', () => {
         configurable: true,
       });
       expect(isExtensionContextValid()).toBe(false);
+    });
+
+    it('re-throws unexpected errors when accessing chrome.runtime', () => {
+      Object.defineProperty(globalThis.chrome, 'runtime', {
+        get() {
+          throw new Error('Unexpected internal error');
+        },
+        configurable: true,
+      });
+      expect(() => isExtensionContextValid()).toThrow('Unexpected internal error');
     });
   });
 

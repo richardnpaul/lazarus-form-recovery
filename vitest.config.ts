@@ -22,13 +22,22 @@ export default defineConfig({
         'src/popup/**/*.ts',
         'src/sidepanel/**/*.ts',
         'src/options/**/*.ts',
+        'src/core/**/*.ts',
+        'src/infrastructure/**/*.ts',
       ],
       exclude: [
         'src/vite-env.d.ts',
         'src/common/types/messages.ts',
         'src/common/types/schema.ts',
         'src/content/rich-text/adapter.ts',
+        'src/core/ports/**/*.ts',
       ],
+      thresholds: {
+        statements: 100,
+        branches: 100,
+        functions: 100,
+        lines: 100,
+      },
     },
   },
 });

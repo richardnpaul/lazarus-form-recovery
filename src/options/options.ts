@@ -1,5 +1,6 @@
 import { RuntimeResponse } from '../common/types/messages';
 import { ExtensionSettings, VaultStatus } from '../common/types/config';
+import { getExtensionVersion } from '../common/utils/version';
 
 // Tab Elements
 const navItems = document.querySelectorAll('.nav-item');
@@ -63,11 +64,7 @@ export async function init() {
 function renderDiagnostics() {
   const versionEl = document.getElementById('diagnostic-version');
   if (versionEl) {
-    const version =
-      typeof chrome !== 'undefined' && chrome.runtime?.getManifest
-        ? chrome.runtime.getManifest()?.version || '0.0.1'
-        : '0.0.1';
-    versionEl.textContent = `${version} (Manifest V3)`;
+    versionEl.textContent = `${getExtensionVersion()} (Manifest V3)`;
   }
 }
 
@@ -110,13 +107,10 @@ async function loadSettings() {
 }
 
 async function saveSettings(patch: Partial<ExtensionSettings>) {
-  const res: RuntimeResponse<ExtensionSettings> = await chrome.runtime.sendMessage({
+  await chrome.runtime.sendMessage({
     type: 'UPDATE_SETTINGS',
     payload: { settings: patch },
   });
-  if (res?.success && res.data) {
-    currentSettings = res.data;
-  }
 }
 
 async function checkVault() {
@@ -138,13 +132,8 @@ async function checkVault() {
 }
 
 function updateModeCards(mode: string) {
-  if (mode === 'hybrid-aes-gcm') {
-    modeVault.classList.add('is-selected');
-    modeStandard.classList.remove('is-selected');
-  } else {
-    modeStandard.classList.add('is-selected');
-    modeVault.classList.remove('is-selected');
-  }
+  modeVault.classList.toggle('is-selected', mode === 'hybrid-aes-gcm');
+  modeStandard.classList.toggle('is-selected', mode === 'none');
 }
 
 // General Tab Event Handlers
@@ -174,7 +163,7 @@ modeStandard.addEventListener('click', async () => {
           type: 'REMOVE_MASTER_PASSWORD',
           payload: { currentPassword: pwd },
         });
-        if (removeRes?.success) {
+        if (removeRes.success) {
           updateModeCards('none');
           await checkVault();
         } else {

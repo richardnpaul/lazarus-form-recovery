@@ -17,6 +17,8 @@ coverage/
 .nyc_output/
 .stryker-tmp/
 reports/
+scratch/
+
 
 # Cache directories
 .vite/

@@ -502,15 +502,7 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
         status: 1, // Deleted status!
       });
 
-      const originalWhere = db.forms.where.bind(db.forms);
-      vi.spyOn(db.forms, 'where').mockImplementation(((indexName: any) => {
-        if (indexName === '[domainId+lastModified]') {
-          throw new Error('CompoundIndexUnavailable');
-        }
-        return originalWhere(indexName);
-      }) as any);
-
-      // 1. getLatestFormRevisions should catch error and use domainId fallback, strictly filtering status 0!
+      // 1. getLatestFormRevisions strictly filtering status 0!
       const latest = await repository.getLatestFormRevisions('fallback-domain.com', 5);
       expect(latest.length).toBe(1);
       expect(latest[0].form.id).toBe('fallback-form-1');
@@ -671,27 +663,9 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
         status: 0,
       });
 
-      // 1. Fallback in getRecoverableFields when [domainId+name+type] throws (exercises line 282)
-      const originalFieldsWhere = db.fields.where.bind(db.fields);
-      vi.spyOn(db.fields, 'where').mockImplementation(((indexName: any) => {
-        if (indexName === '[domainId+name+type]') {
-          throw new Error('FieldsCompoundIndexUnavailable');
-        }
-        return originalFieldsWhere(indexName);
-      }) as any);
-
       const fieldsRes = await repository.getRecoverableText('rev-test.com', 'feedback', 'text');
       expect(fieldsRes.length).toBe(1);
       expect(fieldsRes[0].value).toBe('Fallback Field Value');
-
-      // 2. Fallback in getFormRevisions when [domainId+lastModified] throws (exercises line 368)
-      const originalFormsWhere = db.forms.where.bind(db.forms);
-      vi.spyOn(db.forms, 'where').mockImplementation(((indexName: any) => {
-        if (indexName === '[domainId+lastModified]') {
-          throw new Error('FormsCompoundIndexUnavailable');
-        }
-        return originalFormsWhere(indexName);
-      }) as any);
 
       const formsRes = await repository.getFormRevisions('rev-test.com', 'f_rev_inst');
       expect(formsRes.length).toBe(1);
@@ -812,6 +786,1399 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
       });
       const allHist = await repository.getAllHistory();
       expect(allHist.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Mutation Resistance Tests for Repository', () => {
+    it('kills wildcard regex anchors in matchesDomainPattern', () => {
+      expect(matchesDomainPattern('subgoogle.com', 'google.com')).toBe(false);
+      expect(matchesDomainPattern('google.com.attacker.com', 'google.com')).toBe(false);
+      expect(matchesDomainPattern('google.com', 'google.com')).toBe(true);
+      expect(matchesDomainPattern('mail.google.com', '*.google.com')).toBe(true);
+      expect(matchesDomainPattern('evilgoogle.com', '*.google.com')).toBe(false);
+    });
+
+    it('kills unknown settings keys mutant in getSettings', async () => {
+      await db.settings.put({
+        key: 'completely_unknown_key_mutation_check',
+        value: 'should_be_ignored',
+        lastModified: Date.now(),
+      });
+      const settings = await repository.getSettings();
+      expect('completely_unknown_key_mutation_check' in settings).toBe(false);
+    });
+
+    it('kills disableDomain domain isolation and field deletion mutants strictly', async () => {
+      await repository.updateSettings({ disabledDomains: [] });
+      await db.domains.put({
+        id: 'disable-domain.com',
+        domain: 'disable-domain.com',
+        totalEditingTime: 10,
+        lastModified: 1,
+        status: 0,
+      });
+      await db.forms.put({
+        id: 'f_dis',
+        domainId: 'disable-domain.com',
+        formInstanceId: 'fi',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Title',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1,
+        status: 0,
+        url: '',
+      });
+      await db.fields.put({
+        id: 'fld_dis',
+        formId: 'f_dis',
+        domainId: 'disable-domain.com',
+        revisionId: 'r1',
+        name: 'field1',
+        type: 'text',
+        value: 'val1',
+        encryption: 'none',
+        lastModified: 1,
+        status: 0,
+      });
+      // Field on another domain
+      await db.fields.put({
+        id: 'other_fld',
+        domainId: 'other-domain.com',
+        formId: 'f_other',
+        revisionId: 'r_other',
+        name: 'n',
+        type: 'text',
+        value: 'v',
+        encryption: 'none',
+        lastModified: 1,
+        status: 0,
+      });
+
+      // Default wipeExisting = false
+      await repository.disableDomain('disable-domain.com');
+      let s = await repository.getSettings();
+      expect(s.disabledDomains).toContain('disable-domain.com');
+      expect(await db.forms.get('f_dis')).toBeDefined();
+      expect(await db.fields.get('fld_dis')).toBeDefined();
+      expect(await db.domains.get('disable-domain.com')).toBeDefined();
+
+      // Calling disableDomain again when already in list (branch coverage)
+      await repository.disableDomain('disable-domain.com');
+      s = await repository.getSettings();
+      expect(s.disabledDomains.filter((d) => d === 'disable-domain.com').length).toBe(1);
+
+      // With wipeExisting = true
+      await repository.disableDomain('disable-domain.com', true);
+      expect(await db.forms.get('f_dis')).toBeUndefined();
+      expect(await db.fields.get('fld_dis')).toBeUndefined();
+      expect(await db.domains.get('disable-domain.com')).toBeUndefined();
+      // other domain field must NOT be deleted
+      expect(await db.fields.get('other_fld')).toBeDefined();
+
+      // enableDomain with multiple domains
+      await repository.updateSettings({
+        disabledDomains: ['domain-a.com', 'domain-b.com', 'domain-c.com'],
+      });
+      await repository.enableDomain('domain-b.com');
+      s = await repository.getSettings();
+      expect(s.disabledDomains).toEqual(['domain-a.com', 'domain-c.com']);
+    });
+
+    it('kills deleteForm and clearAllHistory mutants strictly', async () => {
+      await db.forms.put({
+        id: 'f_to_delete',
+        domainId: 'del.com',
+        formInstanceId: 'fi',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'T',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1,
+        status: 0,
+        url: '',
+      });
+      await db.fields.put({
+        id: 'fld_to_delete',
+        formId: 'f_to_delete',
+        domainId: 'del.com',
+        revisionId: 'r1',
+        name: 'f',
+        type: 'text',
+        value: 'v',
+        encryption: 'none',
+        lastModified: 1,
+        status: 0,
+      });
+
+      await repository.deleteForm('f_to_delete');
+      const f = await db.forms.get('f_to_delete');
+      expect(f?.status).toBe(1);
+      const fld = await db.fields.get('fld_to_delete');
+      expect(fld?.status).toBe(1);
+
+      // Clear all history
+      await db.domains.put({
+        id: 'd1',
+        domain: 'd1',
+        totalEditingTime: 1,
+        lastModified: 1,
+        status: 0,
+      });
+      expect(await db.forms.count()).toBeGreaterThan(0);
+      expect(await db.fields.count()).toBeGreaterThan(0);
+      expect(await db.domains.count()).toBeGreaterThan(0);
+
+      await repository.clearAllHistory();
+      expect(await db.forms.count()).toBe(0);
+      expect(await db.fields.count()).toBe(0);
+      expect(await db.domains.count()).toBe(0);
+    });
+
+    it('kills saveFormSnapshot milestone, idle timeout, and cumulative editing time mutants', async () => {
+      const nowSpy = vi.spyOn(Date, 'now');
+      const startTime = 1_700_000_000_000;
+      nowSpy.mockReturnValue(startTime);
+
+      const snap = {
+        domain: 'milestone.com',
+        formInstanceId: 'f_ms',
+        title: 'MS Form',
+        url: 'https://milestone.com',
+        editingTime: 10,
+        fields: [{ name: 'f1', type: 'text', value: 'hello' }],
+      };
+
+      const res1 = await repository.saveFormSnapshot(snap);
+      expect(res1.revisionNumber).toBe(1);
+      let dom = await db.domains.get('milestone.com');
+      expect(dom?.totalEditingTime).toBe(10);
+
+      // Milestone boundary (5 minutes = 300_000ms):
+      // At 299_999ms later, milestone not reached: updates existing revision
+      nowSpy.mockReturnValue(startTime + 299_999);
+      const res2 = await repository.saveFormSnapshot({ ...snap, editingTime: 15 });
+      expect(res2.revisionNumber).toBe(1);
+      expect(res2.revisionId).toBe(res1.revisionId);
+      dom = await db.domains.get('milestone.com');
+      expect(dom?.totalEditingTime).toBe(25);
+
+      // At exactly 300_000ms from creation: milestone reached! Spawns new revision
+      nowSpy.mockReturnValue(startTime + 300_000);
+      const res3 = await repository.saveFormSnapshot(snap);
+      expect(res3.revisionNumber).toBe(2);
+      expect(res3.revisionId).not.toBe(res1.revisionId);
+
+      // Idle timeout boundary (15 minutes = 900_000ms):
+      // Seed a revision with unparseable timestamp in revisionId so revisionCreationTime defaults to now (milestone never reached)
+      const idleBaseTime = 1_800_000_000_000;
+      await db.forms.put({
+        id: 'idle_form_id',
+        domainId: 'idle.com',
+        formInstanceId: 'f_idle',
+        revisionId: 'custom_nonnumeric_rev',
+        revisionNumber: 1,
+        title: 'Idle Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: idleBaseTime,
+        status: 0,
+        url: 'https://idle.com',
+      });
+
+      const idleSnap = {
+        domain: 'idle.com',
+        formInstanceId: 'f_idle',
+        title: 'Idle Form',
+        url: 'https://idle.com',
+        editingTime: 1,
+        fields: [],
+      };
+
+      // At idleBaseTime + 899_999ms (14m 59.999s): idle timeout not reached (< 900_000ms)
+      nowSpy.mockReturnValue(idleBaseTime + 899_999);
+      const resIdle1 = await repository.saveFormSnapshot(idleSnap);
+      expect(resIdle1.revisionNumber).toBe(1);
+
+      // Reset lastModified back to idleBaseTime for exact 900_000ms test
+      await db.forms.update('idle_form_id', { lastModified: idleBaseTime });
+      // At idleBaseTime + 900_000ms (exactly 15 minutes): idle timeout reached! Spawns new revision
+      nowSpy.mockReturnValue(idleBaseTime + 900_000);
+      const resIdle2 = await repository.saveFormSnapshot(idleSnap);
+      expect(resIdle2.revisionNumber).toBe(2);
+
+      nowSpy.mockRestore();
+    });
+
+    it('kills saveFormSnapshot edge cases, sorting, and pruning mutants strictly', async () => {
+      // 1. Fallback domain 'unknown' and formInstanceId 'form_default'
+      const resDef = await repository.saveFormSnapshot({
+        domain: '',
+        formInstanceId: '',
+        title: '',
+        url: '',
+        editingTime: 42,
+        fields: [{ name: 'test_fld', type: 'text', value: 'hello' }],
+      });
+      expect(resDef.domainId).toBe('unknown');
+      const defForm = await db.forms.get(resDef.formId);
+      expect(defForm?.formInstanceId).toBe('form_default');
+      expect(defForm?.url).toBe('');
+      expect(defForm?.editingTime).toBe(42);
+      expect(resDef.revisionId.split('_')[2].length).toBe(5);
+      const fieldCount = await db.fields.where('formId').equals(resDef.formId).count();
+      expect(fieldCount).toBe(1);
+
+      // 2. Existing revisions sorting and filtering
+      const nowSort = Date.now();
+      await db.forms.put({
+        id: 'f_old',
+        domainId: 'sort-test.com',
+        formInstanceId: 'fi_sort',
+        revisionId: `rev_${nowSort}_abcde`,
+        revisionNumber: 1,
+        title: 'Old',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: nowSort,
+        status: 0,
+        url: 'https://sort.com',
+      });
+      await db.forms.put({
+        id: 'f_new',
+        domainId: 'sort-test.com',
+        formInstanceId: 'fi_sort',
+        revisionId: `rev_${nowSort + 100}_abcde`,
+        revisionNumber: 2,
+        title: 'New',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: nowSort + 100,
+        status: 0,
+        url: 'https://sort.com',
+      });
+      // Soft deleted form on same instance
+      await db.forms.put({
+        id: 'f_del_sort',
+        domainId: 'sort-test.com',
+        formInstanceId: 'fi_sort',
+        revisionId: `rev_${nowSort + 200}_abcde`,
+        revisionNumber: 3,
+        title: 'Del',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: nowSort + 200,
+        status: 1,
+        url: 'https://sort.com',
+      });
+      // Form on another domain
+      await db.forms.put({
+        id: 'f_other_dom',
+        domainId: 'other-sort.com',
+        formInstanceId: 'fi_sort',
+        revisionId: `rev_${nowSort + 300}_abcde`,
+        revisionNumber: 4,
+        title: 'Other Dom',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: nowSort + 300,
+        status: 0,
+        url: 'https://other.com',
+      });
+
+      // Saving without forceNewRevision updates the NEWEST active revision (f_new at 2000)
+      const resUpdate = await repository.saveFormSnapshot(
+        {
+          domain: 'sort-test.com',
+          formInstanceId: 'fi_sort',
+          title: 'Updated New',
+          url: 'https://sort.com',
+          editingTime: 1,
+          fields: [],
+        },
+        false,
+        false
+      );
+      expect(resUpdate.formId).toBe('f_new');
+      expect(resUpdate.revisionNumber).toBe(2);
+
+      // 3. Fallback when latestRevision has revisionId: '' and revisionNumber: 0
+      const nowFb = Date.now();
+      await db.forms.put({
+        id: 'f_fallback_test',
+        domainId: 'fb.com',
+        formInstanceId: 'fi_fb',
+        revisionId: '',
+        revisionNumber: 0,
+        title: 'FB',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: nowFb,
+        status: 0,
+        url: '',
+      });
+      const resFb = await repository.saveFormSnapshot(
+        {
+          domain: 'fb.com',
+          formInstanceId: 'fi_fb',
+          title: 'FB update',
+          url: '',
+          editingTime: 1,
+          fields: [],
+        },
+        false,
+        false
+      );
+      expect(resFb.revisionId).toBe(`rev_${nowFb}`);
+      expect(resFb.revisionNumber).toBe(1);
+
+      // 4. Revision pruning field deletion verification
+      const pruneDom = 'prune-fields-test.com';
+      for (let i = 1; i <= 12; i++) {
+        await repository.saveFormSnapshot(
+          {
+            domain: pruneDom,
+            formInstanceId: 'f_prune_fields',
+            title: `Rev ${i}`,
+            url: '',
+            editingTime: 1,
+            fields: [{ name: 'fld', type: 'text', value: `val_${i}` }],
+          },
+          false,
+          true
+        );
+      }
+      const remainingForms = await db.forms.where('domainId').equals(pruneDom).toArray();
+      expect(remainingForms.length).toBe(10);
+      const remainingFields = await db.fields.where('domainId').equals(pruneDom).toArray();
+      expect(remainingFields.length).toBe(10);
+    });
+
+    it('kills getRecoverableText fallback branches, deduplication, and limit mutants', async () => {
+      const domain = 'recov-branch-kill.com';
+
+      // Branch 1 exact match [domainId+name+type]
+      await db.fields.put({
+        id: 'fld_b1',
+        formId: 'form_b1',
+        domainId: domain,
+        revisionId: 'rev_1',
+        name: 'notes',
+        type: 'textarea',
+        value: 'ExactMatch',
+        encryption: 'none',
+        lastModified: 1000,
+        status: 0,
+      });
+      // Soft-deleted field with exact match
+      await db.fields.put({
+        id: 'fld_b1_del',
+        formId: 'form_b1_del',
+        domainId: domain,
+        revisionId: 'rev_1_del',
+        name: 'notes',
+        type: 'textarea',
+        value: 'ExactDeleted',
+        encryption: 'none',
+        lastModified: 1100,
+        status: 1,
+      });
+      const resB1 = await repository.getRecoverableText(domain, 'notes', 'textarea');
+      expect(resB1.length).toBe(1);
+      expect(resB1[0].value).toBe('ExactMatch');
+
+      // Branch 2: Fallback by field name (when type doesn't match)
+      await db.fields.clear();
+      await db.fields.put({
+        id: 'fld_b2_match',
+        formId: 'form_b2',
+        domainId: domain,
+        revisionId: 'rev_b2',
+        name: 'named_field',
+        type: 'custom_type',
+        value: 'NameMatchValue',
+        encryption: 'none',
+        lastModified: 2000,
+        status: 0,
+      });
+      // Soft deleted on branch 2
+      await db.fields.put({
+        id: 'fld_b2_del',
+        formId: 'form_b2',
+        domainId: domain,
+        revisionId: 'rev_b2',
+        name: 'named_field',
+        type: 'custom_type',
+        value: 'NameMatchDeleted',
+        encryption: 'none',
+        lastModified: 2100,
+        status: 1,
+      });
+      // Whitespace only on branch 2
+      await db.fields.put({
+        id: 'fld_b2_ws',
+        formId: 'form_b2',
+        domainId: domain,
+        revisionId: 'rev_b2',
+        name: 'named_field',
+        type: 'custom_type',
+        value: '    ',
+        encryption: 'none',
+        lastModified: 2200,
+        status: 0,
+      });
+      // Different name
+      await db.fields.put({
+        id: 'fld_b2_other',
+        formId: 'form_b2',
+        domainId: domain,
+        revisionId: 'rev_b2',
+        name: 'different_name',
+        type: 'custom_type',
+        value: 'OtherValue',
+        encryption: 'none',
+        lastModified: 2300,
+        status: 0,
+      });
+      const resB2 = await repository.getRecoverableText(domain, 'named_field', 'unmatched_type');
+      expect(resB2.length).toBe(1);
+      expect(resB2[0].value).toBe('NameMatchValue');
+
+      // Branch 3: Fallback to any recent field on domain (when name doesn't match)
+      await db.fields.clear();
+      await db.fields.put({
+        id: 'fld_b3_match',
+        formId: 'form_b3',
+        domainId: domain,
+        revisionId: 'rev_b3',
+        name: 'any_name',
+        type: 'any_type',
+        value: 'AnyFieldValue',
+        encryption: 'none',
+        lastModified: 3000,
+        status: 0,
+      });
+      // Soft-deleted on branch 3
+      await db.fields.put({
+        id: 'fld_b3_del',
+        formId: 'form_b3',
+        domainId: domain,
+        revisionId: 'rev_b3',
+        name: 'del_name',
+        type: 'del_type',
+        value: 'AnyFieldDeleted',
+        encryption: 'none',
+        lastModified: 3100,
+        status: 1,
+      });
+      // Whitespace on branch 3
+      await db.fields.put({
+        id: 'fld_b3_ws',
+        formId: 'form_b3',
+        domainId: domain,
+        revisionId: 'rev_b3',
+        name: 'ws_name',
+        type: 'ws_type',
+        value: '   ',
+        encryption: 'none',
+        lastModified: 3200,
+        status: 0,
+      });
+      const resB3 = await repository.getRecoverableText(
+        domain,
+        'completely_unknown',
+        'unknown_type'
+      );
+      expect(resB3.length).toBe(1);
+      expect(resB3[0].value).toBe('AnyFieldValue');
+
+      // Deduplication trimming test
+      await db.fields.clear();
+      await db.fields.put({
+        id: 'fld_dup1',
+        formId: 'f1',
+        domainId: domain,
+        revisionId: 'r1',
+        name: 'f',
+        type: 't',
+        value: '  Duplicate Text  ',
+        encryption: 'none',
+        lastModified: 1000,
+        status: 0,
+      });
+      await db.fields.put({
+        id: 'fld_dup2',
+        formId: 'f2',
+        domainId: domain,
+        revisionId: 'r2',
+        name: 'f',
+        type: 't',
+        value: 'Duplicate Text',
+        encryption: 'none',
+        lastModified: 2000,
+        status: 0,
+      });
+      const resDup = await repository.getRecoverableText(domain, 'f', 't');
+      expect(resDup.length).toBe(1);
+      expect(resDup[0].value).toBe('Duplicate Text');
+    });
+
+    it('kills getFormRevisions domain isolation and sorting mutants', async () => {
+      const domain = 'rev-sort-kill.com';
+      await db.forms.put({
+        id: 'f_rev_1',
+        domainId: domain,
+        formInstanceId: 'fi_1',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Rev 1',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'https://rev.com',
+      });
+      await db.forms.put({
+        id: 'f_rev_2',
+        domainId: domain,
+        formInstanceId: 'fi_1',
+        revisionId: 'r2',
+        revisionNumber: 2,
+        title: 'Rev 2',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 2000,
+        status: 0,
+        url: 'https://rev.com',
+      });
+      // Soft deleted form
+      await db.forms.put({
+        id: 'f_rev_del',
+        domainId: domain,
+        formInstanceId: 'fi_1',
+        revisionId: 'r_del',
+        revisionNumber: 3,
+        title: 'Rev Del',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 3000,
+        status: 1,
+        url: 'https://rev.com',
+      });
+      // Form on another domain
+      await db.forms.put({
+        id: 'f_rev_other_dom',
+        domainId: 'other-rev-domain.com',
+        formInstanceId: 'fi_1',
+        revisionId: 'r_other',
+        revisionNumber: 1,
+        title: 'Rev Other Dom',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 4000,
+        status: 0,
+        url: 'https://other.com',
+      });
+
+      const revs = await repository.getFormRevisions(domain, 'fi_1');
+      expect(revs.length).toBe(2);
+      expect(revs[0].form.lastModified).toBe(2000);
+      expect(revs[1].form.lastModified).toBe(1000);
+    });
+
+    it('kills getLatestFormRevisions, getDomainHistory, and getAllHistory sorting and limit mutants', async () => {
+      const domain = 'history-sort-kill.com';
+      for (let i = 1; i <= 6; i++) {
+        await db.forms.put({
+          id: `f_hist_${i}`,
+          domainId: domain,
+          formInstanceId: `fi_${i}`,
+          revisionId: `r_${i}`,
+          revisionNumber: 1,
+          title: `Hist ${i}`,
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: 1000 * i,
+          status: 0,
+          url: 'https://hist.com',
+        });
+      }
+      // Soft-deleted form
+      await db.forms.put({
+        id: 'f_hist_del',
+        domainId: domain,
+        formInstanceId: 'fi_del',
+        revisionId: 'r_del',
+        revisionNumber: 1,
+        title: 'Hist Del',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 99999,
+        status: 1,
+        url: 'https://hist.com',
+      });
+      // Form on another domain
+      await db.forms.put({
+        id: 'f_hist_other_dom',
+        domainId: 'other-hist-domain.com',
+        formInstanceId: 'fi_other',
+        revisionId: 'r_oth',
+        revisionNumber: 1,
+        title: 'Other Dom',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 8000,
+        status: 0,
+        url: 'https://other.com',
+      });
+
+      // getLatestFormRevisions (default limit = 5)
+      const latest5 = await repository.getLatestFormRevisions(domain, 5);
+      expect(latest5.length).toBe(5);
+      expect(latest5[0].form.lastModified).toBe(6000);
+      expect(latest5[4].form.lastModified).toBe(2000);
+
+      // getDomainHistory (limit = 2)
+      const domHist = await repository.getDomainHistory(domain, 2);
+      expect(domHist.length).toBe(2);
+      expect(domHist[0].form.lastModified).toBe(6000);
+      expect(domHist[1].form.lastModified).toBe(5000);
+
+      // getAllHistory (limit = 2)
+      const allHist = await repository.getAllHistory(2);
+      expect(allHist.length).toBe(2);
+      expect(allHist[0].form.lastModified).toBe(8000);
+      expect(allHist[1].form.lastModified).toBe(6000);
+    });
+
+    it('kills searchHistory empty query, field matching, case matching, and locked decryption mutants', async () => {
+      await db.forms.clear();
+      await db.fields.clear();
+
+      await db.forms.put({
+        id: 'f_s1',
+        domainId: 'domain-one.com',
+        formInstanceId: 'fi1',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Alphabet Alpha Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'https://domain-one.com/login',
+      });
+      await db.forms.put({
+        id: 'f_s2',
+        domainId: 'domain-two.com',
+        formInstanceId: 'fi2',
+        revisionId: 'r2',
+        revisionNumber: 1,
+        title: 'Beta Document Submission',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 2000,
+        status: 0,
+        url: 'https://domain-two.com/submit',
+      });
+      await db.fields.put({
+        id: 'fld_s_custom',
+        formId: 'f_s1',
+        domainId: 'domain-one.com',
+        revisionId: 'r1',
+        name: 'custom_query_field_name',
+        type: 'text',
+        value: 'regular_value',
+        encryption: 'none',
+        lastModified: 1000,
+        status: 0,
+      });
+      await db.fields.put({
+        id: 'fld_s_val',
+        formId: 'f_s2',
+        domainId: 'domain-two.com',
+        revisionId: 'r2',
+        name: 'other_field',
+        type: 'text',
+        value: 'UniqueSecretValueInsideField',
+        encryption: 'none',
+        lastModified: 2000,
+        status: 0,
+      });
+
+      // 1. Empty query (returns newest first, respects limit)
+      const emptyRes = await repository.searchHistory('', 1);
+      expect(emptyRes.length).toBe(1);
+      expect(emptyRes[0].form.id).toBe('f_s2');
+
+      // 2. Search by field name
+      const fnRes = await repository.searchHistory('custom_query_field');
+      expect(fnRes.length).toBe(1);
+      expect(fnRes[0].form.id).toBe('f_s1');
+
+      // 3. Search by field value (case insensitive)
+      const fvRes = await repository.searchHistory('uniquesecretvalue');
+      expect(fvRes.length).toBe(1);
+      expect(fvRes[0].form.id).toBe('f_s2');
+
+      // 4. Search by domainId (case insensitive)
+      const domRes = await repository.searchHistory('DOMAIN-ONE');
+      expect(domRes.length).toBe(1);
+      expect(domRes[0].form.id).toBe('f_s1');
+
+      // 5. Search with locked encrypted form URL and encrypted field value
+      await db.forms.put({
+        id: 'f_enc',
+        domainId: 'enc-domain.com',
+        formInstanceId: 'fi_enc',
+        revisionId: 'r_enc',
+        revisionNumber: 1,
+        title: 'Encrypted Form',
+        encryption: 'hybrid-aes-gcm',
+        editingTime: 1,
+        lastModified: 3000,
+        status: 0,
+        url: 'ciphertext_should_not_match',
+      });
+      await db.fields.put({
+        id: 'fld_enc',
+        formId: 'f_enc',
+        domainId: 'enc-domain.com',
+        revisionId: 'r_enc',
+        name: 'unmatched_name',
+        type: 'text',
+        value: 'ciphertext_field_value',
+        encryption: 'hybrid-aes-gcm',
+        lastModified: 3000,
+        status: 0,
+      });
+      // Vault is locked, so decrypt fails and returns ''
+      const encUrlMatch = await repository.searchHistory('ciphertext_should_not_match');
+      expect(encUrlMatch.length).toBe(0);
+      const encFieldMatch = await repository.searchHistory('ciphertext_field_value');
+      expect(encFieldMatch.length).toBe(0);
+
+      // Search limit parameter
+      const bothRes = await repository.searchHistory('domain', 1);
+      expect(bothRes.length).toBe(1);
+      expect(bothRes[0].form.id).toBe('f_enc'); // highest timestamp (3000)
+
+      // Test searching for "Stryker was here!" against empty url/values
+      await db.forms.put({
+        id: 'f_empty_url',
+        domainId: 'empty.com',
+        formInstanceId: 'fi_emp',
+        revisionId: 'r_emp',
+        revisionNumber: 1,
+        title: 'Empty URL Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 500,
+        status: 0,
+        url: '',
+      });
+      await db.fields.put({
+        id: 'fld_empty_val',
+        formId: 'f_empty_url',
+        domainId: 'empty.com',
+        revisionId: 'r_emp',
+        name: 'empty_val_name',
+        type: 'text',
+        value: '',
+        encryption: 'none',
+        lastModified: 500,
+        status: 0,
+      });
+      const strykerRes = await repository.searchHistory('Stryker was here!');
+      expect(strykerRes.length).toBe(0);
+
+      // Test optional chaining when title, domainId, or field name are undefined
+      await db.forms.put({
+        id: 'f_undef',
+        domainId: undefined as any,
+        formInstanceId: 'fi_undef',
+        revisionId: 'r_undef',
+        revisionNumber: 1,
+        title: undefined as any,
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 400,
+        status: 0,
+        url: 'https://undef.com',
+      });
+      await db.fields.put({
+        id: 'fld_undef',
+        formId: 'f_undef',
+        domainId: 'undef.com',
+        revisionId: 'r_undef',
+        name: undefined as any,
+        type: 'text',
+        value: 'SomeVal',
+        encryption: 'none',
+        lastModified: 400,
+        status: 0,
+      });
+      const undefRes = await repository.searchHistory('nomatch');
+      expect(undefRes.length).toBe(0);
+    });
+
+    it('kills formatFormOutput and getRecoverableForm locked draft and status filtering mutants', async () => {
+      // Vault is locked
+      vault.lock();
+      await db.forms.put({
+        id: 'f_locked',
+        domainId: '',
+        formInstanceId: 'fi_lock',
+        revisionId: 'r_lock',
+        revisionNumber: 0,
+        title: 'Locked Form',
+        encryption: 'hybrid-aes-gcm',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'enc_url_string',
+        isFinalSubmit: true,
+      });
+      await db.fields.put({
+        id: 'fld_locked_active',
+        formId: 'f_locked',
+        domainId: 'd',
+        revisionId: 'r_lock',
+        name: 'secure_input',
+        type: 'text',
+        value: 'enc_val_string',
+        encryption: 'hybrid-aes-gcm',
+        lastModified: 1000,
+        status: 0,
+      });
+      await db.fields.put({
+        id: 'fld_locked_deleted',
+        formId: 'f_locked',
+        domainId: 'd',
+        revisionId: 'r_lock',
+        name: 'deleted_input',
+        type: 'text',
+        value: 'deleted_val',
+        encryption: 'hybrid-aes-gcm',
+        lastModified: 1000,
+        status: 1, // soft-deleted
+      });
+
+      // getRecoverableForm
+      const rec = await repository.getRecoverableForm('f_locked');
+      expect(rec.form?.url).toBe('[Encrypted URL]');
+      expect(rec.fields.length).toBe(1);
+      expect(rec.fields[0].value).toBe('[Locked Draft]');
+
+      // Non-existent form
+      const nonExistent = await repository.getRecoverableForm('does_not_exist_form_id');
+      expect(nonExistent.form).toBeNull();
+      expect(nonExistent.fields).toEqual([]);
+
+      // formatFormOutput tested via getAllHistory
+      const historyItems = await repository.getAllHistory(1);
+      expect(historyItems[0].form.url).toBe('[Encrypted URL]');
+      expect(historyItems[0].form.domain).toBe('unknown');
+      expect(historyItems[0].form.revisionNumber).toBe(1);
+      expect(historyItems[0].form.isFinalSubmit).toBe(true);
+      expect(historyItems[0].fields.length).toBe(1);
+      expect(historyItems[0].fields[0].value).toBe('[Locked Draft]');
+    });
+
+    it('kills exportAllData settings mutant strictly', async () => {
+      const exp = await repository.exportAllData();
+      expect(exp.settings.autoLockMinutes).toBe(15);
+      expect(exp.settings.expireFormsInterval).toBe(10);
+      expect(exp.settings.filterCreditCards).toBe(true);
+    });
+
+    it('kills saveFormSnapshot defaults, field filtering, and typing mutants strictly', async () => {
+      // 1. snapshot.domain empty string -> domain property 'unknown'
+      const snap1 = await repository.saveFormSnapshot({
+        domain: '',
+        formInstanceId: '',
+        url: 'https://example.com',
+        title: '',
+        editingTime: 1,
+        fields: [
+          { name: 'has_name', value: '' } as any,
+          { name: '', value: 'has_value' } as any,
+          { name: '', value: '' } as any, // skipped
+          { name: 'custom_type_field', value: 'custom_val', type: 'custom_type' },
+          { name: 'default_type_field', value: 'def_val', type: '' },
+        ],
+      });
+      expect(snap1.domainId).toBe('unknown');
+      const savedDom = await db.domains.get('unknown');
+      expect(savedDom?.domain).toBe('unknown');
+
+      // Check formInstanceId default
+      const savedForm = await db.forms.get(snap1.formId);
+      expect(savedForm?.formInstanceId).toBe('form_default');
+
+      // Check fields in db
+      const savedFields = await db.fields.where('formId').equals(snap1.formId).toArray();
+      // Should have 4 fields (skipped the one with empty name AND empty value)
+      expect(savedFields.length).toBe(4);
+
+      const fieldHasName = savedFields.find((f) => f.name === 'has_name');
+      expect(fieldHasName).toBeDefined();
+      expect(fieldHasName?.type).toBe('text');
+      expect(fieldHasName?.value).toBe('');
+
+      const fieldHasVal = savedFields.find((f) => f.value === 'has_value');
+      expect(fieldHasVal).toBeDefined();
+      expect(fieldHasVal?.name).toBe('field_anonymous');
+      expect(fieldHasVal?.type).toBe('text');
+
+      const customTypeField = savedFields.find((f) => f.name === 'custom_type_field');
+      expect(customTypeField?.type).toBe('custom_type');
+
+      const defaultTypeField = savedFields.find((f) => f.name === 'default_type_field');
+      expect(defaultTypeField?.type).toBe('text');
+
+      // Test optional chaining on revisionId when latestRevision has revisionId: undefined
+      await db.forms.put({
+        id: 'f_no_rev_id',
+        domainId: 'no-rev.com',
+        formInstanceId: 'inst_no_rev',
+        revisionId: undefined as any,
+        revisionNumber: 1,
+        title: 'No Rev',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'https://no-rev.com',
+      });
+      const noRevSnap = await repository.saveFormSnapshot({
+        domain: 'no-rev.com',
+        formInstanceId: 'inst_no_rev',
+        url: 'https://no-rev.com',
+        title: 'No Rev 2',
+        editingTime: 1,
+        fields: [{ name: 'f', type: 'text', value: 'v' }],
+      });
+      expect(noRevSnap.revisionNumber).toBe(2);
+    });
+
+    it('kills saveFormSnapshot active session revision update vs idle timeout mutants', async () => {
+      const base = {
+        domain: 'timeout-test.com',
+        formInstanceId: 'inst_timeout',
+        url: 'https://timeout-test.com',
+        title: 'Timeout Test',
+        editingTime: 1,
+        fields: [{ name: 'test', type: 'text', value: 'v1' }],
+      };
+
+      const now = 1000000;
+      const dateSpy = vi.spyOn(Date, 'now').mockReturnValue(now);
+
+      const first = await repository.saveFormSnapshot(base);
+      expect(first.revisionNumber).toBe(1);
+
+      // Save again 1 minute later (within 5-min milestone and 15-min idle timeout)
+      dateSpy.mockReturnValue(now + 1 * 60 * 1000);
+      const second = await repository.saveFormSnapshot(base);
+      // Must NOT spawn a new revision
+      expect(second.revisionId).toBe(first.revisionId);
+      expect(second.formId).toBe(first.formId);
+      expect(second.revisionNumber).toBe(1);
+
+      // Save again 16 minutes after the last revision (idle timeout reached: 16 min > 15 min)
+      dateSpy.mockReturnValue(now + (1 + 16) * 60 * 1000);
+      const third = await repository.saveFormSnapshot(base);
+      // Must spawn a new revision
+      expect(third.revisionId).not.toBe(first.revisionId);
+      expect(third.formId).not.toBe(first.formId);
+      expect(third.revisionNumber).toBe(2);
+
+      dateSpy.mockRestore();
+    });
+
+    it('kills saveFormSnapshot pruning boundaries and isFinalSubmit preservation mutants', async () => {
+      const base = {
+        domain: 'prune-boundary.com',
+        formInstanceId: 'inst_prune',
+        url: 'https://prune-boundary.com',
+        title: 'Prune Boundary',
+        editingTime: 1,
+        fields: [{ name: 'f', type: 'text', value: 'v' }],
+      };
+
+      // Seed 10 revisions with distinct ascending timestamps
+      const dateSpy = vi.spyOn(Date, 'now');
+      for (let i = 1; i <= 10; i++) {
+        dateSpy.mockReturnValue(10000 + i * 1000);
+        await repository.saveFormSnapshot(base, false, true);
+      }
+      expect(await db.forms.where('formInstanceId').equals('inst_prune').count()).toBe(10);
+
+      // Find the oldest revision (lowest timestamp) and mark it isFinalSubmit: true
+      const allRevs = await db.forms.where('formInstanceId').equals('inst_prune').toArray();
+      allRevs.sort((a, b) => a.lastModified - b.lastModified);
+      const oldestRev = allRevs[0];
+      await db.forms.update(oldestRev.id, { isFinalSubmit: true });
+
+      // Save 11th revision at a higher timestamp
+      dateSpy.mockReturnValue(50000);
+      await repository.saveFormSnapshot(base, false, true);
+
+      // Oldest revision must NOT have been pruned because isFinalSubmit is true
+      const oldestStillExists = await db.forms.get(oldestRev.id);
+      expect(oldestStillExists).toBeDefined();
+      expect(oldestStillExists?.isFinalSubmit).toBe(true);
+      expect(await db.forms.where('formInstanceId').equals('inst_prune').count()).toBe(11);
+
+      // Save 12th revision: revisionsToPrune has 2 items (non-final at index 9, final at index 10)
+      // Non-final is pruned, final is kept
+      dateSpy.mockReturnValue(60000);
+      await repository.saveFormSnapshot(base, false, true);
+
+      expect(await db.forms.get(oldestRev.id)).toBeDefined();
+      expect(await db.forms.where('formInstanceId').equals('inst_prune').count()).toBe(11);
+
+      dateSpy.mockRestore();
+    });
+
+    it('kills getRecoverableText exact match vs fallback and limit mutants', async () => {
+      const domain = 'recov-text-precise.com';
+      const domainId = normalizeDomainId(domain);
+
+      // Field 1: exact match for ('recov-text-precise.com', 'notes', 'textarea')
+      await db.fields.put({
+        id: 'fld_exact',
+        formId: 'form_1',
+        domainId,
+        revisionId: 'rev_1',
+        name: 'notes',
+        type: 'textarea',
+        value: 'exact textarea value',
+        encryption: 'none',
+        lastModified: 1000,
+        status: 0,
+      });
+
+      // Field 1b: soft-deleted field with exact match -> should NOT be returned
+      await db.fields.put({
+        id: 'fld_exact_deleted',
+        formId: 'form_deleted',
+        domainId,
+        revisionId: 'rev_del',
+        name: 'notes',
+        type: 'textarea',
+        value: 'deleted textarea value',
+        encryption: 'none',
+        lastModified: 1500,
+        status: 1, // soft deleted
+      });
+
+      // Field 2: same name 'notes', different type 'text', NEWER timestamp 2000
+      await db.fields.put({
+        id: 'fld_other_type',
+        formId: 'form_2',
+        domainId,
+        revisionId: 'rev_2',
+        name: 'notes',
+        type: 'text',
+        value: 'newer text value',
+        encryption: 'none',
+        lastModified: 2000,
+        status: 0,
+      });
+
+      // Field with whitespace-only value -> should be filtered out strictly by f.value.trim()
+      await db.fields.put({
+        id: 'fld_whitespace',
+        formId: 'form_ws',
+        domainId,
+        revisionId: 'rev_ws',
+        name: 'whitespace_field',
+        type: 'text',
+        value: '   ',
+        encryption: 'none',
+        lastModified: 1000,
+        status: 0,
+      });
+      const wsRes = await repository.getRecoverableText(domain, 'whitespace_field', 'text');
+      expect(wsRes.some((item) => item.name === 'whitespace_field')).toBe(false);
+
+      // Query looking specifically for ('notes', 'textarea')
+      // Step 1 matches Field 1. If step 2 runs, it would include Field 2 which is newer!
+      const exactRes = await repository.getRecoverableText(domain, 'notes', 'textarea');
+      expect(exactRes.length).toBe(1);
+      expect(exactRes[0].value).toBe('exact textarea value');
+
+      // Test limit of 10 unique values
+      for (let i = 1; i <= 15; i++) {
+        await db.fields.put({
+          id: `fld_lim_${i}`,
+          formId: `form_lim_${i}`,
+          domainId,
+          revisionId: `rev_lim_${i}`,
+          name: 'limit_field',
+          type: 'text',
+          value: `Unique Value ${i}`,
+          encryption: 'none',
+          lastModified: 3000 + i,
+          status: 0,
+        });
+      }
+      const limitRes = await repository.getRecoverableText(domain, 'limit_field', 'text');
+      expect(limitRes.length).toBe(10);
+      // Values are sorted newest first
+      expect(limitRes[0].value).toBe('Unique Value 15');
+      expect(limitRes[9].value).toBe('Unique Value 6');
+    });
+
+    it('kills getFormRevisions and getLatestFormRevisions filtering and limit mutants', async () => {
+      const domain = 'revisions-filter.com';
+      const domainId = normalizeDomainId(domain);
+
+      // Form 0: Form on a domain that sorts before 'revisions-filter.com' alphabetically,
+      // with a newer timestamp so that if [domainId, Dexie.minKey] is mutated to [], it would leak into top results
+      await db.forms.put({
+        id: 'f_rev_aaa',
+        domainId: 'aaa-other.com',
+        formInstanceId: 'other_domain_inst',
+        revisionId: 'r_aaa',
+        revisionNumber: 1,
+        title: 'AAA Domain Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 999999,
+        status: 0,
+        url: 'https://aaa-other.com',
+      });
+
+      // Form 1: matching instance, active
+      await db.forms.put({
+        id: 'f_rev_1',
+        domainId,
+        formInstanceId: 'target_inst',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Rev 1',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'https://test.com',
+      });
+      // Form 2: different instance
+      await db.forms.put({
+        id: 'f_rev_2',
+        domainId,
+        formInstanceId: 'other_inst',
+        revisionId: 'r2',
+        revisionNumber: 1,
+        title: 'Other Inst',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 2000,
+        status: 0,
+        url: 'https://test.com',
+      });
+      // Form 3: matching instance, but soft-deleted (status: 1)
+      await db.forms.put({
+        id: 'f_rev_3',
+        domainId,
+        formInstanceId: 'target_inst',
+        revisionId: 'r3',
+        revisionNumber: 2,
+        title: 'Deleted Rev',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 3000,
+        status: 1,
+        url: 'https://test.com',
+      });
+
+      const revisions = await repository.getFormRevisions(domain, 'target_inst');
+      expect(revisions.length).toBe(1);
+      expect(revisions[0].form.id).toBe('f_rev_1');
+
+      // Test getLatestFormRevisions default limit (5) and custom limit
+      for (let i = 10; i <= 20; i++) {
+        await db.forms.put({
+          id: `f_latest_${i}`,
+          domainId,
+          formInstanceId: `inst_${i}`,
+          revisionId: `r_${i}`,
+          revisionNumber: 1,
+          title: `Form ${i}`,
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: 5000 + i,
+          status: 0,
+          url: 'https://test.com',
+        });
+      }
+
+      const latestDefault = await repository.getLatestFormRevisions(domain);
+      expect(latestDefault.length).toBe(5);
+      // Ensure none of the results belong to aaa-other.com
+      for (const item of latestDefault) {
+        expect(item.form.domain).toBe(domain);
+      }
+
+      const latestCustom = await repository.getLatestFormRevisions(domain, 3);
+      expect(latestCustom.length).toBe(3);
+    });
+
+    it('kills searchHistory empty query delegation, sorter, and matching mutants', async () => {
+      // 1. Empty query delegation
+      const getAllSpy = vi.spyOn(repository, 'getAllHistory');
+      await repository.searchHistory('', 7);
+      expect(getAllSpy).toHaveBeenCalledWith(7);
+      getAllSpy.mockClear();
+
+      await repository.searchHistory('   ', 4);
+      expect(getAllSpy).toHaveBeenCalledWith(4);
+      getAllSpy.mockClear();
+
+      await repository.searchHistory();
+      expect(getAllSpy).toHaveBeenCalledWith(20);
+      getAllSpy.mockRestore();
+
+      // 2. Sorter b.lastModified - a.lastModified (kills b + a and missing sort)
+      await db.forms.clear();
+      // Insert in ASCENDING timestamp order (Form 1=1000, Form 2=2000, Form 3=3000)
+      await db.forms.put({
+        id: 'f_search_1',
+        domainId: 'search-sort.com',
+        formInstanceId: 'inst_1',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'QueryMatch Oldest',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 1000,
+        status: 0,
+        url: 'https://search-sort.com',
+      });
+      await db.forms.put({
+        id: 'f_search_2',
+        domainId: 'search-sort.com',
+        formInstanceId: 'inst_2',
+        revisionId: 'r2',
+        revisionNumber: 1,
+        title: 'QueryMatch Middle',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 2000,
+        status: 0,
+        url: 'https://search-sort.com',
+      });
+      await db.forms.put({
+        id: 'f_search_3',
+        domainId: 'search-sort.com',
+        formInstanceId: 'inst_3',
+        revisionId: 'r3',
+        revisionNumber: 1,
+        title: 'QueryMatch Newest',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 3000,
+        status: 0,
+        url: 'https://search-sort.com',
+      });
+      // Non-matching form
+      await db.forms.put({
+        id: 'f_non_matching',
+        domainId: 'other.com',
+        formInstanceId: 'inst_4',
+        revisionId: 'r4',
+        revisionNumber: 1,
+        title: 'Completely Different Title',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 4000,
+        status: 0,
+        url: 'https://other.com',
+      });
+
+      const searchRes = await repository.searchHistory('QueryMatch');
+      expect(searchRes.length).toBe(3);
+      expect(searchRes[0].form.id).toBe('f_search_3');
+      expect(searchRes[1].form.id).toBe('f_search_2');
+      expect(searchRes[2].form.id).toBe('f_search_1');
+
+      // Test searchHistory limit
+      const searchLimited = await repository.searchHistory('QueryMatch', 1);
+      expect(searchLimited.length).toBe(1);
+      expect(searchLimited[0].form.id).toBe('f_search_3');
+
+      // 3. getAllHistory default limit (50) and custom limit
+      for (let i = 1; i <= 60; i++) {
+        await db.forms.put({
+          id: `f_all_${i}`,
+          domainId: 'all.com',
+          formInstanceId: `inst_${i}`,
+          revisionId: `r_${i}`,
+          revisionNumber: 1,
+          title: `All ${i}`,
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: 5000 + i,
+          status: 0,
+          url: 'https://all.com',
+        });
+      }
+      const allDefault = await repository.getAllHistory();
+      expect(allDefault.length).toBe(50);
+
+      const allCustom = await repository.getAllHistory(12);
+      expect(allCustom.length).toBe(12);
+
+      // 4. getDomainHistory domain isolation and soft-delete filtering
+      await db.forms.clear();
+      await db.forms.put({
+        id: 'f_dom_active',
+        domainId: 'target-dom.com',
+        formInstanceId: 'inst_1',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Active Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 2000,
+        status: 0,
+        url: 'https://target-dom.com',
+      });
+      await db.forms.put({
+        id: 'f_dom_deleted',
+        domainId: 'target-dom.com',
+        formInstanceId: 'inst_2',
+        revisionId: 'r2',
+        revisionNumber: 1,
+        title: 'Deleted Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 3000,
+        status: 1, // soft-deleted
+        url: 'https://target-dom.com',
+      });
+      await db.forms.put({
+        id: 'f_other_dom',
+        domainId: 'other-dom.com',
+        formInstanceId: 'inst_3',
+        revisionId: 'r3',
+        revisionNumber: 1,
+        title: 'Other Dom Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: 4000,
+        status: 0,
+        url: 'https://other-dom.com',
+      });
+
+      const domHist = await repository.getDomainHistory('target-dom.com');
+      expect(domHist.length).toBe(1);
+      expect(domHist[0].form.id).toBe('f_dom_active');
     });
   });
 });

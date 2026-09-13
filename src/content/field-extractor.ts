@@ -15,7 +15,7 @@ export class FieldExtractor {
     const tag = element.tagName;
     if (tag === 'INPUT') {
       const input = element as HTMLInputElement;
-      const type = (input.type || 'text').toLowerCase();
+      const type = input.type.toLowerCase();
       if (type === 'password') {
         return savePasswords;
       }
@@ -61,7 +61,7 @@ export class FieldExtractor {
       element.getAttribute('placeholder') ||
       '';
     let type = tag.toLowerCase();
-    let value = '';
+    let value: string;
 
     if (tag === 'INPUT') {
       const input = element as HTMLInputElement;
@@ -136,14 +136,12 @@ export class FieldExtractor {
     const fields: FieldSnapshot[] = [];
 
     // If container itself is a trackable field (e.g. contenteditable root), extract it
-    if (this.isTrackable(container, options.savePasswords)) {
-      const selfSnapshot = this.extractField(container, options);
-      if (
-        selfSnapshot &&
-        (selfSnapshot.value.trim().length > 0 || selfSnapshot.type === 'checkbox')
-      ) {
-        fields.push(selfSnapshot);
-      }
+    const selfSnapshot = this.extractField(container, options);
+    if (
+      selfSnapshot &&
+      (selfSnapshot.value.trim().length > 0 || selfSnapshot.type === 'checkbox')
+    ) {
+      fields.push(selfSnapshot);
     }
 
     const elements = queryAllDeep(
@@ -170,7 +168,7 @@ export class FieldExtractor {
     options: ExtractorOptions = {}
   ): FormSnapshot {
     const formElement = target.closest('form');
-    let formInstanceId = 'fake_form';
+    let formInstanceId: string;
     let fields: FieldSnapshot[] = [];
 
     if (formElement) {
@@ -206,10 +204,7 @@ export class FieldExtractor {
     }
 
     const domain =
-      (typeof window !== 'undefined' && window.location?.hostname) ||
-      (typeof window !== 'undefined' && window.location?.protocol === 'file:'
-        ? 'local file'
-        : 'unknown');
+      window.location.hostname || (window.location.protocol === 'file:' ? 'local file' : 'unknown');
 
     return {
       formInstanceId,
@@ -226,8 +221,7 @@ export function getFormActionIdentifier(form: HTMLFormElement): string {
   const action = form.getAttribute('action');
   if (action) {
     try {
-      const base = typeof window !== 'undefined' ? window.location.origin : 'https://example.com';
-      const path = new URL(action, base).pathname;
+      const path = new URL(action, 'https://example.com').pathname;
       const clean = path.replace(/[^a-zA-Z0-9_-]/g, '_').replace(/^_+|_+$/g, '');
       if (clean) return `form_${clean}`;
     } catch {}

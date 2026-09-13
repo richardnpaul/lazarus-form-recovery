@@ -8,9 +8,12 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
   let sentMessages: any[] = [];
   let root: HTMLElement;
 
+  let customResponses: any[] = [];
+
   beforeEach(() => {
     vi.useFakeTimers();
     sentMessages = [];
+    customResponses = [];
     document.body.innerHTML = '';
     document.documentElement.querySelectorAll('lazarus-recovery-host').forEach((el) => el.remove());
 
@@ -20,6 +23,16 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
     // Intercept chrome.runtime.sendMessage
     vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
       sentMessages.push(msg);
+      if (customResponses.length > 0) {
+        const next = customResponses.shift();
+        if (typeof next === 'function') {
+          return next(msg);
+        }
+        if (next instanceof Error) {
+          throw next;
+        }
+        return next;
+      }
       if (msg.type === 'GET_RECOVERABLE_FORM') {
         return {
           success: true,
@@ -82,15 +95,42 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       });
     });
 
-    it('clears autosaveTimer on stop()', () => {
+    it('registers and unregisters chrome.runtime.onMessage listeners and handles stop branches', () => {
+      const addListenerSpy = vi.spyOn(chrome.runtime.onMessage, 'addListener');
+      const removeListenerSpy = vi.spyOn(chrome.runtime.onMessage, 'removeListener');
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+      const testTracker = new FormTracker(root);
+      testTracker.start();
+      expect(addListenerSpy).toHaveBeenCalledWith((testTracker as any).onRuntimeMessageBound);
+
+      // 1. stop with active autosaveTimer
       const input = document.createElement('input');
       root.appendChild(input);
+      (testTracker as any).handleInput({ target: input, composedPath: () => [input] });
+      expect((testTracker as any).autosaveTimer).not.toBeNull();
 
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      expect((tracker as any).autosaveTimer).not.toBeNull();
+      testTracker.stop();
+      expect(clearSpy).toHaveBeenCalled();
+      expect((testTracker as any).autosaveTimer).toBeNull();
+      expect(removeListenerSpy).toHaveBeenCalledWith((testTracker as any).onRuntimeMessageBound);
 
-      tracker.stop();
-      expect((tracker as any).autosaveTimer).toBeNull();
+      // Verify timer does not fire after stop
+      vi.advanceTimersByTime(300);
+      expect(sentMessages.length).toBe(0);
+
+      // 2. stop without active autosaveTimer
+      clearSpy.mockClear();
+      removeListenerSpy.mockClear();
+      testTracker.stop();
+      expect(clearSpy).not.toHaveBeenCalled();
+
+      // 3. stop when isExtensionContextValid is false
+      const ctxSpy = vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
+      removeListenerSpy.mockClear();
+      testTracker.stop();
+      expect(removeListenerSpy).not.toHaveBeenCalled();
+      ctxSpy.mockRestore();
     });
   });
 
@@ -105,12 +145,18 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       form.appendChild(input);
       root.appendChild(form);
 
-      // Fire multiple rapid input events
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+      // First input: timer is null, clearTimeout not called
       input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect(clearSpy).not.toHaveBeenCalled();
+      expect((tracker as any).autosaveTimer).not.toBeNull();
       vi.advanceTimersByTime(200);
 
+      // Second input: timer is active, clearTimeout IS called
       input.value = 'Hello world';
       input.dispatchEvent(new Event('input', { bubbles: true }));
+      expect(clearSpy).toHaveBeenCalled();
       vi.advanceTimersByTime(200);
 
       input.value = 'Hello world!';
@@ -165,24 +211,32 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(sentMessages.length).toBe(1); // Still 1
     });
 
-    it('flushes autosave immediately upon pagehide or beforeunload', () => {
+    it('flushes autosave immediately upon pagehide or beforeunload and manages timer', () => {
       const input = document.createElement('input');
       input.placeholder = 'Search GitHub';
       input.value = 'lazarus form recovery';
       root.appendChild(input);
 
-      // Must interact to set lastInteractedElement
+      // Interact to set lastInteractedElement
       input.dispatchEvent(new Event('focus', { bubbles: true }));
       input.dispatchEvent(new Event('input', { bubbles: true }));
       expect(sentMessages.length).toBe(0);
+      expect((tracker as any).autosaveTimer).not.toBeNull();
 
-      // Page navigates away immediately (triggers pagehide)
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
+
+      // Page navigates away immediately (triggers pagehide) with active timer
       window.dispatchEvent(new Event('pagehide'));
+      expect(clearSpy).toHaveBeenCalled();
+      expect((tracker as any).autosaveTimer).toBeNull();
       expect(sentMessages.length).toBe(1);
       expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
 
+      // Page navigates away when timer is already null
+      clearSpy.mockClear();
       sentMessages = [];
       window.dispatchEvent(new Event('beforeunload'));
+      expect(clearSpy).not.toHaveBeenCalled();
       expect(sentMessages.length).toBe(1);
     });
 
@@ -214,29 +268,59 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
     });
 
     it('tracks active editing time and resets on idle gaps > 5 mins', () => {
-      const form = document.createElement('form');
-      form.id = 'time-tracker-form';
-      const input = document.createElement('input');
-      form.appendChild(input);
-      root.appendChild(form);
+      // 1. Initial call returns 0
+      const t1 = (tracker as any).updateEditingTime('time-form');
+      expect(t1).toBe(0);
 
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      // Advance by 1 minute
-      vi.advanceTimersByTime(60000);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      // 2. 50s later (< 300,000ms idle): returns 50
+      vi.advanceTimersByTime(50000);
+      const t2 = (tracker as any).updateEditingTime('time-form');
+      expect(t2).toBe(50);
 
-      // Advance by 6 minutes (idle threshold)
-      vi.advanceTimersByTime(360000);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
+      // 3. Exactly 300,000ms later (idleTime <= EDITING_IDLE_TIME): accumulates 300s -> 350
+      vi.advanceTimersByTime(300000);
+      const t3 = (tracker as any).updateEditingTime('time-form');
+      expect(t3).toBe(350);
+
+      // 4. Exactly 300,001ms later (idleTime > EDITING_IDLE_TIME): resets burst start, does not accumulate -> 350
+      vi.advanceTimersByTime(300001);
+      const t4 = (tracker as any).updateEditingTime('time-form');
+      expect(t4).toBe(350);
+
+      // 5. 10s later in new active burst: accumulates 10s -> 360
+      vi.advanceTimersByTime(10000);
+      const t5 = (tracker as any).updateEditingTime('time-form');
+      expect(t5).toBe(360);
     });
 
-    it('passes strict false to isTrackable internally', () => {
+    it('resolves getFormId correctly for id, name, form_wrapper, and fake_form', () => {
+      // Form with id
+      const f1 = document.createElement('form');
+      f1.id = 'form-id-1';
+      expect((tracker as any).getFormId(f1)).toBe('form-id-1');
+
+      // Form with name only
+      const f2 = document.createElement('form');
+      f2.setAttribute('name', 'form-name-2');
+      expect((tracker as any).getFormId(f2)).toBe('form-name-2');
+
+      // Form with neither id nor name
+      const f3 = document.createElement('form');
+      expect((tracker as any).getFormId(f3)).toBe('form_wrapper');
+
+      // Null form element
+      expect((tracker as any).getFormId(null)).toBe('fake_form');
+    });
+
+    it('passes strict false to isTrackable internally and attaches recovery UI on focus', () => {
       const spy = vi.spyOn(FieldExtractor, 'isTrackable');
       const input = document.createElement('input');
       root.appendChild(input);
 
-      input.dispatchEvent(new Event('focus', { bubbles: true }));
-      expect(spy).toHaveBeenCalledWith(input, false); // must explicitly assert false!
+      (tracker as any).handleFocus({ target: input, composedPath: () => [input] });
+      expect(spy).toHaveBeenCalledWith(input, false);
+      expect((tracker as any).lastInteractedElement).toBe(input);
+      expect(document.querySelector('lazarus-recovery-host')).not.toBeNull();
     });
 
     it('ignores input events on invalid elements and password fields', () => {
@@ -250,9 +334,19 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       form.appendChild(pass);
       root.appendChild(form);
 
+      (tracker as any).lastInteractedElement = null;
+      (tracker as any).autosaveTimer = null;
       pass.dispatchEvent(new Event('input', { bubbles: true }));
+      expect((tracker as any).autosaveTimer).toBeNull();
+      expect((tracker as any).lastInteractedElement).toBeNull();
       vi.advanceTimersByTime(300);
       expect(sentMessages.length).toBe(0);
+
+      // Non-trackable element directly passed to handleInput
+      const untrackable = document.createElement('div');
+      (tracker as any).handleInput({ target: untrackable, composedPath: () => [untrackable] });
+      expect((tracker as any).autosaveTimer).toBeNull();
+      expect((tracker as any).lastInteractedElement).toBeNull();
     });
 
     it('handles contenteditable divs correctly', () => {
@@ -281,8 +375,10 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       form.appendChild(input);
       root.appendChild(form);
 
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
       form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 
+      expect(clearSpy).not.toHaveBeenCalled();
       expect(sentMessages.length).toBe(1);
       const msg = sentMessages[0];
       expect(msg.type).toBe('SUBMIT_FORM');
@@ -302,8 +398,11 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       input.dispatchEvent(new Event('input', { bubbles: true }));
       expect((tracker as any).autosaveTimer).not.toBeNull();
 
+      const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
+
       // Submit immediately before timer expires
       form.dispatchEvent(new Event('submit', { bubbles: true }));
+      expect(clearSpy).toHaveBeenCalled();
       expect((tracker as any).autosaveTimer).toBeNull();
     });
 
@@ -322,19 +421,117 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(sentMessages[0].type).toBe('SAVE_AUTOSAVE');
     });
 
-    it('dispatches UPDATE_CONTEXT_MENU on right click (contextmenu)', () => {
+    it('does not dispatch messages on submit, reset, or triggerAutosave when form has 0 trackable fields or non-form reset', () => {
       const form = document.createElement('form');
-      form.id = 'context-form';
-      const input = document.createElement('input');
-      input.name = 'target_input';
-      form.appendChild(input);
+      const pass = document.createElement('input');
+      pass.type = 'password';
+      pass.value = 'secret';
+      form.appendChild(pass);
       root.appendChild(form);
 
-      input.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }));
+      // Reset empty
+      sentMessages = [];
+      (tracker as any).handleReset({ target: form, composedPath: () => [form] });
+      expect(sentMessages.length).toBe(0);
 
-      const contextMsg = sentMessages.find((m) => m.type === 'UPDATE_CONTEXT_MENU');
-      expect(contextMsg).toBeDefined();
-      expect(contextMsg.payload.formInstanceId).toBe('context-form');
+      // Reset non-form
+      const nonForm = document.createElement('div');
+      const inputInNonForm = document.createElement('input');
+      inputInNonForm.name = 'non_form_in';
+      inputInNonForm.value = 'val';
+      nonForm.appendChild(inputInNonForm);
+      root.appendChild(nonForm);
+      (tracker as any).handleReset({ target: nonForm, composedPath: () => [nonForm] });
+      expect(sentMessages.length).toBe(0);
+
+      // Submit empty
+      sentMessages = [];
+      (tracker as any).handleSubmit({ target: form, composedPath: () => [form] });
+      expect(sentMessages.length).toBe(0);
+
+      // TriggerAutosave empty
+      sentMessages = [];
+      (tracker as any).triggerAutosave(pass);
+      expect(sentMessages.length).toBe(0);
+    });
+
+    it('dispatches UPDATE_CONTEXT_MENU on right click (contextmenu) with accurate payload', () => {
+      // Case 1: Form with id and input with name
+      const form1 = document.createElement('form');
+      form1.id = 'form-id-1';
+      const input1 = document.createElement('input');
+      input1.name = 'input-name-1';
+      form1.appendChild(input1);
+      root.appendChild(form1);
+
+      input1.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true }));
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0]).toEqual({
+        type: 'UPDATE_CONTEXT_MENU',
+        payload: {
+          domain: window.location.hostname,
+          formInstanceId: 'form-id-1',
+          fieldName: 'input-name-1',
+          fieldType: 'input',
+        },
+      });
+
+      // Case 2: Form with name only, input with id only
+      sentMessages = [];
+      const form2 = document.createElement('form');
+      form2.setAttribute('name', 'form-name-2');
+      const input2 = document.createElement('input');
+      input2.id = 'input-id-2';
+      form2.appendChild(input2);
+      root.appendChild(form2);
+
+      (tracker as any).handleContextMenu({ target: input2, composedPath: () => [input2] });
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload).toEqual({
+        domain: window.location.hostname,
+        formInstanceId: 'form-name-2',
+        fieldName: 'input-id-2',
+        fieldType: 'input',
+      });
+
+      // Case 3: Form with neither id nor name, input with neither
+      sentMessages = [];
+      const form3 = document.createElement('form');
+      const input3 = document.createElement('input');
+      form3.appendChild(input3);
+      root.appendChild(form3);
+
+      (tracker as any).handleContextMenu({ target: input3, composedPath: () => [input3] });
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload).toEqual({
+        domain: window.location.hostname,
+        formInstanceId: undefined,
+        fieldName: undefined,
+        fieldType: 'input',
+      });
+
+      // Case 4: Rich text editor (Quill)
+      sentMessages = [];
+      const quill = document.createElement('div');
+      quill.className = 'ql-editor';
+      quill.id = 'quill-id';
+      root.appendChild(quill);
+
+      (tracker as any).handleContextMenu({ target: quill, composedPath: () => [quill] });
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload).toEqual({
+        domain: window.location.hostname,
+        formInstanceId: undefined,
+        fieldName: 'quill-id',
+        fieldType: 'quill',
+      });
+
+      // Case 5: Non-trackable target (div)
+      sentMessages = [];
+      const div = document.createElement('div');
+      root.appendChild(div);
+      (tracker as any).handleContextMenu({ target: div, composedPath: () => [div] });
+      expect(sentMessages.length).toBe(0);
     });
 
     it('handles submit edge cases (non-element target, orphaned inputs)', () => {
@@ -369,7 +566,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
 
       // Focus nameInput
       nameInput.focus();
-      (tracker as any).lastInteractedElement = nameInput; // strictly set it
+      (tracker as any).lastInteractedElement = nameInput;
 
       // 1. RESTORE_FORM_REVISION
       await (tracker as any).handleRuntimeMessage({
@@ -385,7 +582,6 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
         action: 'RESTORE_FIELD_TEXT',
         payload: { value: 'Directly Injected Text' },
       });
-      // The last element modified by RESTORE_FORM_REVISION was emailInput, so it became lastInteractedElement
       expect(emailInput.value).toBe('Directly Injected Text');
 
       // 3. FORCE_SAVE_NOW
@@ -394,8 +590,7 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(forceMsg).toBeDefined();
 
       // 4. RESTORE_FORM_REVISION failure scenarios
-      // Non-existent form id
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+      customResponses.push({ success: false });
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_FORM_REVISION',
         payload: { formId: 'non-existent' },
@@ -427,9 +622,9 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       // 7. RESTORE_FORM_REVISION fallback querySelector (when formElement is not found)
       const orphanInput = document.createElement('input');
       orphanInput.name = 'orphan_field';
-      document.body.appendChild(orphanInput); // Outside root, but document.querySelector will find it
+      document.body.appendChild(orphanInput);
 
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+      customResponses.push({
         success: true,
         data: {
           form: { id: 'recovered-f2', formInstanceId: 'non-existent-form' },
@@ -443,80 +638,197 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(orphanInput.value).toBe('Found Me');
 
       // 8. RESTORE_FORM_REVISION throws exception
-      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('Network error'));
+      customResponses.push(new Error('Network error'));
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_FORM_REVISION',
         payload: { formId: 'rec_form_err' },
       });
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Failed to restore form revision:',
+        expect.any(Error)
+      );
       consoleSpy.mockRestore();
 
       // 9. Fast forward timers to trigger flashConfirmation setTimeout
       vi.advanceTimersByTime(300);
     });
 
-    it('handles RESTORE_LAST_FORM message by querying latest domain form', async () => {
+    it('handles RESTORE_LAST_FORM message by querying latest domain form across hostname and protocol fallbacks', async () => {
       const form = document.createElement('form');
       const input = document.createElement('input');
       input.name = 'email_addr';
       form.appendChild(input);
       root.appendChild(form);
 
-      (chrome.runtime.sendMessage as any)
-        .mockResolvedValueOnce({
-          success: true,
-          data: [{ form: { id: 'domain_latest_1' } }],
-        })
-        .mockResolvedValueOnce({
-          success: true,
-          data: {
-            form: { id: 'domain_latest_1' },
-            fields: [{ name: 'email_addr', value: 'restored@example.com' }],
-          },
-        });
+      // 1. Hostname is defined
+      sentMessages = [];
+      customResponses.push({
+        success: true,
+        data: [{ form: { id: 'domain_latest_1' } }],
+      });
+      customResponses.push({
+        success: true,
+        data: {
+          form: { id: 'domain_latest_1' },
+          fields: [{ name: 'email_addr', value: 'restored@example.com' }],
+        },
+      });
 
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_LAST_FORM',
       });
 
+      expect(sentMessages[0].type).toBe('GET_DOMAIN_HISTORY');
+      expect(sentMessages[0].payload.domain).toBe(window.location.hostname);
       expect(input.value).toBe('restored@example.com');
 
-      // Error branch handled gracefully
-      (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('RestoreLastFailed'));
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      // 2. Empty hostname with file: protocol
+      const origLoc = window.location;
+      delete (window as any).location;
+      (window as any).location = { hostname: '', protocol: 'file:', href: 'file:///app.html' };
+
+      sentMessages = [];
+      customResponses.push({
+        success: true,
+        data: [],
+      });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(sentMessages[0].payload.domain).toBe('local file');
+
+      // 3. Empty hostname with custom: protocol -> 'unknown'
+      (window as any).location = { hostname: '', protocol: 'custom:', href: 'custom://app' };
+      sentMessages = [];
+      customResponses.push({
+        success: true,
+        data: [],
+      });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(sentMessages[0].payload.domain).toBe('unknown');
+
+      (window as any).location = origLoc;
+
+      // 4. Error branch handled gracefully
+      customResponses.push(new Error('RestoreLastFailed'));
+      const consoleSpy2 = vi.spyOn(console, 'error').mockImplementation(() => {});
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_LAST_FORM',
       });
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to restore last form:', expect.any(Error));
-      consoleSpy.mockRestore();
+      expect(consoleSpy2).toHaveBeenCalledWith('Failed to restore last form:', expect.any(Error));
+      consoleSpy2.mockRestore();
+
+      // Spy on restoreFormFromId for empty/invalid responses vs valid item
+      const restoreFromIdSpy = vi.spyOn(tracker as any, 'restoreFormFromId');
+      const consoleErrorSpy = vi.spyOn(console, 'error');
+
+      // 5. Response with success: false (must not call restoreFormFromId and must not throw error)
+      customResponses.push({ success: false, data: [{ form: { id: 'should_not_call' } }] });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+      // 6. Response with data: null
+      customResponses.push({ success: true, data: null });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+      // 7. Response with data: []
+      customResponses.push({ success: true, data: [] });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+      // 8. Response with data: [{ form: null }]
+      customResponses.push({ success: true, data: [{ form: null }] });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+      // 8b. Response is null
+      customResponses.push(null);
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).not.toHaveBeenCalled();
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+
+      // 9. Response with data: [{ form: { id: 'target_id' } }]
+      customResponses.push({ success: true, data: [{ form: { id: 'target_id' } }] });
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreFromIdSpy).toHaveBeenCalledWith('target_id');
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('handles invalid context guards and auto-stop across all event listeners', async () => {
-      // 1. When context is invalid, ensureContextValid stops tracker and returns false
+    it('strictly terminates all methods when extension context is invalid without performing side effects', async () => {
       const isContextSpy = vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
       const stopSpy = vi.spyOn(tracker, 'stop');
 
       expect((tracker as any).ensureContextValid()).toBe(false);
       expect(stopSpy).toHaveBeenCalled();
 
-      // All listeners early return cleanly when context is invalid
-      (tracker as any).onBlur(new Event('blur'));
-      (tracker as any).onPaste(new Event('paste'));
-      (tracker as any).onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
-      (tracker as any).onPageHide();
+      // Create realistic trackable elements
+      const form = document.createElement('form');
+      form.id = 'ctx-form';
+      const input = document.createElement('input');
+      input.name = 'ctx_field';
+      input.value = 'unchanged_val';
+      form.appendChild(input);
+      root.appendChild(form);
+
+      const addSpy = vi.spyOn(root, 'addEventListener');
       tracker.start();
-      (tracker as any).handleFocus(new Event('focus'));
-      (tracker as any).handleContextMenu(new MouseEvent('contextmenu'));
-      (tracker as any).handleInput(new Event('input'));
-      (tracker as any).handleReset(new Event('reset'));
-      (tracker as any).handleSubmit(new Event('submit'));
-      await (tracker as any).handleRuntimeMessage({});
+      expect(addSpy).not.toHaveBeenCalled();
+
+      const triggerSpy = vi.spyOn(tracker as any, 'triggerAutosave');
+      const restoreSpy = vi.spyOn(tracker as any, 'restoreLastForm');
+
+      // Ensure lastInteractedElement is set, then invoke handlers
+      (tracker as any).lastInteractedElement = input;
+      (tracker as any).onBlur({ target: input, composedPath: () => [input] });
+      (tracker as any).onPaste({ target: input, composedPath: () => [input] });
+      (tracker as any).onKeyDown({ key: 'Enter', target: input, composedPath: () => [input] });
+      (tracker as any).onPageHide();
+      expect(triggerSpy).not.toHaveBeenCalled();
+
+      (tracker as any).lastInteractedElement = null;
+      (tracker as any).handleFocus({ target: input, composedPath: () => [input] });
+      expect((tracker as any).lastInteractedElement).toBeNull();
+
+      (tracker as any).handleContextMenu({ target: input, composedPath: () => [input] });
+      expect((tracker as any).lastInteractedElement).toBeNull();
+
+      (tracker as any).handleInput({ target: input, composedPath: () => [input] });
+      expect((tracker as any).lastInteractedElement).toBeNull();
+      expect((tracker as any).autosaveTimer).toBeNull();
+
+      (tracker as any).handleReset({ target: form, composedPath: () => [form] });
+      (tracker as any).handleSubmit({ target: form, composedPath: () => [form] });
+      (tracker as any).triggerAutosave(input);
+
+      await (tracker as any).handleRuntimeMessage({ action: 'RESTORE_LAST_FORM' });
+      expect(restoreSpy).not.toHaveBeenCalled();
+
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: { formId: 'f1' },
+      });
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+        payload: { value: 'hack' },
+      });
+      await (tracker as any).handleRuntimeMessage({ action: 'FORCE_SAVE_NOW' });
       await (tracker as any).restoreLastForm();
       await (tracker as any).restoreFormFromId('id');
-      (tracker as any).restoreActiveField('val');
+
+      (tracker as any).lastInteractedElement = input;
+      (tracker as any).restoreActiveField('hack');
       (tracker as any).forceSaveCurrentForm();
-      (tracker as any).triggerAutosave(document.createElement('input'));
+
+      // Zero side-effects
+      expect(sentMessages.length).toBe(0);
+      expect((tracker as any).autosaveTimer).toBeNull();
+      expect(document.querySelector('lazarus-recovery-host')).toBeNull();
+      expect(input.value).toBe('unchanged_val');
+      expect(input.style.backgroundColor).toBe('');
 
       isContextSpy.mockRestore();
     });
@@ -561,244 +873,259 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       (tracker as any).onPageHide();
     });
 
-    it('covers contextmenu on rich text, named forms, unnamed elements, and non-trackable items', () => {
-      // 1. Target with rich text adapter
-      const quill = document.createElement('div');
-      quill.className = 'ql-editor';
-      quill.id = 'quill_target';
-      root.appendChild(quill);
-      (tracker as any).handleContextMenu(new MouseEvent('contextmenu', { bubbles: true }));
-      (tracker as any).handleContextMenu({ target: quill, composedPath: () => [quill] });
-
-      // 2. Form with name attribute (no id) and input with name
-      const formWithName = document.createElement('form');
-      formWithName.setAttribute('name', 'named_form');
-      const inputWithName = document.createElement('input');
-      inputWithName.name = 'user_field';
-      formWithName.appendChild(inputWithName);
-      root.appendChild(formWithName);
-      (tracker as any).handleContextMenu({
-        target: inputWithName,
-        composedPath: () => [inputWithName],
-      });
-
-      // 3. Form with neither id nor name, and input with neither id nor name
-      const plainForm = document.createElement('form');
-      const plainInput = document.createElement('input');
-      plainForm.appendChild(plainInput);
-      root.appendChild(plainForm);
-      (tracker as any).handleContextMenu({ target: plainInput, composedPath: () => [plainInput] });
-
-      // 4. Target is non-trackable
-      const div = document.createElement('div');
-      root.appendChild(div);
-      (tracker as any).handleContextMenu({ target: div, composedPath: () => [div] });
-    });
-
-    it('covers reset and submit on forms with name vs form_wrapper vs fake_form and 0 fields', () => {
-      // 1. Reset form with no id (uses form_wrapper)
-      const formNoId = document.createElement('form');
-      (tracker as any).handleReset({ target: formNoId, composedPath: () => [formNoId] });
-
-      // 2. Submit form with name attribute
-      const formWithName = document.createElement('form');
-      formWithName.setAttribute('name', 'submit_form_name');
-      const input = document.createElement('input');
-      input.name = 'data';
-      input.value = 'submit_val';
-      formWithName.appendChild(input);
-      root.appendChild(formWithName);
-      (tracker as any).handleSubmit({ target: formWithName, composedPath: () => [formWithName] });
-
-      // 3. Submit form with no id and no name (uses form_wrapper)
-      const formNoName = document.createElement('form');
-      const input2 = document.createElement('input');
-      input2.name = 'd2';
-      input2.value = 'v2';
-      formNoName.appendChild(input2);
-      root.appendChild(formNoName);
-      (tracker as any).handleSubmit({ target: formNoName, composedPath: () => [formNoName] });
-
-      // 4. Submit input outside form (uses fake_form)
-      const orphan = document.createElement('input');
-      orphan.value = 'orphan_val';
-      root.appendChild(orphan);
-      (tracker as any).handleSubmit({ target: orphan, composedPath: () => [orphan] });
-
-      // 5. Submit form with 0 fields
-      const emptyForm = document.createElement('form');
-      (tracker as any).handleSubmit({ target: emptyForm, composedPath: () => [emptyForm] });
-
-      // 6. Submit with active autosaveTimer
-      (tracker as any).autosaveTimer = setTimeout(() => {}, 1000);
-      (tracker as any).handleSubmit({ target: formWithName, composedPath: () => [formWithName] });
-      expect((tracker as any).autosaveTimer).toBeNull();
-    });
-
-    it('covers triggerAutosave on forms with no id, fake_form, and 0 fields', () => {
-      // 1. Form with no id
-      const form = document.createElement('form');
-      const input = document.createElement('input');
-      input.name = 'auto_in';
-      input.value = 'auto_val';
-      form.appendChild(input);
-      root.appendChild(form);
-      (tracker as any).triggerAutosave(input);
-
-      // 2. Orphan input outside form
-      const orphan = document.createElement('input');
-      orphan.value = 'orphan_auto';
-      root.appendChild(orphan);
-      (tracker as any).triggerAutosave(orphan);
-
-      // 3. Target with 0 fields
-      const emptyInput = document.createElement('input');
-      emptyInput.value = '';
-      (tracker as any).triggerAutosave(emptyInput);
-    });
-
-    it('covers runtime message edge cases and invalid payloads', async () => {
+    it('covers runtime message edge cases, null/missing payloads, and invalid actions', async () => {
       // 1. Non-object messages
       await (tracker as any).handleRuntimeMessage(null);
       await (tracker as any).handleRuntimeMessage('string_msg');
+      await (tracker as any).handleRuntimeMessage(12345);
 
-      // 2. RESTORE_FORM_REVISION missing formId
+      // 2. RESTORE_FORM_REVISION missing payload or formId
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+      });
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FORM_REVISION',
+        payload: null,
+      });
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_FORM_REVISION',
         payload: {},
       });
 
-      // 3. RESTORE_FIELD_TEXT with non-string value
+      // 3. RESTORE_FIELD_TEXT with missing payload or non-string value
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+      });
+      await (tracker as any).handleRuntimeMessage({
+        action: 'RESTORE_FIELD_TEXT',
+        payload: null,
+      });
       await (tracker as any).handleRuntimeMessage({
         action: 'RESTORE_FIELD_TEXT',
         payload: { value: 12345 },
       });
 
-      // 4. Unrecognized action
+      // 4. Unrecognized action, even with string value and formId in payload
+      const testIn = document.createElement('input');
+      testIn.value = 'orig_val';
+      root.appendChild(testIn);
+      (tracker as any).lastInteractedElement = testIn;
+
+      const restoreFromIdSpy2 = vi.spyOn(tracker as any, 'restoreFormFromId');
+      const forceSaveSpy = vi.spyOn(tracker as any, 'forceSaveCurrentForm');
+      const restoreLastSpy = vi.spyOn(tracker as any, 'restoreLastForm');
+      const restoreActiveSpy = vi.spyOn(tracker as any, 'restoreActiveField');
+
       await (tracker as any).handleRuntimeMessage({
         action: 'UNKNOWN_CUSTOM_ACTION',
+        payload: { value: 'hack_val', formId: 'hack_id' },
       });
+      expect(restoreFromIdSpy2).not.toHaveBeenCalled();
+      expect(forceSaveSpy).not.toHaveBeenCalled();
+      expect(restoreLastSpy).not.toHaveBeenCalled();
+      expect(restoreActiveSpy).not.toHaveBeenCalled();
+      expect(testIn.value).toBe('orig_val');
     });
 
-    it('covers restoreLastForm domain fallbacks, empty items, and failed responses', async () => {
-      // 1. res.success is false
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
-      await (tracker as any).restoreLastForm();
+    it('covers restoreFormFromId scoping to targetForm over document querySelector and error handling', async () => {
+      // Two forms with identical input names
+      const formA = document.createElement('form');
+      formA.id = 'form-A';
+      const inputA = document.createElement('input');
+      inputA.name = 'target_field';
+      inputA.value = 'original_A';
+      formA.appendChild(inputA);
+      root.appendChild(formA);
 
-      // 2. res.data is not array
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: null });
-      await (tracker as any).restoreLastForm();
+      const formB = document.createElement('form');
+      formB.id = 'form-B';
+      const inputB = document.createElement('input');
+      inputB.name = 'target_field';
+      inputB.value = 'original_B';
+      formB.appendChild(inputB);
+      root.appendChild(formB);
 
-      // 3. res.data is empty array
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
-      await (tracker as any).restoreLastForm();
+      // Set lastInteractedElement in formB
+      (tracker as any).lastInteractedElement = inputB;
 
-      // 4. latestItem has no form.id
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
-        success: true,
-        data: [{ form: null }],
-      });
-      await (tracker as any).restoreLastForm();
-
-      // 5. file: protocol domain
-      const origLoc = window.location;
-      delete (window as any).location;
-      (window as any).location = { hostname: '', protocol: 'file:', href: 'file:///app.html' };
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
-      await (tracker as any).restoreLastForm();
-      (window as any).location = origLoc;
-    });
-
-    it('covers restoreFormFromId failure, missing targetForm, and missing element in doc', async () => {
-      // 1. res.success is false or no data
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
-      await (tracker as any).restoreFormFromId('rev_fail');
-
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: null });
-      await (tracker as any).restoreFormFromId('rev_null_data');
-
-      // 2. Empty fields array
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
-        success: true,
-        data: { fields: [] },
-      });
-      await (tracker as any).restoreFormFromId('rev_empty_fields');
-
-      // 3. targetForm is null (no form in document) and elements found via document.querySelector
-      document.body.innerHTML = '';
-      const input = document.createElement('input');
-      input.name = 'global_field';
-      document.body.appendChild(input);
-
-      (tracker as any).lastInteractedElement = null;
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+      customResponses.push({
         success: true,
         data: {
-          form: { id: 'f_global' },
+          form: { id: 'rev-target' },
+          fields: [{ name: 'target_field', value: 'restored_in_B' }],
+        },
+      });
+
+      await (tracker as any).restoreFormFromId('rev-target');
+
+      // formB input updated, formA untouched
+      expect(inputB.value).toBe('restored_in_B');
+      expect(inputA.value).toBe('original_A');
+
+      // Error and empty checks without throwing or overwriting
+      const consoleSpy = vi.spyOn(console, 'error');
+
+      customResponses.push({
+        success: false,
+        data: { fields: [{ name: 'target_field', value: 'HACKED' }] },
+      });
+      await (tracker as any).restoreFormFromId('rev_fail');
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(inputB.value).toBe('restored_in_B');
+
+      customResponses.push(null);
+      await (tracker as any).restoreFormFromId('rev_null_response');
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(inputB.value).toBe('restored_in_B');
+
+      customResponses.push({ success: true, data: null });
+      await (tracker as any).restoreFormFromId('rev_null_data');
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(inputB.value).toBe('restored_in_B');
+
+      customResponses.push({ success: true, data: { fields: [] } });
+      await (tracker as any).restoreFormFromId('rev_empty_fields');
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(inputB.value).toBe('restored_in_B');
+
+      customResponses.push({ success: true, data: { fields: null } });
+      await (tracker as any).restoreFormFromId('rev_null_fields');
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(inputB.value).toBe('restored_in_B');
+
+      // targetForm is null, document.querySelector finds orphan input, and non_existent field ignored
+      root.innerHTML = '';
+      const orphanInput = document.createElement('input');
+      orphanInput.name = 'orphan_input';
+      orphanInput.value = 'old_orphan';
+      root.appendChild(orphanInput);
+      (tracker as any).lastInteractedElement = null;
+
+      customResponses.push({
+        success: true,
+        data: {
+          form: { id: 'rev-orphan' },
           fields: [
-            { name: 'global_field', value: 'Found Globally' },
-            { name: 'non_existent_field', value: 'NotFound' }, // covers if (el) false branch
+            { name: 'orphan_input', value: 'restored_orphan' },
+            { name: 'non_existent_field', value: 'ignored' },
           ],
         },
       });
-      await (tracker as any).restoreFormFromId('rev_global');
-      expect(input.value).toBe('Found Globally');
+      await (tracker as any).restoreFormFromId('rev-orphan');
+      expect(orphanInput.value).toBe('restored_orphan');
+      expect(consoleSpy).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
     });
 
-    it('covers forceSaveCurrentForm fallbacks and applyValueToElement non-input element', () => {
-      // 1. forceSaveCurrentForm: lastInteractedElement is null, activeElement is null, uses querySelector
-      document.body.innerHTML = '';
-      const form = document.createElement('form'); // no id -> form_wrapper
-      const ta = document.createElement('textarea');
-      ta.value = 'ta_val';
-      form.appendChild(ta);
-      document.body.appendChild(form);
+    it('covers forceSaveCurrentForm target resolution, safeSendMessage null check, and flashConfirmation', async () => {
+      root.innerHTML = '';
+      const div1 = document.createElement('div');
+      const input1 = document.createElement('input');
+      input1.name = 'field1';
+      input1.value = 'val1';
+      div1.appendChild(input1);
+      root.appendChild(div1);
 
+      const div2 = document.createElement('div');
+      const input2 = document.createElement('input');
+      input2.name = 'field2';
+      input2.value = 'val2';
+      div2.appendChild(input2);
+      root.appendChild(div2);
+
+      // 1. lastInteractedElement has highest precedence
+      (tracker as any).lastInteractedElement = input1;
+      sentMessages = [];
+      customResponses.push({ success: true });
+      (tracker as any).forceSaveCurrentForm();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(sentMessages[0].payload.form.fields[0].value).toBe('val1');
+      expect(input1.style.getPropertyPriority('background-color')).toBe('important');
+
+      // 2. When safeSendMessage returns null, flashConfirmation is not called
+      input2.style.backgroundColor = '';
+      (tracker as any).lastInteractedElement = input2;
+      customResponses.push(null);
+      (tracker as any).forceSaveCurrentForm();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(input2.style.backgroundColor).toBe('');
+
+      // 3. When lastInteractedElement is null, falls back to activeElement
+      input2.focus();
+      (tracker as any).lastInteractedElement = null;
+      sentMessages = [];
+      customResponses.push({ success: true });
+      (tracker as any).forceSaveCurrentForm();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(sentMessages[0].payload.form.fields[0].value).toBe('val2');
+
+      // 4. When both are null, falls back to document.querySelector
       (tracker as any).lastInteractedElement = null;
       const origActive = document.activeElement;
       Object.defineProperty(document, 'activeElement', { value: null, configurable: true });
-
-      // Test with safeSendMessage resolving with non-null vs null
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
+      sentMessages = [];
+      customResponses.push({ success: true });
       (tracker as any).forceSaveCurrentForm();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(sentMessages.length).toBe(1);
 
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce(null);
+      // 5. When no elements in document, returns safely
+      root.innerHTML = '';
+      sentMessages = [];
       (tracker as any).forceSaveCurrentForm();
+      expect(sentMessages.length).toBe(0);
 
-      // Test with form having an explicit id
-      form.id = 'form_with_id';
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
-      (tracker as any).forceSaveCurrentForm();
-
-      // Test when target is NOT inside a form -> fake_form
-      document.body.innerHTML = '';
-      const standaloneInput = document.createElement('input');
-      standaloneInput.value = 'standalone';
-      document.body.appendChild(standaloneInput);
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true });
-      (tracker as any).forceSaveCurrentForm();
-
-      // When no form/input/textarea in document -> returns
-      document.body.innerHTML = '';
-      (tracker as any).forceSaveCurrentForm();
-
-      // 2. restoreActiveField when target is null
-      (tracker as any).restoreActiveField('val');
       Object.defineProperty(document, 'activeElement', { value: origActive, configurable: true });
-
-      // 3. applyValueToElement on plain div (non-input, non-adapter)
-      const plainDiv = document.createElement('div');
-      (tracker as any).applyValueToElement(plainDiv, 'div text content');
-      expect(plainDiv.textContent).toBe('div text content');
-
-      // 4. applyValueToElement on Quill editor
-      const quill = document.createElement('div');
-      quill.className = 'ql-editor';
-      (tracker as any).applyValueToElement(quill, '<p>quill html</p>');
-      expect(quill.innerHTML).toBe('<p>quill html</p>');
     });
 
-    it('covers onBlur, onKeyDown, handleFocus, start/stop without window, and restoreLastForm custom protocol', async () => {
+    it('accurately dispatches synthetic input and change events with bubbles and composed in applyValueToElement', () => {
+      const input = document.createElement('input');
+      input.style.backgroundColor = 'rgb(255, 255, 255)';
+      root.appendChild(input);
+
+      let inputEvt: Event | null = null;
+      let changeEvt: Event | null = null;
+      input.addEventListener('input', (e) => {
+        inputEvt = e;
+      });
+      input.addEventListener('change', (e) => {
+        changeEvt = e;
+      });
+
+      (tracker as any).applyValueToElement(input, 'synthesized-value');
+
+      expect(input.value).toBe('synthesized-value');
+
+      // Verify input event flags
+      expect(inputEvt).not.toBeNull();
+      expect(inputEvt!.type).toBe('input');
+      expect(inputEvt!.bubbles).toBe(true);
+      expect(inputEvt!.composed).toBe(true);
+
+      // Verify change event flags
+      expect(changeEvt).not.toBeNull();
+      expect(changeEvt!.type).toBe('change');
+      expect(changeEvt!.bubbles).toBe(true);
+
+      // Verify flashConfirmation styles
+      expect(input.style.getPropertyValue('background-color')).toBe('rgba(33, 196, 93, 0.25)');
+      expect(input.style.getPropertyPriority('background-color')).toBe('important');
+
+      // 299ms: still highlighted
+      vi.advanceTimersByTime(299);
+      expect(input.style.getPropertyValue('background-color')).toBe('rgba(33, 196, 93, 0.25)');
+
+      // 300ms: restored to origBg
+      vi.advanceTimersByTime(1);
+      expect(input.style.backgroundColor).toBe('rgb(255, 255, 255)');
+    });
+
+    it('covers onBlur, onKeyDown, handleFocus, start/stop without window, and restoreActiveField null', async () => {
       const input = document.createElement('input');
       input.value = 'test_val';
       root.appendChild(input);
@@ -816,6 +1143,13 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       root.appendChild(div);
       (tracker as any).handleFocus({ target: div });
 
+      // restoreActiveField when target is null
+      (tracker as any).lastInteractedElement = null;
+      const origActive = document.activeElement;
+      Object.defineProperty(document, 'activeElement', { value: null, configurable: true });
+      (tracker as any).restoreActiveField('val');
+      Object.defineProperty(document, 'activeElement', { value: origActive, configurable: true });
+
       // start() and stop() when window is undefined
       const origWindow = globalThis.window;
       try {
@@ -824,27 +1158,6 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
         tracker.stop();
       } finally {
         globalThis.window = origWindow;
-      }
-
-      // stop() when context is invalid
-      const ctxSpy = vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
-      tracker.stop();
-      ctxSpy.mockRestore();
-
-      // restoreLastForm when protocol is custom: (returns unknown)
-      const origLoc = window.location;
-      delete (window as any).location;
-      (window as any).location = { hostname: '', protocol: 'custom:', href: 'custom://app' };
-      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: true, data: [] });
-      await (tracker as any).restoreLastForm();
-
-      // restoreLastForm when window is undefined
-      try {
-        delete (globalThis as any).window;
-        await (tracker as any).restoreLastForm();
-      } finally {
-        globalThis.window = origWindow;
-        (window as any).location = origLoc;
       }
     });
   });

@@ -513,5 +513,114 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
         globalThis.document = origDoc;
       }
     });
+
+    it('kills surviving mutants across field extraction and snapshots', () => {
+      // 1. isTrackable default savePasswords=false
+      const pw = document.createElement('input');
+      pw.type = 'password';
+      expect(FieldExtractor.isTrackable(pw)).toBe(false);
+
+      // 2. element name resolution with ONLY aria-label
+      const elAria = document.createElement('input');
+      elAria.setAttribute('aria-label', 'Search query');
+      expect(FieldExtractor.extractField(elAria)?.name).toBe('Search query');
+
+      // 3. element name resolution with ONLY placeholder
+      const elPl = document.createElement('input');
+      elPl.setAttribute('placeholder', 'Type message');
+      expect(FieldExtractor.extractField(elPl)?.name).toBe('Type message');
+
+      // 4. select.multiple check vs select.value
+      const select = document.createElement('select');
+      select.name = 'status';
+      Object.defineProperty(select, 'multiple', { value: false });
+      Object.defineProperty(select, 'selectedOptions', { value: [{ value: 'wrong' }] });
+      Object.defineProperty(select, 'value', { value: 'correct' });
+      expect(FieldExtractor.extractField(select)?.value).toBe('correct');
+
+      // 5. container fallback for detached element (parentElement)
+      const div = document.createElement('div');
+      const detachedInput = document.createElement('input');
+      detachedInput.type = 'text';
+      detachedInput.value = 'hello';
+      div.appendChild(detachedInput);
+      expect(FieldExtractor.extractField(detachedInput)?.name).toBe('text_1');
+
+      // 6. credit card scrubbing with default options (filterCreditCards not provided)
+      const ccInput = document.createElement('input');
+      ccInput.name = 'card_number';
+      ccInput.value = '4532015112830366';
+      expect(FieldExtractor.extractField(ccInput)?.value).toBe('[REDACTED CREDIT CARD]');
+
+      // 7. extractAllFields on trackable container with non-empty text
+      const trackableInput = document.createElement('input');
+      trackableInput.value = 'valid_value';
+      const res = FieldExtractor.extractAllFields(trackableInput);
+      expect(res.length).toBe(1);
+      expect(res[0].value).toBe('valid_value');
+
+      // 8. whitespace-only descendant excluded
+      const formWs = document.createElement('form');
+      const wsInput = document.createElement('input');
+      wsInput.value = '   ';
+      formWs.appendChild(wsInput);
+      expect(FieldExtractor.extractAllFields(formWs).length).toBe(0);
+
+      // 9. buildFormSnapshot with form name attribute
+      const namedForm = document.createElement('form');
+      namedForm.setAttribute('name', 'custom_form_name');
+      const formChild = document.createElement('input');
+      formChild.value = 'abc';
+      namedForm.appendChild(formChild);
+      document.body.appendChild(namedForm);
+      const namedSnap = FieldExtractor.buildFormSnapshot(formChild);
+      expect(namedSnap.formInstanceId).toBe('custom_form_name');
+
+      // 10. non-form section container with nested inputs
+      const section = document.createElement('section');
+      section.id = 'sec-container';
+      const inner = document.createElement('div');
+      const in1 = document.createElement('input');
+      in1.name = 'f1';
+      in1.value = 'v1';
+      const in2 = document.createElement('input');
+      in2.name = 'f2';
+      in2.value = 'v2';
+      inner.appendChild(in1);
+      inner.appendChild(in2);
+      section.appendChild(inner);
+      document.body.appendChild(section);
+      const secSnap = FieldExtractor.buildFormSnapshot(in1);
+      expect(secSnap.formInstanceId).toBe('sec-container');
+      expect(secSnap.fields.length).toBe(2);
+
+      // 11. target preservation when extractAllFields returns non-matching fields
+      const targetIn = document.createElement('input');
+      targetIn.name = 'target_f';
+      targetIn.value = 'target_v';
+      const spyFields = vi
+        .spyOn(FieldExtractor, 'extractAllFields')
+        .mockReturnValue([
+          { name: 'unrelated', selector: 'unrelated', type: 'text', value: 'other' },
+        ]);
+      const snapPreserve = FieldExtractor.buildFormSnapshot(targetIn);
+      expect(snapPreserve.fields.length).toBe(2);
+      expect(snapPreserve.fields[1].name).toBe('target_f');
+      spyFields.mockRestore();
+
+      // 12. title and domain
+      document.title = 'My Test Title';
+      const snapTitle = FieldExtractor.buildFormSnapshot(in1);
+      expect(snapTitle.title).toBe('My Test Title');
+
+      document.title = '';
+      const snapNoTitle = FieldExtractor.buildFormSnapshot(in1);
+      expect(snapNoTitle.title).toBe(snapNoTitle.domain);
+
+      // 13. action with multiple leading and trailing underscores
+      const formMulti = document.createElement('form');
+      formMulti.setAttribute('action', '/__api__/');
+      expect(getFormActionIdentifier(formMulti)).toBe('form_api');
+    });
   });
 });

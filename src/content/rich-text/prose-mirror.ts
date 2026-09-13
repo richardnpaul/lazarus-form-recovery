@@ -6,29 +6,20 @@ export class ProseMirrorAdapter implements RichTextAdapter {
 
   public matches(element: HTMLElement): boolean {
     return (
-      element.classList.contains('ProseMirror') ||
+      element.closest('.ProseMirror') !== null ||
       element.getAttribute('data-slate-editor') === 'true' ||
-      element.getAttribute('data-lexical-editor') === 'true' ||
-      element.closest('.ProseMirror') !== null
+      element.getAttribute('data-lexical-editor') === 'true'
     );
   }
 
   public getValue(element: HTMLElement): string {
-    const editor = element.classList.contains('ProseMirror')
-      ? element
-      : (element.closest('.ProseMirror') as HTMLElement) || element;
+    const editor = (element.closest('.ProseMirror') as HTMLElement) || element;
     return editor.innerHTML || editor.textContent || '';
   }
 
   public setValue(element: HTMLElement, value: string): void {
-    const editor = element.classList.contains('ProseMirror')
-      ? element
-      : (element.closest('.ProseMirror') as HTMLElement) || element;
-    if (value.includes('<') && value.includes('>')) {
-      safeSetHtml(editor, value);
-    } else {
-      editor.textContent = value;
-    }
+    const editor = (element.closest('.ProseMirror') as HTMLElement) || element;
+    safeSetHtml(editor, value);
   }
 
   public getName(element: HTMLElement): string {

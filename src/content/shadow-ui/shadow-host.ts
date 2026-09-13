@@ -36,7 +36,6 @@ export class LazarusRecoveryHost extends HTMLElement {
     this.button.onClick(async () => {
       if (this.menu.isOpen()) {
         this.menu.hide();
-        this.button.setActive(false);
       } else if (this.currentTarget) {
         this.button.setActive(true);
         await this.openMenuForTarget(this.currentTarget);
@@ -57,7 +56,6 @@ export class LazarusRecoveryHost extends HTMLElement {
     document.addEventListener('click', () => {
       if (this.menu.isOpen()) {
         this.menu.hide();
-        this.button.setActive(false);
       }
     });
   }
@@ -67,16 +65,19 @@ export class LazarusRecoveryHost extends HTMLElement {
     this.button.attachTo(element);
     if (this.menu.isOpen()) {
       this.menu.hide();
-      this.button.setActive(false);
     }
+  }
+
+  public getMenu(): RecoveryMenu {
+    return this.menu;
   }
 
   private async openMenuForTarget(target: HTMLElement) {
     const adapter = findRichTextAdapter(target);
+    const fieldType = adapter ? adapter.name : target.tagName.toLowerCase();
     const fieldName = adapter
       ? adapter.getName(target)
       : target.getAttribute('name') || target.id || '';
-    const fieldType = adapter ? adapter.name : target.tagName.toLowerCase();
 
     const msg: RuntimeMessage = {
       type: 'GET_RECOVERABLE_TEXT',
@@ -88,24 +89,22 @@ export class LazarusRecoveryHost extends HTMLElement {
     };
 
     let items: any[] = [];
-    try {
-      const res: any = await safeSendMessage(msg);
-      if (res?.success && Array.isArray(res.data)) {
-        items = res.data;
-      }
-    } catch {
-      items = [];
+    const res: any = await safeSendMessage(msg).catch(() => {});
+    if (res?.success && Array.isArray(res.data)) {
+      items = res.data;
     }
 
     const btnEl = this.button.getElement();
-    const btnLeft = parseInt(btnEl.style.left || '0', 10);
-    const btnTop = parseInt(btnEl.style.top || '0', 10);
+    const btnLeft = parseInt(btnEl.style.left, 10) || 0;
+    const btnTop = parseInt(btnEl.style.top, 10) || 0;
 
     this.menu.show(target, items, btnLeft, btnTop);
   }
 
   private async restoreEntireForm(target: HTMLElement) {
     const formElement = target.closest('form');
+    if (!formElement) return;
+
     const msg: RuntimeMessage = {
       type: 'GET_DOMAIN_HISTORY',
       payload: {
@@ -120,23 +119,21 @@ export class LazarusRecoveryHost extends HTMLElement {
         const latestForm = res.data[0];
         const fields = Array.isArray(latestForm.fields) ? latestForm.fields : [];
 
-        if (formElement) {
-          fields.forEach((f: any) => {
-            const input = formElement.querySelector(
-              `[name="${escapeCss(f.name)}"], #${escapeCss(f.name)}`
-            ) as HTMLElement;
-            if (input) {
-              const adapter = findRichTextAdapter(input);
-              if (adapter) {
-                adapter.setValue(input, f.value);
-              } else if ('value' in input) {
-                (input as HTMLInputElement).value = f.value;
-              }
-              input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
-              input.dispatchEvent(new Event('change', { bubbles: true }));
+        fields.forEach((f: any) => {
+          const input = formElement.querySelector(
+            `[name="${escapeCss(f.name)}"], #${escapeCss(f.name)}`
+          ) as HTMLElement;
+          if (input) {
+            const adapter = findRichTextAdapter(input);
+            if (adapter) {
+              adapter.setValue(input, f.value);
+            } else if ('value' in input) {
+              (input as HTMLInputElement).value = f.value;
             }
-          });
-        }
+            input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
       }
     } catch (err) {
       console.error('Failed to restore entire form:', err);
@@ -146,12 +143,11 @@ export class LazarusRecoveryHost extends HTMLElement {
 
 export function defineRecoveryHostElement(): void {
   if (
-    typeof customElements !== 'undefined' &&
-    typeof customElements.get === 'function' &&
-    !customElements.get('lazarus-recovery-host')
+    typeof globalThis.customElements?.get === 'function' &&
+    !globalThis.customElements.get('lazarus-recovery-host')
   ) {
     try {
-      customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
+      globalThis.customElements.define('lazarus-recovery-host', LazarusRecoveryHost);
     } catch {
       // Already defined or restricted environment
     }
@@ -161,14 +157,7 @@ export function defineRecoveryHostElement(): void {
 defineRecoveryHostElement();
 
 export function attachRecoveryUI(target: HTMLElement): LazarusRecoveryHost | null {
-  if (
-    !isExtensionContextValid() ||
-    typeof document === 'undefined' ||
-    !document.documentElement ||
-    typeof customElements === 'undefined' ||
-    customElements === null ||
-    typeof customElements.get !== 'function'
-  ) {
+  if (!isExtensionContextValid() || typeof globalThis.customElements?.get !== 'function') {
     return null;
   }
   try {

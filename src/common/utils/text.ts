@@ -20,7 +20,9 @@ export function formatTimeAgo(timestamp: number): string {
  */
 export function computeWordCount(text: string): number {
   if (!text) return 0;
-  return text.trim().split(/\s+/).filter(Boolean).length;
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return trimmed.split(/\s+/).length;
 }
 
 /**
@@ -40,44 +42,32 @@ export function sanitizePreview(text: string, maxLength = 80): string {
  * Computes a line-by-line or token-by-token diff between two texts.
  */
 export function computeSimpleDiff(oldText: string, newText: string): DiffPart[] {
-  if (oldText === newText) {
-    return [{ type: 'unchanged', value: oldText }];
-  }
-
-  const oldTokens = oldText.split(/(\s+|\b)/).filter(Boolean);
-  const newTokens = newText.split(/(\s+|\b)/).filter(Boolean);
+  const oldTokens: string[] = oldText.match(/\S+|\s+/g) ?? [];
+  const newTokens: string[] = newText.match(/\S+|\s+/g) ?? [];
 
   const diff: DiffPart[] = [];
   let i = 0;
   let j = 0;
 
   while (i < oldTokens.length || j < newTokens.length) {
-    if (i < oldTokens.length && j < newTokens.length && oldTokens[i] === newTokens[j]) {
+    if (oldTokens[i] === newTokens[j]) {
       diff.push({ type: 'unchanged', value: oldTokens[i] });
       i++;
       j++;
-    } else {
-      // Look ahead for matches
-      let foundOldInNew = -1;
-      for (let k = j; k < Math.min(j + 5, newTokens.length); k++) {
-        if (i < oldTokens.length && oldTokens[i] === newTokens[k]) {
-          foundOldInNew = k;
-          break;
-        }
-      }
-
-      if (foundOldInNew !== -1) {
-        while (j < foundOldInNew) {
+    } else if (i < oldTokens.length) {
+      const matchIndex = newTokens.indexOf(oldTokens[i], j);
+      if (matchIndex !== -1 && matchIndex < j + 5) {
+        while (j < matchIndex) {
           diff.push({ type: 'added', value: newTokens[j] });
           j++;
         }
-      } else if (i < oldTokens.length) {
+      } else {
         diff.push({ type: 'removed', value: oldTokens[i] });
         i++;
-      } else {
-        diff.push({ type: 'added', value: newTokens[j] });
-        j++;
       }
+    } else {
+      diff.push({ type: 'added', value: newTokens[j] });
+      j++;
     }
   }
 

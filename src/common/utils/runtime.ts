@@ -10,20 +10,22 @@
  * or falsy, and calling chrome APIs throws "Extension context invalidated" synchronously.
  */
 export function isExtensionContextValid(): boolean {
-  try {
-    return Boolean(
-      typeof chrome !== 'undefined' &&
-      chrome.runtime &&
-      typeof chrome.runtime.id === 'string' &&
-      chrome.runtime.id.length > 0
-    );
-  } catch {
+  const c = (globalThis as any).chrome;
+  if (!c) {
     return false;
+  }
+  try {
+    return Boolean(c.runtime && c.runtime.id);
+  } catch (err: any) {
+    if (isContextInvalidatedError(err)) {
+      return false;
+    }
+    throw err;
   }
 }
 
 function isContextInvalidatedError(err: any): boolean {
-  const msg = String(err?.message || err || '');
+  const msg = String(err?.message ?? err);
   return (
     msg.includes('Extension context invalidated') ||
     msg.includes('Receiving end does not exist') ||
@@ -45,18 +47,9 @@ export async function safeSendMessage<T = any>(message: any): Promise<T | null> 
   }
 
   try {
-    const result = chrome.runtime.sendMessage(message);
-    if (result && typeof (result as Promise<any>).then === 'function') {
-      return await (result as Promise<any>).catch((err) => {
-        if (isContextInvalidatedError(err)) {
-          return null;
-        }
-        throw err;
-      });
-    }
-    return null;
+    const result = await chrome.runtime.sendMessage(message);
+    return result ?? null;
   } catch (err: any) {
-    // Synchronous throw in Chromium when extension context is invalidated
     if (isContextInvalidatedError(err)) {
       return null;
     }

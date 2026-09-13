@@ -272,10 +272,10 @@ export async function handleRuntimeMessage(
       }
 
       case 'OPEN_OPTIONS_PAGE': {
-        if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
+        if (chrome.runtime?.openOptionsPage) {
           chrome.runtime.openOptionsPage();
-        } else if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-          chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html') });
+        } else if (chrome.tabs?.create) {
+          chrome.tabs.create({ url: chrome.runtime?.getURL('src/options/options.html') || '' });
         }
         return { success: true };
       }

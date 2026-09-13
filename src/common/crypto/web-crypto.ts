@@ -55,10 +55,7 @@ export class WebCryptoVault {
    */
   public static async decrypt(cipherBase64: string, key: CryptoKey): Promise<string> {
     const binary = atob(cipherBase64);
-    const combined = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      combined[i] = binary.charCodeAt(i);
-    }
+    const combined = Uint8Array.from(binary, (c) => c.charCodeAt(0));
 
     const iv = combined.slice(0, this.IV_LENGTH);
     const cipherBuffer = combined.slice(this.IV_LENGTH);

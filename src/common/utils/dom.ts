@@ -48,42 +48,27 @@ export function computeButtonPosition(
   btnHeight = 24
 ): Position {
   const rect = target.getBoundingClientRect();
-  const scrollX = window.scrollX || window.pageXOffset || 0;
-  const scrollY = window.scrollY || window.pageYOffset || 0;
+  const scrollX = window.scrollX || 0;
+  const scrollY = window.scrollY || 0;
 
   const left = rect.left + scrollX;
   const top = rect.top + scrollY;
 
-  let btnX: number;
-  let btnY: number;
-  let placement: 'internal' | 'external';
+  const isExternal = rect.height < 28 || rect.width < 100;
+  const placement: 'internal' | 'external' = isExternal ? 'external' : 'internal';
 
-  if (rect.height < 28 || rect.width < 100) {
-    // External placement
-    btnX = left + rect.width + 4;
-    btnY = top + (rect.height - btnHeight) / 2;
-    placement = 'external';
-  } else {
-    // Internal placement inside top-right corner
-    btnX = left + rect.width - btnWidth - 6;
-    btnY = top + (rect.height - btnHeight) / 2;
-    placement = 'internal';
-  }
+  const btnX = isExternal ? left + rect.width + 4 : left + rect.width - btnWidth - 6;
+  const btnY = top + (rect.height - btnHeight) / 2;
 
   // Viewport clamping
-  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+  const viewportWidth =
+    window.innerWidth > 0 ? window.innerWidth : document.documentElement.clientWidth;
   const maxX = scrollX + viewportWidth - btnWidth - 8;
-  if (btnX > maxX) {
-    btnX = maxX;
-  }
-  if (btnX < scrollX + 4) {
-    btnX = scrollX + 4;
-  }
-  if (btnY < scrollY + 4) {
-    btnY = scrollY + 4;
-  }
 
-  return { x: Math.round(btnX), y: Math.round(btnY), placement };
+  const clampedX = Math.min(Math.max(btnX, scrollX + 4), maxX);
+  const clampedY = Math.max(btnY, scrollY + 4);
+
+  return { x: Math.round(clampedX), y: Math.round(clampedY), placement };
 }
 
 /**
@@ -112,31 +97,13 @@ export function queryAllDeep(root: ParentNode, selector: string): HTMLElement[] 
 }
 
 /**
- * Blocklist of executable or high-risk tags that should never be injected into the DOM.
+ * Exhaustive blocklist of executable or high-risk tags that should never be injected into the DOM.
  */
-const BLOCKED_TAGS = new Set([
-  'script',
-  'iframe',
-  'frame',
-  'frameset',
-  'object',
-  'embed',
-  'applet',
-  'base',
-  'meta',
-  'link',
-  'style',
-  'template',
-  'form',
-  'foreignobject',
-  'use',
-  'animate',
-  'set',
-  'animatemotion',
-  'animatetransform',
-  'discard',
-  'annotation-xml',
-]);
+const BLOCKED_TAGS = new Set(
+  'script iframe frame frameset object embed applet base meta link style template form foreignobject use animate set animatemotion animatetransform discard annotation-xml'.split(
+    ' '
+  )
+);
 
 /**
  * Safely parses an HTML string and populates an element's children using DOMParser and replaceChildren.
@@ -145,7 +112,7 @@ const BLOCKED_TAGS = new Set([
  */
 export function safeSetHtml(element: Element, html: string): void {
   if (!element) return;
-  if (!html || typeof html !== 'string') {
+  if (typeof html !== 'string') {
     element.replaceChildren();
     return;
   }
@@ -155,15 +122,14 @@ export function safeSetHtml(element: Element, html: string): void {
   // 1. Remove dangerous/executable tags across HTML, SVG, and MathML namespaces
   const allElements = Array.from(doc.body.querySelectorAll('*'));
   for (const el of allElements) {
-    if (!el.isConnected) continue;
-
-    const localName = el.tagName.toLowerCase();
-    if (BLOCKED_TAGS.has(localName)) {
+    if (BLOCKED_TAGS.has(el.tagName.toLowerCase())) {
       el.remove();
-      continue;
     }
+  }
 
-    // 2. Sanitize attributes across all remaining elements
+  // 2. Sanitize attributes across all remaining connected elements
+  const remainingElements = Array.from(doc.body.querySelectorAll('*'));
+  for (const el of remainingElements) {
     const attrs = Array.from(el.attributes);
     for (const attr of attrs) {
       const name = attr.name.toLowerCase();
@@ -190,8 +156,7 @@ export function safeSetHtml(element: Element, html: string): void {
         name === 'background' ||
         name === 'xlink:href'
       ) {
-        // Strip control characters, whitespace, and backslashes
-        const normalized = attr.value.replace(/[\x00-\x20\s\\]+/g, '').toLowerCase();
+        const normalized = attr.value.replace(/[\x00-\x20\s\\]/g, '').toLowerCase();
 
         if (normalized.startsWith('javascript:') || normalized.startsWith('vbscript:')) {
           el.removeAttribute(attr.name);
@@ -217,7 +182,7 @@ export function safeSetHtml(element: Element, html: string): void {
 
       // Strip dangerous CSS expressions in style attributes
       if (name === 'style') {
-        const normalized = attr.value.replace(/[\x00-\x20\s\\]+/g, '').toLowerCase();
+        const normalized = attr.value.replace(/[\x00-\x20\s\\]/g, '').toLowerCase();
         if (
           normalized.includes('javascript:') ||
           normalized.includes('expression(') ||

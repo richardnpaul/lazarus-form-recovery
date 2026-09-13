@@ -2,19 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as runtimeUtils from '../../src/common/utils/runtime';
 import { FormTracker } from '../../src/content/form-tracker';
 
-describe('content-script.ts', () => {
+describe('content-script.iife.ts', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     delete (window as any).__LAZARUS_TRACKER__;
   });
 
   it('executes initContentScript() on top-level evaluation', async () => {
-    await import('../../src/content/content-script');
+    await import('../../src/content/content-script.iife');
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
   });
 
   it('boots and tracks forms, stopping previous trackers and logging', async () => {
-    const cs = await import('../../src/content/content-script');
+    const csIife = await import('../../src/content/content-script.iife');
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const startSpy = vi.spyOn(FormTracker.prototype, 'start');
@@ -23,7 +23,7 @@ describe('content-script.ts', () => {
     const stopMock = vi.fn();
     (window as any).__LAZARUS_TRACKER__ = { stop: stopMock };
 
-    cs.initContentScript();
+    csIife.initContentScript();
 
     expect(stopMock).toHaveBeenCalledTimes(1);
     expect(startSpy).toHaveBeenCalled();
@@ -36,20 +36,20 @@ describe('content-script.ts', () => {
     // 2. Early return when extension context is invalid
     (window as any).__LAZARUS_TRACKER__ = 'sentinel_tracker';
     vi.spyOn(runtimeUtils, 'isExtensionContextValid').mockReturnValue(false);
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBe('sentinel_tracker');
     vi.restoreAllMocks();
 
-    // 3. Existing tracker with non-function stop (should not call stop or warn)
+    // 3. Existing tracker with non-function stop
     const nonFnWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     (window as any).__LAZARUS_TRACKER__ = { stop: 'not_a_fn' };
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
     expect(nonFnWarnSpy).not.toHaveBeenCalled();
 
     // 4. Existing tracker without stop property
     (window as any).__LAZARUS_TRACKER__ = {};
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
     expect(nonFnWarnSpy).not.toHaveBeenCalled();
 
@@ -60,17 +60,17 @@ describe('content-script.ts', () => {
         throw stopErr;
       }),
     };
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
     expect(nonFnWarnSpy).toHaveBeenCalledWith('Failed to stop previous tracker:', stopErr);
 
     // 6. Existing tracker is null / undefined
     (window as any).__LAZARUS_TRACKER__ = null;
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
 
     delete (window as any).__LAZARUS_TRACKER__;
-    cs.initContentScript();
+    csIife.initContentScript();
     expect((window as any).__LAZARUS_TRACKER__).toBeInstanceOf(FormTracker);
   });
 });

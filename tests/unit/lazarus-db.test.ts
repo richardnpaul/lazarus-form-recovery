@@ -234,4 +234,27 @@ describe('LazarusDatabase Unit Tests (Dexie + IndexedDB)', () => {
       expect(retrieved?.value).toBe(14);
     });
   });
+
+  describe('Database Metadata and Schema Versioning', () => {
+    it('defines the correct database name and schema stores for all versions', () => {
+      const rawDb = new LazarusDatabase();
+      expect(rawDb.name).toBe('LazarusDatabase');
+
+      const v1 = (rawDb as any)._versions[0]._cfg.storesSource;
+      expect(v1.domains).toBe('id, domain, lastModified, status');
+      expect(v1.forms).toBe('id, domainId, url, lastModified, status');
+      expect(v1.fields).toBe('id, formId, domainId, name, type, lastModified, status');
+      expect(v1.settings).toBe('key, lastModified');
+
+      const v2 = (rawDb as any)._versions[1]._cfg.storesSource;
+      expect(v2.domains).toBe('id, domain, lastModified, status');
+      expect(v2.forms).toBe(
+        'id, domainId, formInstanceId, revisionId, url, lastModified, status, [domainId+lastModified], [domainId+formInstanceId+lastModified]'
+      );
+      expect(v2.fields).toBe(
+        'id, formId, domainId, revisionId, name, type, lastModified, status, [domainId+name+type]'
+      );
+      expect(v2.settings).toBe('key, lastModified');
+    });
+  });
 });

@@ -9,6 +9,7 @@ export interface ExtensionSettings {
   disabledDomains: string[];
 }
 
+// Default extension configuration settings
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   savePasswords: false,
   filterCreditCards: true,
