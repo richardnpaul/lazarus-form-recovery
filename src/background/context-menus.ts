@@ -28,7 +28,9 @@ export function isFirefox(): boolean {
     return true;
   }
   if (typeof navigator !== 'undefined' && navigator.userAgent) {
-    return navigator.userAgent.toLowerCase().includes('firefox');
+    if (navigator.userAgent.toLowerCase().includes('firefox')) {
+      return true;
+    }
   }
   return false;
 }
@@ -175,8 +177,6 @@ export async function updateDynamicContextMenus(
 }
 
 function rebuildSubmenus() {
-  if (!chrome.contextMenus) return;
-
   // 1. Update Form Revisions Submenu
   // Remove old items under form parent
   try {

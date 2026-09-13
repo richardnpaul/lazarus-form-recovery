@@ -12,7 +12,6 @@ export function isValidLuhn(input: string): boolean {
 
   for (let i = digits.length - 1; i >= 0; i--) {
     let digit = parseInt(digits.charAt(i), 10);
-    if (isNaN(digit)) return false;
 
     if (shouldDouble) {
       digit *= 2;

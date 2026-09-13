@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VaultManager } from '../../src/common/crypto/vault';
+import { WebCryptoVault } from '../../src/common/crypto/web-crypto';
 import { db } from '../../src/common/db/lazarus-db';
 
 describe('VaultManager Unit Tests', () => {
@@ -126,5 +127,31 @@ describe('VaultManager Unit Tests', () => {
     expect(vault.isUnlocked()).toBe(false);
 
     vi.useRealTimers();
+  });
+
+  it('initializes autoLockMinutes from settings in db', async () => {
+    await db.settings.put({
+      key: 'autoLockMinutes',
+      value: 30,
+      lastModified: Date.now(),
+    });
+    const loadedVault = new VaultManager();
+    // Allow async initAutoLockDuration to resolve
+    await new Promise((r) => setTimeout(r, 20));
+    const status = await loadedVault.getStatus();
+    expect(status.autoLockMinutes).toBe(30);
+  });
+
+  it('rejects empty master password when setting', async () => {
+    await expect(vault.setMasterPassword('')).rejects.toThrow('Password cannot be empty');
+  });
+
+  it('returns false in unlock when decrypted sentinel does not match', async () => {
+    await vault.setMasterPassword('CorrectPass');
+    vault.lock();
+
+    vi.spyOn(WebCryptoVault, 'decrypt').mockResolvedValueOnce('WRONG_SENTINEL');
+    const unlocked = await vault.unlock('CorrectPass');
+    expect(unlocked).toBe(false);
   });
 });

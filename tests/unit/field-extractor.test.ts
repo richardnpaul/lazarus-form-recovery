@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { FieldExtractor } from '../../src/content/field-extractor';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { FieldExtractor, getFormActionIdentifier } from '../../src/content/field-extractor';
 import { isValidLuhn, scrubSensitiveData } from '../../src/common/utils/pii';
 
 describe('FieldExtractor & PII Security Unit Tests', () => {
@@ -332,6 +332,11 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
       expect(snapshot.fields[0].name).toBe('detached');
 
       spy.mockRestore();
+    });
+
+    it('returns form_wrapper when form is detached and has no action or name', () => {
+      const detachedForm = document.createElement('form');
+      expect(getFormActionIdentifier(detachedForm)).toBe('form_wrapper');
     });
   });
 });

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   formatTimeAgo,
   computeWordCount,
@@ -10,8 +10,10 @@ import {
   getElementSelector,
   computeButtonPosition,
   queryAllDeep,
+  safeSetHtml,
 } from '../../src/common/utils/dom';
 import { isValidLuhn, scrubSensitiveData } from '../../src/common/utils/pii';
+import { getExtensionVersion } from '../../src/common/utils/version';
 
 describe('Text Utilities (src/common/utils/text.ts)', () => {
   it('should format relative timestamps correctly', () => {
@@ -73,7 +75,19 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
     const originalCss = (globalThis as any).CSS;
     (globalThis as any).CSS = { escape: (s: string) => `escaped-${s}` };
     expect(escapeCss('test')).toBe('escaped-test');
+
+    // Simulate CSS unavailable (fallback regex branch)
+    (globalThis as any).CSS = undefined;
+    expect(escapeCss('weird:id.with spaces')).toBe('weird\\:id\\.with\\ spaces');
+
     (globalThis as any).CSS = originalCss;
+  });
+
+  it('should strip srcdoc attribute in safeSetHtml', () => {
+    const el = document.createElement('div');
+    safeSetHtml(el, '<div srcdoc="secret">safe text</div>');
+    expect(el.querySelector('[srcdoc]')).toBeNull();
+    expect(el.textContent).toBe('safe text');
   });
 
   it('should generate accurate element selectors', () => {
@@ -218,5 +232,23 @@ describe('PII Utilities (src/common/utils/pii.ts)', () => {
     expect(scrubSensitiveData('My card is 4532-0151-1283-0366 here')).toBe(
       'My card is [REDACTED CREDIT CARD] here'
     );
+  });
+});
+
+describe('Version Utilities (src/common/utils/version.ts)', () => {
+  it('retrieves extension version from chrome.runtime.getManifest() or fallback', () => {
+    // 1. Manifest version available
+    (chrome.runtime as any).getManifest = vi.fn().mockReturnValue({ version: '2.5.0' });
+    expect(getExtensionVersion()).toBe('2.5.0');
+
+    // 2. Manifest without version
+    (chrome.runtime as any).getManifest = vi.fn().mockReturnValue({});
+    expect(getExtensionVersion()).toBe('0.0.1');
+
+    // 3. getManifest undefined
+    const orig = chrome.runtime.getManifest;
+    delete (chrome.runtime as any).getManifest;
+    expect(getExtensionVersion()).toBe('0.0.1');
+    chrome.runtime.getManifest = orig;
   });
 });

@@ -15,7 +15,7 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
     await db.domains.clear();
     await db.settings.clear();
     vault.lock();
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('Utility functions', () => {
@@ -535,6 +535,180 @@ describe('LazarusRepository Full Branch Coverage (src/common/db/repository.ts)',
       );
 
       expect(res.revisionNumber).toBe(1); // In-place update due to fallback querying the active form
+    });
+
+    it('exercises sort comparators and filters when querying multiple records', async () => {
+      const now = Date.now();
+
+      // 1. Seed two active forms with different timestamps, plus one deleted form
+      await db.forms.bulkPut([
+        {
+          id: 'sort-form-older',
+          domainId: 'sort-test.com',
+          url: 'https://sort-test.com/1',
+          formInstanceId: 'f_sort_1',
+          revisionId: 'r1',
+          revisionNumber: 1,
+          title: 'Older Form Multi Match',
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: now - 5000,
+          status: 0,
+        },
+        {
+          id: 'sort-form-newer',
+          domainId: 'sort-test.com',
+          url: 'https://sort-test.com/2',
+          formInstanceId: 'f_sort_2',
+          revisionId: 'r2',
+          revisionNumber: 1,
+          title: 'Newer Form Multi Match',
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: now,
+          status: 0,
+        },
+        {
+          id: 'sort-form-deleted',
+          domainId: 'sort-test.com',
+          url: 'https://sort-test.com/3',
+          formInstanceId: 'f_sort_3',
+          revisionId: 'r3',
+          revisionNumber: 1,
+          title: 'Deleted Form Multi Match',
+          encryption: 'none',
+          editingTime: 1,
+          lastModified: now + 1000,
+          status: 1,
+        },
+      ]);
+
+      // Seed fields for getRecoverableFields with different timestamps
+      await db.fields.bulkPut([
+        {
+          id: 'sort-field-1',
+          formId: 'sort-form-older',
+          domainId: 'sort-test.com',
+          revisionId: 'r1',
+          name: 'comment',
+          type: 'textarea',
+          value: 'First Comment Value',
+          encryption: 'none',
+          lastModified: now - 3000,
+          status: 0,
+        },
+        {
+          id: 'sort-field-2',
+          formId: 'sort-form-newer',
+          domainId: 'sort-test.com',
+          revisionId: 'r2',
+          name: 'comment',
+          type: 'textarea',
+          value: 'Second Comment Value',
+          encryption: 'none',
+          lastModified: now - 1000,
+          status: 0,
+        },
+      ]);
+
+      // 1. getLatestFormRevisions standard path (exercises line 386 filter)
+      const latest = await repository.getLatestFormRevisions('sort-test.com', 5);
+      expect(latest.length).toBe(2);
+      expect(latest[0].form.id).toBe('sort-form-newer');
+      expect(latest[1].form.id).toBe('sort-form-older');
+
+      // 2. getRecoverableFields with >= 2 fields (exercises line 314 sort)
+      const recFields = await repository.getRecoverableText('sort-test.com', 'comment', 'textarea');
+      expect(recFields.length).toBe(2);
+      expect(recFields[0].value).toBe('Second Comment Value');
+      expect(recFields[1].value).toBe('First Comment Value');
+
+      // 3. searchHistory('') with >= 2 forms (exercises line 447 sort)
+      const emptySearch = await repository.searchHistory('', 10);
+      expect(emptySearch.length).toBeGreaterThanOrEqual(2);
+      expect(emptySearch[0].form.lastModified).toBeGreaterThanOrEqual(
+        emptySearch[1].form.lastModified
+      );
+
+      // 4. searchHistory('Multi Match') with >= 2 forms (exercises line 497 sort)
+      const querySearch = await repository.searchHistory('Multi Match', 10);
+      expect(querySearch.length).toBe(2);
+      expect(querySearch[0].form.id).toBe('sort-form-newer');
+      expect(querySearch[1].form.id).toBe('sort-form-older');
+
+      // 5. getAllHistory() with >= 2 forms (exercises line 508 sort)
+      const allHist = await repository.getAllHistory(10);
+      expect(allHist.length).toBeGreaterThanOrEqual(2);
+      expect(allHist[0].form.lastModified).toBeGreaterThanOrEqual(allHist[1].form.lastModified);
+    });
+
+    it('handles fallback queries when compound index fails in getRecoverableFields and getFormRevisions', async () => {
+      const now = Date.now();
+      await db.forms.put({
+        id: 'rev-form-1',
+        domainId: 'rev-test.com',
+        url: 'https://rev-test.com',
+        formInstanceId: 'f_rev_inst',
+        revisionId: 'r1',
+        revisionNumber: 1,
+        title: 'Rev Form',
+        encryption: 'none',
+        editingTime: 1,
+        lastModified: now,
+        status: 0,
+      });
+
+      await db.fields.put({
+        id: 'rev-field-1',
+        formId: 'rev-form-1',
+        domainId: 'rev-test.com',
+        revisionId: 'r1',
+        name: 'feedback',
+        type: 'text',
+        value: 'Fallback Field Value',
+        encryption: 'none',
+        lastModified: now,
+        status: 0,
+      });
+
+      // 1. Fallback in getRecoverableFields when [domainId+name+type] throws (exercises line 282)
+      const originalFieldsWhere = db.fields.where.bind(db.fields);
+      vi.spyOn(db.fields, 'where').mockImplementation(((indexName: any) => {
+        if (indexName === '[domainId+name+type]') {
+          throw new Error('FieldsCompoundIndexUnavailable');
+        }
+        return originalFieldsWhere(indexName);
+      }) as any);
+
+      const fieldsRes = await repository.getRecoverableText('rev-test.com', 'feedback', 'text');
+      expect(fieldsRes.length).toBe(1);
+      expect(fieldsRes[0].value).toBe('Fallback Field Value');
+
+      // 2. Fallback in getFormRevisions when [domainId+lastModified] throws (exercises line 368)
+      const originalFormsWhere = db.forms.where.bind(db.forms);
+      vi.spyOn(db.forms, 'where').mockImplementation(((indexName: any) => {
+        if (indexName === '[domainId+lastModified]') {
+          throw new Error('FormsCompoundIndexUnavailable');
+        }
+        return originalFormsWhere(indexName);
+      }) as any);
+
+      const formsRes = await repository.getFormRevisions('rev-test.com', 'f_rev_inst');
+      expect(formsRes.length).toBe(1);
+      expect(formsRes[0].form.id).toBe('rev-form-1');
+
+      // 3. Save snapshot with a field that has no name and no value (exercises line 222 continue)
+      await repository.saveFormSnapshot({
+        formInstanceId: 'f_empty_field',
+        url: 'https://rev-test.com',
+        domain: 'rev-test.com',
+        title: 'Empty Field Form',
+        editingTime: 1,
+        fields: [
+          { name: '', type: 'text', value: '' },
+          { name: 'valid', type: 'text', value: 'has-value' },
+        ],
+      });
     });
   });
 });

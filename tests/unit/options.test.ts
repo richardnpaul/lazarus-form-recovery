@@ -475,6 +475,43 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       );
       expect(msg2).toBeDefined();
     });
+
+    it('handles mode switching when master password is not configured', async () => {
+      const { init } = await import('../../src/options/options');
+      (chrome.runtime.sendMessage as any).mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: { encryptionMode: 'none', disabledDomains: [] },
+          };
+        }
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: false, isUnlocked: false } };
+        }
+        if (msg.type === 'UPDATE_SETTINGS') {
+          sentMessages.push(msg);
+          return { success: true };
+        }
+        return { success: true };
+      });
+      await init();
+
+      const modeVault = document.getElementById('mode-vault') as HTMLElement;
+      const modeStandard = document.getElementById('mode-standard') as HTMLElement;
+      const modal = document.getElementById('password-modal') as HTMLElement;
+
+      // 1. Click modeVault opens password modal because hasMasterPassword is false (line 193)
+      modeVault.click();
+      expect(modal.classList.contains('is-visible')).toBe(true);
+
+      // Close modal
+      modal.classList.remove('is-visible');
+
+      // 2. Click modeStandard when hasMasterPassword is false (lines 186-187)
+      modeStandard.click();
+      await new Promise((r) => setTimeout(r, 40));
+      expect(modeStandard.classList.contains('is-selected')).toBe(true);
+    });
   });
 
   describe('Master Password Modal & Strength Meter', () => {

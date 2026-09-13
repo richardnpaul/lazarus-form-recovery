@@ -145,7 +145,7 @@ function applyFilter(items: any[]): any[] {
   });
 }
 
-function renderEmpty() {
+export function renderEmpty() {
   const historyList = document.getElementById('history-list') as HTMLElement;
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
@@ -193,7 +193,7 @@ function renderEmpty() {
   );
 }
 
-function renderHistory(items: any[]) {
+export function renderHistory(items: any[]) {
   const historyList = document.getElementById('history-list') as HTMLElement;
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;

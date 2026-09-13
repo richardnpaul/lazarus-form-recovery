@@ -226,7 +226,7 @@ export class FieldExtractor {
   }
 }
 
-function getFormActionIdentifier(form: HTMLFormElement): string {
+export function getFormActionIdentifier(form: HTMLFormElement): string {
   const action = form.getAttribute('action');
   if (action) {
     try {

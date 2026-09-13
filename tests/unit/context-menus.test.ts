@@ -3,6 +3,7 @@ import {
   setupContextMenus,
   updateDynamicContextMenus,
   handleContextMenuClick,
+  isFirefox,
 } from '../../src/background/context-menus';
 import { repository } from '../../src/common/db/repository';
 
@@ -94,6 +95,39 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       });
 
       getUrlSpy.mockRestore();
+    });
+
+    it('evaluates isFirefox correctly across runtime checks', () => {
+      // Line 28: sidebarAction defined
+      (chrome as any).sidebarAction = {};
+      expect(isFirefox()).toBe(true);
+      delete (chrome as any).sidebarAction;
+
+      // Line 32: true when userAgent includes firefox
+      const origUserAgent = navigator.userAgent;
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
+        configurable: true,
+      });
+      expect(isFirefox()).toBe(true);
+
+      // Line 35: fallback false when userAgent is not firefox and getURL not moz-extension
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
+        configurable: true,
+      });
+      expect(isFirefox()).toBe(false);
+      Object.defineProperty(navigator, 'userAgent', { value: origUserAgent, configurable: true });
+    });
+
+    it('returns early when chrome.contextMenus is undefined', async () => {
+      const origMenus = chrome.contextMenus;
+      delete (chrome as any).contextMenus;
+
+      expect(() => setupContextMenus()).not.toThrow();
+      await expect(updateDynamicContextMenus('example.com')).resolves.not.toThrow();
+
+      (chrome as any).contextMenus = origMenus;
     });
   });
 
@@ -354,6 +388,45 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         'Error handling context menu action:',
         expect.any(Error)
       );
+    });
+
+    it('handles rejection gracefully when sendMessage fails for save-now, revision restore, or field snippet restore', async () => {
+      (chrome.tabs.sendMessage as any).mockRejectedValue(new Error('Connection lost'));
+
+      // 1. save-now rejection
+      await handleContextMenuClick({ menuItemId: 'lazarus-save-now' }, mockTab);
+
+      // 2. form revision rejection
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([
+        {
+          form: {
+            id: 'rev_form_1',
+            revisionNumber: 1,
+            isFinalSubmit: false,
+            lastModified: Date.now(),
+          },
+          fields: [],
+        },
+      ]);
+      await updateDynamicContextMenus('sub.example.com');
+      await handleContextMenuClick({ menuItemId: 'lazarus-form-rev-0' }, mockTab);
+
+      // 3. field snippet rejection
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([]);
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
+        {
+          id: 'snip_1',
+          formId: 'rev_form_1',
+          name: 'notes',
+          type: 'text',
+          value: 'Recovered Snippet Content',
+          lastModified: Date.now(),
+        },
+      ]);
+      await updateDynamicContextMenus('sub.example.com', undefined, 'notes', 'text');
+      await handleContextMenuClick({ menuItemId: 'lazarus-field-val-0' }, mockTab);
+
+      expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(3);
     });
   });
 });

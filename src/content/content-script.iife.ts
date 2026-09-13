@@ -1,7 +1,7 @@
 import { FormTracker } from './form-tracker';
 import { isExtensionContextValid } from '../common/utils/runtime';
 
-function initContentScript() {
+export function initContentScript() {
   if (!isExtensionContextValid()) {
     return;
   }

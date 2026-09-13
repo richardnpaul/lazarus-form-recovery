@@ -104,6 +104,12 @@ describe('Runtime Utilities (src/common/utils/runtime.ts)', () => {
       (chrome.runtime.sendMessage as any).mockRejectedValue(new Error('DatabaseError'));
       await expect(safeSendMessage({ type: 'TEST' })).rejects.toThrow('DatabaseError');
     });
+
+    it('returns null when chrome.runtime.sendMessage returns undefined / non-thenable', async () => {
+      (chrome.runtime.sendMessage as any).mockReturnValue(undefined);
+      const res = await safeSendMessage({ type: 'TEST' });
+      expect(res).toBeNull();
+    });
   });
 
   describe('safeGetURL', () => {

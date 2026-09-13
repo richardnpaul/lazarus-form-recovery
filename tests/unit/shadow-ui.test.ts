@@ -150,6 +150,15 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(input.style.backgroundColor).toBe('');
       vi.useRealTimers();
     });
+
+    it('handles styling and value helpers when target is null', () => {
+      const manager = new LivePreviewManager();
+      (manager as any).stashOriginal();
+      (manager as any).applyValue('test');
+      (manager as any).applyPreviewStyles();
+      (manager as any).revertStyles();
+      (manager as any).flashConfirmation();
+    });
   });
 
   describe('RecoveryButton', () => {
@@ -354,29 +363,38 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(container.style.left).toBe(`${expectedRightClamp}px`);
 
       menu.hide();
+      expect(menu.isOpen()).toBe(false);
+    });
+
+    it('handles renderList when snippet list element is missing', () => {
+      const menu = new RecoveryMenu(new LivePreviewManager());
+      const list = menu.getElement().querySelector('.lz-snippet-list');
+      list?.remove();
+      (menu as any).renderList();
     });
   });
 
   describe('LazarusRecoveryHost & attachRecoveryUI', () => {
-    it('creates recovery host, positions near element, opens menu, and restores form', async () => {
+    it('creates and attaches host element, positions near target, and handles button clicks', async () => {
       const form = document.createElement('form');
       const input = document.createElement('input');
-      input.id = 'comment_input';
-      input.setAttribute('name', 'full_name');
-      form.appendChild(input);
-
+      input.name = 'full_name';
+      input.id = 'full_name_id';
       const textarea = document.createElement('textarea');
       textarea.name = 'bio';
+      form.appendChild(input);
       form.appendChild(textarea);
+
+      document.body.appendChild(form);
+
+      const host = attachRecoveryUI(input)!;
+      expect(host).toBeInstanceOf(LazarusRecoveryHost);
 
       const ceDiv = document.createElement('div');
       ceDiv.setAttribute('contenteditable', 'true');
       ceDiv.id = 'rich_notes';
       form.appendChild(ceDiv);
 
-      document.body.appendChild(form);
-
-      const host = attachRecoveryUI(input);
       expect(host).toBeInstanceOf(LazarusRecoveryHost);
 
       // Second call returns existing host
@@ -448,6 +466,71 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
       (host as any).currentTarget = null;
       await (hostMenu as any).onRestoreEntireFormCallback?.();
+    });
+
+    it('toggles menu closed when clicking trigger button while menu is open', async () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      const host = attachRecoveryUI(input)!;
+      await (host as any).openMenuForTarget(input);
+      expect((host as any).menu.isOpen()).toBe(true);
+
+      const triggerBtn = (host as any).button.getElement();
+      await triggerBtn.click();
+      expect((host as any).menu.isOpen()).toBe(false);
+    });
+
+    it('returns null in attachRecoveryUI when customElements is unavailable or documentElement is missing', () => {
+      const input = document.createElement('input');
+      const origCE = (window as any).customElements;
+
+      Object.defineProperty(window, 'customElements', { value: null, configurable: true });
+      expect(attachRecoveryUI(input)).toBeNull();
+
+      Object.defineProperty(window, 'customElements', {
+        value: { get: undefined },
+        configurable: true,
+      });
+      expect(attachRecoveryUI(input)).toBeNull();
+
+      Object.defineProperty(window, 'customElements', { value: origCE, configurable: true });
+    });
+
+    it('catches and logs error when attachRecoveryUI fails to append host', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      document.documentElement
+        .querySelectorAll('lazarus-recovery-host')
+        .forEach((el) => el.remove());
+
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const appendSpy = vi.spyOn(document.documentElement, 'appendChild').mockImplementation(() => {
+        throw new Error('AppendError');
+      });
+
+      expect(attachRecoveryUI(input)).toBeNull();
+      expect(warnSpy).toHaveBeenCalledWith('Failed to attach recovery UI:', expect.any(Error));
+
+      appendSpy.mockRestore();
+      warnSpy.mockRestore();
+    });
+
+    it('defines customElement if not already defined when attaching recovery UI', () => {
+      const input = document.createElement('input');
+      document.body.appendChild(input);
+      document.documentElement
+        .querySelectorAll('lazarus-recovery-host')
+        .forEach((el) => el.remove());
+
+      const defineSpy = vi.spyOn(customElements, 'define').mockImplementation(() => {});
+      const getSpy = vi.spyOn(customElements, 'get').mockReturnValue(undefined);
+
+      const host = attachRecoveryUI(input);
+      expect(defineSpy).toHaveBeenCalledWith('lazarus-recovery-host', expect.any(Function));
+      expect(host).not.toBeNull();
+
+      defineSpy.mockRestore();
+      getSpy.mockRestore();
     });
   });
 });

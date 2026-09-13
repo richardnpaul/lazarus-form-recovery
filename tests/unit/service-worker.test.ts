@@ -62,6 +62,12 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
     await triggers.command('recover_last_form');
     expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(42, { action: 'RESTORE_LAST_FORM' });
 
+    // 1b. Active tab exists but sendMessage rejects (exercises .catch(() => {}))
+    (chrome.tabs.query as any).mockResolvedValueOnce([{ id: 43, windowId: 10 }]);
+    (chrome.tabs.sendMessage as any).mockRejectedValueOnce(new Error('TabDisconnected'));
+    await triggers.command('recover_last_form');
+    expect(chrome.tabs.sendMessage).toHaveBeenCalledWith(43, { action: 'RESTORE_LAST_FORM' });
+
     // 2. Active tab has no id
     (chrome.tabs.query as any).mockResolvedValueOnce([{}]);
     await triggers.command('recover_last_form');

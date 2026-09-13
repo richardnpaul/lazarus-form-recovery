@@ -490,5 +490,66 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Failed to restore last form:', expect.any(Error));
       consoleSpy.mockRestore();
     });
+
+    it('handles invalid context guards and null targets across all event listeners', async () => {
+      // 1. When context is invalid, all listeners early return cleanly
+      (tracker as any).ensureContextValid = vi.fn().mockReturnValue(false);
+
+      (tracker as any).onBlur(new Event('blur'));
+      (tracker as any).onPaste(new Event('paste'));
+      (tracker as any).onKeyDown(new KeyboardEvent('keydown', { key: 'Enter' }));
+      (tracker as any).onPageHide();
+      tracker.start();
+      (tracker as any).handleFocus(new Event('focus'));
+      (tracker as any).handleContextMenu(new MouseEvent('contextmenu'));
+      (tracker as any).handleInput(new Event('input'));
+      (tracker as any).handleReset(new Event('reset'));
+      (tracker as any).handleSubmit(new Event('submit'));
+      await (tracker as any).handleRuntimeMessage({});
+      await (tracker as any).restoreLastForm();
+      await (tracker as any).restoreFormFromId('id');
+      (tracker as any).restoreActiveField('val');
+      (tracker as any).forceSaveCurrentForm();
+      (tracker as any).triggerAutosave(document.createElement('input'));
+
+      // 2. Restore ensureContextValid and test null / invalid targets
+      (tracker as any).ensureContextValid = () => true;
+
+      // Null target on handleFocus (line 180)
+      (tracker as any).handleFocus({ target: null, composedPath: () => [] });
+
+      // Null target on handleContextMenu (line 191)
+      (tracker as any).handleContextMenu({ target: null, composedPath: () => [] });
+
+      // Null or non-form target on handleReset (line 238)
+      (tracker as any).handleReset({ target: null, composedPath: () => [] });
+      const nonForm = document.createElement('div');
+      (tracker as any).handleReset({ target: nonForm, composedPath: () => [nonForm] });
+
+      // Null target on handleSubmit (line 256)
+      (tracker as any).handleSubmit({ target: null, composedPath: () => [] });
+
+      // Non-object message on handleRuntimeMessage (line 303)
+      await (tracker as any).handleRuntimeMessage(null);
+      await (tracker as any).handleRuntimeMessage('not an object');
+
+      // Empty fields array in restoreFormFromId (line 360)
+      (chrome.runtime.sendMessage as any).mockResolvedValueOnce({
+        success: true,
+        data: { fields: [] },
+      });
+      await (tracker as any).restoreFormFromId('empty_form');
+
+      // Null target on restoreActiveField (line 391)
+      (tracker as any).lastInteractedElement = null;
+      const origActive = document.activeElement;
+      Object.defineProperty(document, 'activeElement', { value: null, configurable: true });
+      (tracker as any).restoreActiveField('val');
+
+      // Null target on forceSaveCurrentForm (line 401)
+      document.body.innerHTML = '';
+      (tracker as any).forceSaveCurrentForm();
+      Object.defineProperty(document, 'activeElement', { value: origActive, configurable: true });
+    });
   });
 });

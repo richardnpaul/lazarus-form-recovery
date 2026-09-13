@@ -506,6 +506,58 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     }
   });
 
+  it('handles edge cases in tab resolution, domain toggling, history loading, and window focus', async () => {
+    sidepanel = await import('../../src/sidepanel/sidepanel');
+    await Promise.resolve();
+
+    // 1. URL parse error on active tab (line 44)
+    chrome.tabs.query = vi.fn().mockResolvedValue([{ id: 1, url: 'http://' }]);
+    await sidepanel.resolveActiveTab();
+
+    // 2. Active tab with no URL (lines 47-48)
+    chrome.tabs.query = vi.fn().mockResolvedValue([{ id: 1 }]);
+    await sidepanel.resolveActiveTab();
+
+    // 3. updateSiteStatus error branch (line 91)
+    (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('SiteStatusFail'));
+    chrome.tabs.query = vi.fn().mockResolvedValue([{ id: 1, url: 'https://example.com' }]);
+    await sidepanel.resolveActiveTab();
+    expect(document.getElementById('site-status')?.textContent).toBe('Tracking active');
+
+    // 4. loadHistory non-success response (line 110)
+    (chrome.runtime.sendMessage as any).mockResolvedValueOnce({ success: false });
+    await sidepanel.loadHistory('');
+
+    // 5. loadHistory throw error branch (lines 113-114)
+    (chrome.runtime.sendMessage as any).mockRejectedValueOnce(new Error('LoadFail'));
+    await sidepanel.loadHistory('');
+
+    // 6. applyFilter with this_site and empty currentDomain (line 122)
+    chrome.tabs.query = vi.fn().mockResolvedValue([{ id: 1, url: 'about:blank' }]);
+    await sidepanel.resolveActiveTab();
+    const thisSiteChip = document.getElementById('chip-this-site') as HTMLElement;
+    thisSiteChip.click();
+    await sidepanel.loadHistory('');
+
+    // 7. Domain toggle when currentDomain is empty (line 377)
+    const toggle = document.getElementById('domain-toggle') as HTMLInputElement;
+    toggle.dispatchEvent(new Event('change'));
+
+    // 8. Missing history-list / history-count in renderHistory (lines 151, 199, 332)
+    document.getElementById('history-list')?.remove();
+    sidepanel.initSidepanel();
+    sidepanel.renderEmpty();
+    sidepanel.renderHistory([]);
+    await sidepanel.loadHistory('');
+
+    // 9. Window focus event with this_site filter (lines 470-471)
+    document.body.innerHTML = SIDEPANEL_HTML;
+    sidepanel = await import('../../src/sidepanel/sidepanel');
+    (document.getElementById('chip-this-site') as HTMLElement)?.click();
+    window.dispatchEvent(new Event('focus'));
+    await Promise.resolve();
+  });
+
   it('covers DOMContentLoaded deferred boot path strictly', async () => {
     vi.resetModules();
     // Mock readyState to 'loading'

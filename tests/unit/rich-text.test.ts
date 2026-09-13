@@ -148,6 +148,9 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
 
       const normal = document.createElement('div');
       expect(adapter.matches(normal)).toBe(false);
+
+      expect(adapter.matches(null as any)).toBe(false);
+      expect(adapter.matches({} as any)).toBe(false);
     });
 
     it('gets and sets values with HTML and text', () => {
