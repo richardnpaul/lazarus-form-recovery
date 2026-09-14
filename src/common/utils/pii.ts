@@ -12,18 +12,16 @@ export function isValidLuhn(input: string): boolean {
 
   for (let i = digits.length - 1; i >= 0; i--) {
     let digit = parseInt(digits.charAt(i), 10);
-    if (isNaN(digit)) return false;
 
     if (shouldDouble) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
+      digit = digit > 4 ? digit * 2 - 9 : digit * 2;
     }
 
     sum += digit;
     shouldDouble = !shouldDouble;
   }
 
-  return sum % 10 === 0;
+  return sum > 0 && sum % 10 === 0;
 }
 
 /**
@@ -35,19 +33,17 @@ const CARD_REGEX = /\b(?:\d[ -]*?){13,19}\b/g;
 /**
  * Scrubs credit card numbers and sensitive CVV codes from text.
  */
-export function scrubSensitiveData(text: string, fieldName: string = ''): string {
+export function scrubSensitiveData(text: string, fieldName?: string): string {
   if (!text) return text;
 
   // 1. If the field is an explicit CVV/CVC field, redact entirely
-  const lowerName = fieldName.toLowerCase();
-  if (/\b(cvv|cvc|cid|security_?code|card_?code)\b/.test(lowerName)) {
+  if (fieldName && /\b(cvv|cvc|cid|security_?code|card_?code)\b/.test(fieldName.toLowerCase())) {
     return '[REDACTED CVV]';
   }
 
   // 2. Scan for candidate credit card numbers
   return text.replace(CARD_REGEX, (match) => {
-    const rawDigits = match.replace(/\D/g, '');
-    if (isValidLuhn(rawDigits)) {
+    if (isValidLuhn(match)) {
       return '[REDACTED CREDIT CARD]';
     }
     return match;

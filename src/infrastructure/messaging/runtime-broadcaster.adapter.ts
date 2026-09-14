@@ -2,16 +2,17 @@ import {
   IEventBroadcasterPort,
   FormSavedEventPayload,
 } from '../../core/ports/outbound/event-broadcaster.port';
+import { getBrowserApi } from '../../common/utils/runtime';
 
 export class RuntimeBroadcasterAdapter implements IEventBroadcasterPort {
   public broadcastFormSaved(payload: FormSavedEventPayload): void {
     try {
-      chrome.runtime
-        ?.sendMessage?.({
+      getBrowserApi()
+        .runtime.sendMessage({
           type: 'FORM_SAVED',
           payload,
         })
-        .catch?.(() => {});
+        .catch(() => {});
     } catch {
       // Ignored if no receiver is active
     }
@@ -19,11 +20,11 @@ export class RuntimeBroadcasterAdapter implements IEventBroadcasterPort {
 
   public broadcastRefresh(): void {
     try {
-      chrome.runtime
-        ?.sendMessage?.({
+      getBrowserApi()
+        .runtime.sendMessage({
           type: 'REFRESH_HISTORY',
         })
-        .catch?.(() => {});
+        .catch(() => {});
     } catch {
       // Ignored if no receiver is active
     }

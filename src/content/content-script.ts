@@ -1,17 +1,19 @@
 import { FormTracker } from './form-tracker';
 import { isExtensionContextValid } from '../common/utils/runtime';
 
-function initContentScript() {
+export function initContentScript() {
   if (!isExtensionContextValid()) {
     return;
   }
 
   // Stop any previous tracker instance (e.g. before extension reload or re-injection)
   const existingTracker = (window as any).__LAZARUS_TRACKER__;
-  if (existingTracker && typeof existingTracker.stop === 'function') {
+  if (typeof existingTracker?.stop === 'function') {
     try {
       existingTracker.stop();
-    } catch {}
+    } catch (e) {
+      console.warn('Failed to stop previous tracker:', e);
+    }
   }
 
   const tracker = new FormTracker();

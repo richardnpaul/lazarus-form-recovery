@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { FieldExtractor } from '../../src/content/field-extractor';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { FieldExtractor, getFormActionIdentifier } from '../../src/content/field-extractor';
 import { isValidLuhn, scrubSensitiveData } from '../../src/common/utils/pii';
 
 describe('FieldExtractor & PII Security Unit Tests', () => {
@@ -332,6 +332,295 @@ describe('FieldExtractor & PII Security Unit Tests', () => {
       expect(snapshot.fields[0].name).toBe('detached');
 
       spy.mockRestore();
+    });
+
+    it('returns form_wrapper when form is detached and has no action or name', () => {
+      const detachedForm = document.createElement('form');
+      expect(getFormActionIdentifier(detachedForm)).toBe('form_wrapper');
+    });
+
+    it('handles input with undefined or empty type fallback to text', () => {
+      const input = document.createElement('input');
+      Object.defineProperty(input, 'type', { value: '', configurable: true });
+      expect(FieldExtractor.isTrackable(input)).toBe(true);
+      const snapshot = FieldExtractor.extractField(input);
+      expect(snapshot?.type).toBe('text');
+    });
+
+    it('handles checkbox and radio with checked=true and empty value falling back to on', () => {
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.name = 'empty_cb';
+      cb.checked = true;
+      Object.defineProperty(cb, 'value', { value: '', configurable: true });
+      const snapCb = FieldExtractor.extractField(cb);
+      expect(snapCb?.value).toBe('on');
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'empty_radio';
+      radio.checked = true;
+      Object.defineProperty(radio, 'value', { value: '', configurable: true });
+      const snapRadio = FieldExtractor.extractField(radio);
+      expect(snapRadio?.value).toBe('on');
+    });
+
+    it('handles textarea with empty or undefined value', () => {
+      const ta = document.createElement('textarea');
+      Object.defineProperty(ta, 'value', { value: undefined, configurable: true });
+      const snapTa = FieldExtractor.extractField(ta);
+      expect(snapTa?.value).toBe('');
+    });
+
+    it('falls back to element selector when element index is not in container allInputs', () => {
+      const parent = document.createElement('div');
+      const input = document.createElement('input');
+      parent.appendChild(input);
+      vi.spyOn(parent, 'querySelectorAll').mockReturnValue([] as any);
+      const snap = FieldExtractor.extractField(input);
+      expect(snap?.name).toBe('input');
+    });
+
+    it('skips PII scrubbing when filterCreditCards is false', () => {
+      const input = document.createElement('input');
+      input.name = 'cc_num';
+      input.value = '4532015112830366';
+      const snap = FieldExtractor.extractField(input, { filterCreditCards: false });
+      expect(snap?.value).toBe('4532015112830366');
+    });
+
+    it('handles container itself being trackable with empty text vs checkbox', () => {
+      const emptyInput = document.createElement('input');
+      emptyInput.type = 'text';
+      emptyInput.value = '';
+      const fieldsEmpty = FieldExtractor.extractAllFields(emptyInput);
+      expect(fieldsEmpty.length).toBe(0);
+
+      const uncheckedCb = document.createElement('input');
+      uncheckedCb.type = 'checkbox';
+      uncheckedCb.checked = false;
+      const fieldsCb = FieldExtractor.extractAllFields(uncheckedCb);
+      expect(fieldsCb.length).toBe(1);
+      expect(fieldsCb[0].type).toBe('checkbox');
+      expect(fieldsCb[0].value).toBe('');
+    });
+
+    it('handles detached target with no parentElement in buildFormSnapshot', () => {
+      const detached = document.createElement('input');
+      detached.value = 'detached_val';
+      const snapshot = FieldExtractor.buildFormSnapshot(detached);
+      expect(snapshot.fields.length).toBe(1);
+    });
+
+    it('determines domain when hostname is empty for file: and unknown protocol', () => {
+      const origLocation = window.location;
+      delete (window as any).location;
+
+      (window as any).location = {
+        hostname: '',
+        protocol: 'file:',
+        href: 'file:///test.html',
+      };
+      const detached = document.createElement('input');
+      detached.value = 'file_test';
+      const snap1 = FieldExtractor.buildFormSnapshot(detached);
+      expect(snap1.domain).toBe('local file');
+
+      (window as any).location = {
+        hostname: '',
+        protocol: 'custom:',
+        href: 'custom://test',
+      };
+      const snap2 = FieldExtractor.buildFormSnapshot(detached);
+      expect(snap2.domain).toBe('unknown');
+
+      (window as any).location = origLocation;
+    });
+
+    it('handles getFormActionIdentifier edge cases with clean empty, invalid URL, and index', () => {
+      const form = document.createElement('form');
+      form.setAttribute('action', '/');
+      document.body.appendChild(form);
+      expect(getFormActionIdentifier(form)).toBe('form_1');
+
+      const invalidForm = document.createElement('form');
+      invalidForm.setAttribute('action', 'http://[');
+      document.body.appendChild(invalidForm);
+      expect(getFormActionIdentifier(invalidForm)).toBe('form_2');
+
+      const orphanForm = document.createElement('form');
+      expect(getFormActionIdentifier(orphanForm)).toBe('form_wrapper');
+    });
+
+    it('skips non-HTMLElement in extractAllFields', () => {
+      const container = document.createElement('div');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('class', 'ql-editor');
+      svg.appendChild(rect);
+      container.appendChild(svg);
+      document.body.appendChild(container);
+
+      const fields = FieldExtractor.extractAllFields(container);
+      expect(fields.length).toBe(0);
+    });
+
+    it('matches target by selector when field name differs and handles empty target value', () => {
+      const container = document.createElement('div');
+      const input = document.createElement('input');
+      input.value = 'typed';
+      container.appendChild(input);
+      document.body.appendChild(container);
+
+      // Spy on extractAllFields to return a field with matching selector but different name
+      const actualSelector = FieldExtractor.extractField(input)!.selector;
+      const spy = vi
+        .spyOn(FieldExtractor, 'extractAllFields')
+        .mockReturnValue([
+          { name: 'other_name', type: 'text', value: 'typed', selector: actualSelector },
+        ]);
+      const snap = FieldExtractor.buildFormSnapshot(input);
+      expect(snap.fields.length).toBe(1);
+      spy.mockRestore();
+
+      // Empty target value
+      const emptyInput = document.createElement('input');
+      emptyInput.value = '   ';
+      const snapEmpty = FieldExtractor.buildFormSnapshot(emptyInput);
+      expect(snapEmpty.fields.length).toBe(0);
+    });
+
+    it('handles getFormActionIdentifier when window or document are undefined', () => {
+      const form = document.createElement('form');
+      form.setAttribute('action', '/api/submit');
+
+      const origWindow = globalThis.window;
+      const origDoc = globalThis.document;
+
+      try {
+        // 1. window undefined
+        delete (globalThis as any).window;
+        const id1 = getFormActionIdentifier(form);
+        expect(id1).toBe('form_api_submit');
+
+        // 2. document undefined and no action
+        form.removeAttribute('action');
+        delete (globalThis as any).document;
+        const id2 = getFormActionIdentifier(form);
+        expect(id2).toBe('form_wrapper');
+      } finally {
+        globalThis.window = origWindow;
+        globalThis.document = origDoc;
+      }
+    });
+
+    it('kills surviving mutants across field extraction and snapshots', () => {
+      // 1. isTrackable default savePasswords=false
+      const pw = document.createElement('input');
+      pw.type = 'password';
+      expect(FieldExtractor.isTrackable(pw)).toBe(false);
+
+      // 2. element name resolution with ONLY aria-label
+      const elAria = document.createElement('input');
+      elAria.setAttribute('aria-label', 'Search query');
+      expect(FieldExtractor.extractField(elAria)?.name).toBe('Search query');
+
+      // 3. element name resolution with ONLY placeholder
+      const elPl = document.createElement('input');
+      elPl.setAttribute('placeholder', 'Type message');
+      expect(FieldExtractor.extractField(elPl)?.name).toBe('Type message');
+
+      // 4. select.multiple check vs select.value
+      const select = document.createElement('select');
+      select.name = 'status';
+      Object.defineProperty(select, 'multiple', { value: false });
+      Object.defineProperty(select, 'selectedOptions', { value: [{ value: 'wrong' }] });
+      Object.defineProperty(select, 'value', { value: 'correct' });
+      expect(FieldExtractor.extractField(select)?.value).toBe('correct');
+
+      // 5. container fallback for detached element (parentElement)
+      const div = document.createElement('div');
+      const detachedInput = document.createElement('input');
+      detachedInput.type = 'text';
+      detachedInput.value = 'hello';
+      div.appendChild(detachedInput);
+      expect(FieldExtractor.extractField(detachedInput)?.name).toBe('text_1');
+
+      // 6. credit card scrubbing with default options (filterCreditCards not provided)
+      const ccInput = document.createElement('input');
+      ccInput.name = 'card_number';
+      ccInput.value = '4532015112830366';
+      expect(FieldExtractor.extractField(ccInput)?.value).toBe('[REDACTED CREDIT CARD]');
+
+      // 7. extractAllFields on trackable container with non-empty text
+      const trackableInput = document.createElement('input');
+      trackableInput.value = 'valid_value';
+      const res = FieldExtractor.extractAllFields(trackableInput);
+      expect(res.length).toBe(1);
+      expect(res[0].value).toBe('valid_value');
+
+      // 8. whitespace-only descendant excluded
+      const formWs = document.createElement('form');
+      const wsInput = document.createElement('input');
+      wsInput.value = '   ';
+      formWs.appendChild(wsInput);
+      expect(FieldExtractor.extractAllFields(formWs).length).toBe(0);
+
+      // 9. buildFormSnapshot with form name attribute
+      const namedForm = document.createElement('form');
+      namedForm.setAttribute('name', 'custom_form_name');
+      const formChild = document.createElement('input');
+      formChild.value = 'abc';
+      namedForm.appendChild(formChild);
+      document.body.appendChild(namedForm);
+      const namedSnap = FieldExtractor.buildFormSnapshot(formChild);
+      expect(namedSnap.formInstanceId).toBe('custom_form_name');
+
+      // 10. non-form section container with nested inputs
+      const section = document.createElement('section');
+      section.id = 'sec-container';
+      const inner = document.createElement('div');
+      const in1 = document.createElement('input');
+      in1.name = 'f1';
+      in1.value = 'v1';
+      const in2 = document.createElement('input');
+      in2.name = 'f2';
+      in2.value = 'v2';
+      inner.appendChild(in1);
+      inner.appendChild(in2);
+      section.appendChild(inner);
+      document.body.appendChild(section);
+      const secSnap = FieldExtractor.buildFormSnapshot(in1);
+      expect(secSnap.formInstanceId).toBe('sec-container');
+      expect(secSnap.fields.length).toBe(2);
+
+      // 11. target preservation when extractAllFields returns non-matching fields
+      const targetIn = document.createElement('input');
+      targetIn.name = 'target_f';
+      targetIn.value = 'target_v';
+      const spyFields = vi
+        .spyOn(FieldExtractor, 'extractAllFields')
+        .mockReturnValue([
+          { name: 'unrelated', selector: 'unrelated', type: 'text', value: 'other' },
+        ]);
+      const snapPreserve = FieldExtractor.buildFormSnapshot(targetIn);
+      expect(snapPreserve.fields.length).toBe(2);
+      expect(snapPreserve.fields[1].name).toBe('target_f');
+      spyFields.mockRestore();
+
+      // 12. title and domain
+      document.title = 'My Test Title';
+      const snapTitle = FieldExtractor.buildFormSnapshot(in1);
+      expect(snapTitle.title).toBe('My Test Title');
+
+      document.title = '';
+      const snapNoTitle = FieldExtractor.buildFormSnapshot(in1);
+      expect(snapNoTitle.title).toBe(snapNoTitle.domain);
+
+      // 13. action with multiple leading and trailing underscores
+      const formMulti = document.createElement('form');
+      formMulti.setAttribute('action', '/__api__/');
+      expect(getFormActionIdentifier(formMulti)).toBe('form_api');
     });
   });
 });

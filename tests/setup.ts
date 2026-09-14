@@ -66,7 +66,7 @@ globalThis.chrome = {
         }
         setTimeout(() => {
           if (!responded) resolve({ success: true });
-        }, 100);
+        }, 5000);
       });
     }),
     onMessage: {

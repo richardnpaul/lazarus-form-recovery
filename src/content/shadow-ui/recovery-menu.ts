@@ -7,9 +7,9 @@ import { safeSendMessage, safeGetURL } from '../../common/utils/runtime';
 export class RecoveryMenu {
   private container: HTMLDivElement;
   private previewManager: LivePreviewManager;
-  private currentItems: any[] = [];
-  private filteredItems: any[] = [];
-  private focusedIndex = -1;
+  private currentItems!: any[];
+  private filteredItems!: any[];
+  private focusedIndex!: number;
   private currentTarget: HTMLElement | null = null;
   private onCommitCallback: ((val: string) => void) | null = null;
   private onDismissCallback: (() => void) | null = null;
@@ -56,20 +56,20 @@ export class RecoveryMenu {
     // Position menu card below or near the button
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const menuWidth = 320;
-    let menuLeft = buttonLeft - menuWidth + 24;
-    if (menuLeft < 10) menuLeft = 10;
-    if (menuLeft + menuWidth > viewportWidth - 10) {
-      menuLeft = viewportWidth - menuWidth - 10;
-    }
+    const menuLeft = Math.max(
+      10,
+      Math.min(buttonLeft - menuWidth + 24, viewportWidth - menuWidth - 10)
+    );
 
     this.container.style.left = `${menuLeft}px`;
     this.container.style.top = `${buttonTop + 28}px`;
     this.container.style.display = 'flex';
 
-    // Focus search input
     setTimeout(() => {
       const search = this.container.querySelector('.lz-search-input') as HTMLInputElement;
-      search?.focus();
+      if (search) {
+        search.focus();
+      }
     }, 50);
   }
 
@@ -197,7 +197,7 @@ export class RecoveryMenu {
 
     this.filteredItems.forEach((item, index) => {
       const li = document.createElement('li');
-      li.className = `lz-snippet-item ${index === this.focusedIndex ? 'is-focused' : ''}`;
+      li.className = index === this.focusedIndex ? 'lz-snippet-item is-focused' : 'lz-snippet-item';
       li.setAttribute('role', 'option');
       li.setAttribute('tabindex', '0');
 
@@ -272,28 +272,25 @@ export class RecoveryMenu {
       return;
     }
 
-    if (this.filteredItems.length === 0) return;
+    if (!this.filteredItems || this.filteredItems.length === 0) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       this.focusedIndex = (this.focusedIndex + 1) % this.filteredItems.length;
       this.updateFocusedItemClass();
       const current = this.filteredItems[this.focusedIndex];
-      if (current) this.previewManager.preview(current.value);
+      this.previewManager.preview(current.value);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       this.focusedIndex =
         (this.focusedIndex - 1 + this.filteredItems.length) % this.filteredItems.length;
       this.updateFocusedItemClass();
       const current = this.filteredItems[this.focusedIndex];
-      if (current) this.previewManager.preview(current.value);
+      this.previewManager.preview(current.value);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (this.focusedIndex >= 0 && this.focusedIndex < this.filteredItems.length) {
-        this.commitItem(this.filteredItems[this.focusedIndex].value);
-      } else if (this.filteredItems.length > 0) {
-        this.commitItem(this.filteredItems[0].value);
-      }
+      const item = this.filteredItems[this.focusedIndex] ?? this.filteredItems[0];
+      this.commitItem(item.value);
     }
   }
 }

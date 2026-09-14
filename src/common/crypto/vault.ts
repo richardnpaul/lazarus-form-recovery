@@ -2,11 +2,17 @@ import { WebCryptoVault } from './web-crypto';
 import { db } from '../db/lazarus-db';
 import { VaultStatus } from '../types/config';
 
-const VAULT_SENTINEL = 'LAZARUS_VAULT_VERIFIED_v1';
+/**
+ * Unique cryptographic sentinel used to verify successful vault decryption.
+ */
+export const VAULT_SENTINEL: string = 'LAZARUS_VAULT_VERIFIED_v1';
 const SALT_SETTING_KEY = 'vault_salt';
 const TOKEN_SETTING_KEY = 'vault_verification_token';
 const AUTOLOCK_SETTING_KEY = 'autoLockMinutes';
 
+/**
+ * In-memory vault manager coordinating WebCrypto encryption, master keys, and auto-lock schedules.
+ */
 export class VaultManager {
   private activeKey: CryptoKey | null = null;
   private autoLockTimer: any = null;
@@ -20,7 +26,7 @@ export class VaultManager {
   private async initAutoLockDuration() {
     try {
       const setting = await db.settings.get(AUTOLOCK_SETTING_KEY);
-      if (setting && typeof setting.value === 'number') {
+      if (typeof setting?.value === 'number') {
         this.autoLockMinutes = setting.value;
       }
     } catch {
@@ -66,7 +72,7 @@ export class VaultManager {
    * Initializes or updates the Master Password.
    */
   public async setMasterPassword(newPassword: string): Promise<void> {
-    if (!newPassword || newPassword.length < 1) {
+    if (!newPassword) {
       throw new Error('Password cannot be empty');
     }
 
@@ -97,11 +103,7 @@ export class VaultManager {
       throw new Error('No Master Password has been configured.');
     }
 
-    const saltBinary = atob(saltRecord.value);
-    const salt = new Uint8Array(saltBinary.length);
-    for (let i = 0; i < saltBinary.length; i++) {
-      salt[i] = saltBinary.charCodeAt(i);
-    }
+    const salt = Uint8Array.from(atob(saltRecord.value), (c) => c.charCodeAt(0));
 
     try {
       const key = await WebCryptoVault.deriveKey(password, salt);
@@ -125,10 +127,8 @@ export class VaultManager {
   public lock(): void {
     this.activeKey = null;
     this.unlockTimestamp = 0;
-    if (this.autoLockTimer) {
-      clearTimeout(this.autoLockTimer);
-      this.autoLockTimer = null;
-    }
+    clearTimeout(this.autoLockTimer);
+    this.autoLockTimer = null;
   }
 
   /**
@@ -149,10 +149,8 @@ export class VaultManager {
   }
 
   private resetAutoLockTimer(): void {
-    if (this.autoLockTimer) {
-      clearTimeout(this.autoLockTimer);
-      this.autoLockTimer = null;
-    }
+    clearTimeout(this.autoLockTimer);
+    this.autoLockTimer = null;
 
     if (this.autoLockMinutes > 0 && this.activeKey) {
       this.autoLockTimer = setTimeout(

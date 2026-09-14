@@ -3,9 +3,11 @@ import '../../src/background/service-worker';
 import { db } from '../../src/common/db/lazarus-db';
 import { RuntimeMessage } from '../../src/common/types/messages';
 import { handleRuntimeMessage } from '../../src/background/message-router';
+import { vault } from '../../src/common/crypto/vault';
 
 describe('Background Storage & Message Router Tests', () => {
   beforeEach(async () => {
+    vault.lock();
     await db.forms.clear();
     await db.fields.clear();
     await db.domains.clear();

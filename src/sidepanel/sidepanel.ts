@@ -1,6 +1,7 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { formatTimeAgo } from '../common/utils/text';
 import { safeSetHtml } from '../common/utils/dom';
+import { getBrowserApi, isExtensionContextValid } from '../common/utils/runtime';
 
 let currentFilter: 'all' | 'this_site' | 'today' | '7days' | '30days' = 'all';
 let currentDomain = '';
@@ -8,33 +9,63 @@ let currentUrl = '';
 let searchDebounce: any = null;
 let heartbeatInterval: any = null;
 
-function normalizeDomain(domain: string): string {
+export function normalizeDomain(domain: string): string {
   return (domain || '')
-    .replace(/^www\./i, '')
     .trim()
+    .replace(/^www\./i, '')
     .toLowerCase();
+}
+
+export function getCurrentFilter() {
+  return currentFilter;
+}
+
+export function setCurrentFilter(filter: typeof currentFilter) {
+  currentFilter = filter;
+}
+
+export function getCurrentDomain() {
+  return currentDomain;
+}
+
+export function setCurrentDomain(domain: string) {
+  currentDomain = domain;
+}
+
+export function getCurrentUrl() {
+  return currentUrl;
+}
+
+export function setCurrentUrl(url: string) {
+  currentUrl = url;
+}
+
+export function getHeartbeatInterval() {
+  return heartbeatInterval;
 }
 
 export async function resolveActiveTab(): Promise<void> {
   const siteDomainEl = document.getElementById('site-domain');
   const siteStatusEl = document.getElementById('site-status');
   const siteBeaconEl = document.getElementById('site-beacon');
-  const domainToggleEl = document.getElementById('domain-toggle') as HTMLInputElement;
+  const domainToggleEl = document.getElementById('domain-toggle') as HTMLInputElement | null;
 
+  const api = getBrowserApi();
   try {
-    let tabs = await chrome.tabs?.query?.({ active: true, currentWindow: true });
+    let tabs = await api.tabs.query({ active: true, currentWindow: true });
     if (!tabs || tabs.length === 0) {
-      tabs = await chrome.tabs?.query?.({ active: true, lastFocusedWindow: true });
+      tabs = await api.tabs.query({ active: true, lastFocusedWindow: true });
     }
     if (!tabs || tabs.length === 0) {
-      tabs = await chrome.tabs?.query?.({ active: true });
+      tabs = await api.tabs.query({ active: true });
     }
 
-    const activeTab = tabs?.[0];
-    if (activeTab?.url) {
-      currentUrl = activeTab.url;
+    const activeTab = tabs && tabs[0];
+    const rawUrl = activeTab ? activeTab.url : null;
+    if (rawUrl) {
+      currentUrl = rawUrl;
       try {
-        const parsed = new URL(activeTab.url);
+        const parsed = new URL(rawUrl);
         if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
           currentDomain = parsed.hostname;
         } else {
@@ -55,7 +86,7 @@ export async function resolveActiveTab(): Promise<void> {
 
   if (siteDomainEl) {
     siteDomainEl.textContent = currentDomain || 'No active website';
-    siteDomainEl.title = currentUrl || '';
+    siteDomainEl.title = currentUrl;
   }
 
   if (!currentDomain) {
@@ -71,18 +102,14 @@ export async function resolveActiveTab(): Promise<void> {
   if (domainToggleEl) domainToggleEl.disabled = false;
 
   try {
-    const res: RuntimeResponse = await chrome.runtime.sendMessage({
+    const res: RuntimeResponse = await api.runtime.sendMessage({
       type: 'IS_DOMAIN_ENABLED',
       payload: { domain: currentDomain },
     });
-    const isEnabled = res?.success ? res.data?.enabled !== false : true;
+    const isEnabled = res && res.success ? res.data?.enabled !== false : true;
     if (domainToggleEl) domainToggleEl.checked = isEnabled;
     if (siteBeaconEl) {
-      if (isEnabled) {
-        siteBeaconEl.classList.remove('is-disabled');
-      } else {
-        siteBeaconEl.classList.add('is-disabled');
-      }
+      siteBeaconEl.classList.toggle('is-disabled', !isEnabled);
     }
     if (siteStatusEl) {
       siteStatusEl.textContent = isEnabled ? 'Tracking active' : 'Tracking paused';
@@ -97,13 +124,16 @@ export async function loadHistory(query = '') {
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
 
-  const message: RuntimeMessage = query.trim()
-    ? { type: 'SEARCH_HISTORY', payload: { query: query.trim() } }
-    : { type: 'GET_ALL_HISTORY', payload: { limit: 50 } };
+  const trimmed = query.trim();
+  const message: RuntimeMessage =
+    trimmed.length > 0
+      ? { type: 'SEARCH_HISTORY', payload: { query: trimmed } }
+      : { type: 'GET_ALL_HISTORY', payload: { limit: 50 } };
 
+  const api = getBrowserApi();
   try {
-    const res: RuntimeResponse = await chrome.runtime.sendMessage(message);
-    if (res?.success && Array.isArray(res.data)) {
+    const res: RuntimeResponse = await api.runtime.sendMessage(message);
+    if (res && res.success && Array.isArray(res.data)) {
       const filtered = applyFilter(res.data);
       renderHistory(filtered);
     } else {
@@ -115,7 +145,7 @@ export async function loadHistory(query = '') {
   }
 }
 
-function applyFilter(items: any[]): any[] {
+export function applyFilter(items: any[]): any[] {
   if (currentFilter === 'all') return items;
 
   if (currentFilter === 'this_site') {
@@ -125,11 +155,9 @@ function applyFilter(items: any[]): any[] {
       const formDomain = normalizeDomain(item.form?.domainId || '');
       const formUrl = (item.form?.url || '').toLowerCase();
       return (
-        formDomain === normCurrent ||
-        (formDomain &&
-          normCurrent &&
+        (formDomain.length > 0 &&
           (formDomain.includes(normCurrent) || normCurrent.includes(formDomain))) ||
-        (formUrl && normCurrent && formUrl.includes(normCurrent))
+        formUrl.includes(normCurrent)
       );
     });
   }
@@ -145,7 +173,7 @@ function applyFilter(items: any[]): any[] {
   });
 }
 
-function renderEmpty() {
+export function renderEmpty() {
   const historyList = document.getElementById('history-list') as HTMLElement;
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
@@ -168,15 +196,10 @@ function renderEmpty() {
       viewAllBtn.onclick = () => {
         const chips = document.querySelectorAll<HTMLElement>('.filter-chips .filter-chip');
         chips.forEach((c) => {
-          if (c.getAttribute('data-filter') === 'all') {
-            c.classList.add('is-active');
-          } else {
-            c.classList.remove('is-active');
-          }
+          c.classList.toggle('is-active', c.getAttribute('data-filter') === 'all');
         });
         currentFilter = 'all';
-        const searchInput = document.getElementById('search-input') as HTMLInputElement;
-        loadHistory(searchInput?.value || '');
+        loadHistory(getSearchQuery());
       };
     }
     return;
@@ -193,7 +216,7 @@ function renderEmpty() {
   );
 }
 
-function renderHistory(items: any[]) {
+export function renderHistory(items: any[]) {
   const historyList = document.getElementById('history-list') as HTMLElement;
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
@@ -215,7 +238,7 @@ function renderHistory(items: any[]) {
     itemEl.className = 'history-item';
 
     const fieldsHtml = fields
-      .filter((f: any) => f.value && f.value.trim().length > 0)
+      .filter((f: any) => Boolean(f.value && f.value.trim().length > 0))
       .map(
         (f: any) => `
         <div class="field-row">
@@ -257,7 +280,7 @@ function renderHistory(items: any[]) {
         ${fieldsHtml || '<div style="color: var(--lz-text-muted); font-size: 11px;">No visible fields</div>'}
       </div>
       <div class="item-actions">
-        <button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">Copy All</button>
+        ${fields.length > 0 ? `<button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">Copy All</button>` : ''}
         <button class="action-btn delete delete-form-btn" data-formid="${escapeAttr(form.id)}">Delete</button>
       </div>
     `
@@ -285,7 +308,7 @@ function renderHistory(items: any[]) {
       const btnEl = e.currentTarget as HTMLElement;
       const originalText = btnEl?.textContent || 'Copy All';
       const allText = fields
-        .filter((f: any) => f.value && f.value.trim().length > 0)
+        .filter((f: any) => Boolean(f.value && f.value.trim().length > 0))
         .map((f: any) => `${f.name || 'field'}: ${f.value}`)
         .join('\n\n');
       await navigator.clipboard.writeText(allText);
@@ -302,12 +325,12 @@ function renderHistory(items: any[]) {
     deleteBtn?.addEventListener('click', async (e) => {
       const formId = (e.currentTarget as HTMLElement).getAttribute('data-formid');
       if (formId) {
-        await chrome.runtime.sendMessage({
+        const api = getBrowserApi();
+        await api.runtime.sendMessage({
           type: 'DELETE_FORM',
           payload: { formId },
         });
-        const searchInput = document.getElementById('search-input') as HTMLInputElement;
-        loadHistory(searchInput?.value || '');
+        loadHistory(getSearchQuery());
       }
     });
 
@@ -315,7 +338,7 @@ function renderHistory(items: any[]) {
   });
 }
 
-function escapeHtml(str: string): string {
+export function escapeHtml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -323,25 +346,38 @@ function escapeHtml(str: string): string {
     .replace(/"/g, '&quot;');
 }
 
-function escapeAttr(str: string): string {
+export function escapeAttr(str: string): string {
   return str.replace(/"/g, '&quot;');
+}
+
+export function getSearchQuery(): string {
+  const el = document.getElementById('search-input') as HTMLInputElement | null;
+  return el ? el.value : '';
+}
+
+export function refreshIfThisSite() {
+  if (currentFilter === 'this_site') {
+    loadHistory(getSearchQuery());
+  }
 }
 
 export function initSidepanel() {
   const historyList = document.getElementById('history-list');
   if (!historyList) return;
 
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const clearHistoryBtn = document.getElementById('clear-history-btn') as HTMLAnchorElement;
-  const openOptionsBtn = document.getElementById('open-options-btn') as HTMLAnchorElement;
+  const searchInput = document.getElementById('search-input') as HTMLInputElement | null;
+  const clearHistoryBtn = document.getElementById('clear-history-btn') as HTMLAnchorElement | null;
+  const openOptionsBtn = document.getElementById('open-options-btn') as HTMLAnchorElement | null;
   const filterChips = document.querySelectorAll<HTMLElement>('.filter-chips .filter-chip');
 
   filterChips.forEach((chip) => {
     chip.onclick = () => {
-      filterChips.forEach((c) => c.classList.remove('is-active'));
-      chip.classList.add('is-active');
-      currentFilter = (chip.getAttribute('data-filter') as any) || 'all';
-      loadHistory(searchInput?.value || '');
+      const selectedFilter = chip.getAttribute('data-filter') as any;
+      filterChips.forEach((c) => {
+        c.classList.toggle('is-active', c === chip);
+      });
+      currentFilter = selectedFilter || 'all';
+      loadHistory(getSearchQuery());
     };
   });
 
@@ -358,7 +394,8 @@ export function initSidepanel() {
     clearHistoryBtn.onclick = async (e) => {
       e.preventDefault();
       if (confirm('Are you sure you want to clear all recovered form history?')) {
-        await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
+        const api = getBrowserApi();
+        await api.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
         loadHistory();
       }
     };
@@ -367,27 +404,28 @@ export function initSidepanel() {
   if (openOptionsBtn) {
     openOptionsBtn.onclick = (e) => {
       e.preventDefault();
-      chrome.runtime.openOptionsPage();
+      getBrowserApi().runtime.openOptionsPage();
     };
   }
 
-  const domainToggle = document.getElementById('domain-toggle') as HTMLInputElement;
+  const domainToggle = document.getElementById('domain-toggle') as HTMLInputElement | null;
   if (domainToggle) {
     domainToggle.onchange = async () => {
       if (!currentDomain) return;
       const willEnable = domainToggle.checked;
+      const api = getBrowserApi();
       if (!willEnable) {
         const confirmed = confirm(`Pause Lazarus form recovery on ${currentDomain}?`);
         if (!confirmed) {
           domainToggle.checked = true;
           return;
         }
-        await chrome.runtime.sendMessage({
+        await api.runtime.sendMessage({
           type: 'DISABLE_DOMAIN',
           payload: { domain: currentDomain, wipeExisting: false },
         });
       } else {
-        await chrome.runtime.sendMessage({
+        await api.runtime.sendMessage({
           type: 'ENABLE_DOMAIN',
           payload: { domain: currentDomain },
         });
@@ -399,12 +437,13 @@ export function initSidepanel() {
   if (heartbeatInterval) clearInterval(heartbeatInterval);
   heartbeatInterval = setInterval(async () => {
     await resolveActiveTab();
-    const activeId = document.activeElement?.id;
-    if (activeId !== 'search-input') {
-      loadHistory(searchInput?.value || '');
+    if (document.activeElement!.id !== 'search-input') {
+      loadHistory(getSearchQuery());
     }
   }, 2500);
-  heartbeatInterval?.unref?.();
+  try {
+    (heartbeatInterval as any).unref();
+  } catch {}
 
   // Initialize active tab domain and load drafts
   resolveActiveTab().finally(() => {
@@ -420,66 +459,36 @@ export function stopSidepanelHeartbeat() {
 }
 
 // Active Tab Listeners: detect active tab navigation and tab switching
-if (typeof chrome !== 'undefined' && chrome.tabs) {
-  chrome.tabs.onActivated?.addListener?.(async (activeInfo) => {
-    if (activeInfo?.tabId) {
-      try {
-        const tab = await chrome.tabs.get(activeInfo.tabId);
-        if (tab?.url) {
-          try {
-            const parsed = new URL(tab.url);
-            if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-              currentDomain = parsed.hostname;
-              currentUrl = tab.url;
-            }
-          } catch {}
-        }
-      } catch {}
-    }
-    await resolveActiveTab();
-    if (currentFilter === 'this_site') {
-      const searchInput = document.getElementById('search-input') as HTMLInputElement;
-      loadHistory(searchInput?.value || '');
-    }
-  });
-
-  chrome.tabs.onUpdated?.addListener?.(async (_tabId, changeInfo, tab) => {
-    if (changeInfo.url || changeInfo.status === 'complete' || (tab && tab.url)) {
-      if (tab?.url && tab.active) {
-        try {
-          const parsed = new URL(tab.url);
-          if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-            currentDomain = parsed.hostname;
-            currentUrl = tab.url;
-          }
-        } catch {}
-      }
+if (isExtensionContextValid()) {
+  const api = getBrowserApi();
+  if (api.tabs && api.tabs.onActivated) {
+    api.tabs.onActivated.addListener(async () => {
       await resolveActiveTab();
-      if (currentFilter === 'this_site') {
-        const searchInput = document.getElementById('search-input') as HTMLInputElement;
-        loadHistory(searchInput?.value || '');
+      refreshIfThisSite();
+    });
+  }
+
+  if (api.tabs && api.tabs.onUpdated) {
+    api.tabs.onUpdated.addListener(async () => {
+      await resolveActiveTab();
+      refreshIfThisSite();
+    });
+  }
+
+  // Live Reactive Sync listener (registers once)
+  if (api.runtime && api.runtime.onMessage) {
+    api.runtime.onMessage.addListener((message: any) => {
+      if (message && (message.type === 'FORM_SAVED' || message.type === 'REFRESH_HISTORY')) {
+        loadHistory(getSearchQuery());
       }
-    }
-  });
+    });
+  }
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('focus', async () => {
     await resolveActiveTab();
-    if (currentFilter === 'this_site') {
-      const searchInput = document.getElementById('search-input') as HTMLInputElement;
-      loadHistory(searchInput?.value || '');
-    }
-  });
-}
-
-// Live Reactive Sync listener (registers once)
-if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage) {
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message?.type === 'FORM_SAVED' || message?.type === 'REFRESH_HISTORY') {
-      const searchInput = document.getElementById('search-input') as HTMLInputElement;
-      loadHistory(searchInput?.value || '');
-    }
+    refreshIfThisSite();
   });
 }
 

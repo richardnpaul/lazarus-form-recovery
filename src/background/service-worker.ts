@@ -3,29 +3,25 @@ import { setupAlarms } from './alarms';
 import { setupContextMenus } from './context-menus';
 import { handleRuntimeMessage } from './message-router';
 import { sessionStorageManager } from './storage-manager';
-
-const spKey = ['side', 'Panel'].join('');
-const openKey = ['op', 'en'].join('');
-const setBehaviorKey = ['set', 'Panel', 'Behavior'].join('');
+import { getBrowserApi } from '../common/utils/runtime';
 
 // Setup side panel behavior for Chrome (open on action click)
 export function setupSidePanelBehavior() {
-  if (typeof chrome !== 'undefined') {
-    const sp = (chrome as any)?.[spKey];
-    if (typeof sp?.[setBehaviorKey] === 'function') {
-      sp[setBehaviorKey]({ openPanelOnActionClick: true }).catch(() => {});
-    }
+  const sp = (chrome as any).sidePanel;
+  if (typeof sp?.setPanelBehavior === 'function') {
+    sp.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {});
   }
 }
 
 // Programmatically inject content scripts into open tabs upon extension load/reload
 export async function injectContentScriptIntoOpenTabs() {
-  if (typeof chrome === 'undefined' || !chrome.scripting || !chrome.tabs) return;
+  const api = getBrowserApi();
+  if (!api || !api.scripting || !api.tabs) return;
   try {
-    const tabs = await chrome.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] });
+    const tabs = await api.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] });
     for (const tab of tabs) {
-      if (tab.id) {
-        chrome.scripting
+      if (typeof tab.id === 'number') {
+        api.scripting
           .executeScript({
             target: { tabId: tab.id, allFrames: true },
             files: ['src/content/content-script.iife.js'],
@@ -41,49 +37,52 @@ export async function injectContentScriptIntoOpenTabs() {
 }
 
 // Initialize alarms, context menus, and side panel behavior
-setupAlarms();
-setupContextMenus();
-setupSidePanelBehavior();
-
-chrome.runtime.onInstalled.addListener(() => {
+export function initBackgroundServiceWorker(): boolean {
   setupAlarms();
   setupContextMenus();
   setupSidePanelBehavior();
+  return true;
+}
+
+(globalThis as any).__LAZARUS_SW_INITIALIZED__ = initBackgroundServiceWorker();
+
+chrome.runtime.onInstalled.addListener(() => {
+  initBackgroundServiceWorker();
   injectContentScriptIntoOpenTabs();
 });
 
-chrome.runtime.onStartup?.addListener(() => {
-  setupAlarms();
-  setupContextMenus();
-  setupSidePanelBehavior();
+chrome.runtime.onStartup.addListener(() => {
+  initBackgroundServiceWorker();
   injectContentScriptIntoOpenTabs();
 });
 
 // Toolbar action click listener (Firefox sidebar toggle & Chrome fallback)
-chrome.action?.onClicked?.addListener(async (tab) => {
+chrome.action.onClicked.addListener(async (tab) => {
   const browserApi =
     typeof (globalThis as any).browser !== 'undefined' ? (globalThis as any).browser : chrome;
-  if (browserApi?.sidebarAction?.toggle) {
-    try {
-      await browserApi.sidebarAction.toggle();
-      return;
-    } catch {
-      // Fall through to open
+
+  const sidebar = browserApi.sidebarAction;
+  if (sidebar) {
+    if (typeof sidebar.toggle === 'function') {
+      try {
+        await sidebar.toggle();
+      } catch (err) {
+        console.error('Failed to toggle sidebarAction:', err);
+      }
+    } else if (typeof sidebar.open === 'function') {
+      try {
+        await sidebar.open();
+      } catch (err) {
+        console.error('Failed to open sidebarAction:', err);
+      }
     }
-  }
-  if (browserApi?.sidebarAction?.open) {
-    try {
-      await browserApi.sidebarAction.open();
-      return;
-    } catch (err) {
-      console.error('Failed to open sidebarAction:', err);
-    }
+    return;
   }
 
-  const sp = (browserApi as any)?.[spKey];
-  if (typeof sp?.[openKey] === 'function' && tab?.windowId) {
+  const sp = (browserApi as any).sidePanel;
+  if (typeof sp?.open === 'function' && tab?.windowId) {
     try {
-      await sp[openKey]({ windowId: tab.windowId });
+      await sp.open({ windowId: tab.windowId });
     } catch (err) {
       console.error('Failed to open sidePanel:', err);
     }
@@ -105,19 +104,19 @@ export function onRuntimeMessage(
 chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
 // Tab lifecycle: clean up session autosaves on tab close
-chrome.tabs?.onRemoved?.addListener((tabId) => {
+chrome.tabs.onRemoved.addListener((tabId) => {
   sessionStorageManager.clearTabAutosaves(tabId).catch(() => {});
 });
 
 // Handle extension keyboard shortcut commands
-chrome.commands?.onCommand?.addListener(async (command) => {
+chrome.commands.onCommand.addListener(async (command) => {
   if (command === 'recover_last_form') {
     try {
       let tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-      if (!tabs || tabs.length === 0) {
+      if (tabs.length === 0) {
         tabs = await chrome.tabs.query({ active: true, currentWindow: true });
       }
-      const activeTab = tabs?.[0];
+      const activeTab = tabs[0];
       if (activeTab?.id) {
         // Broadcast to content script
         chrome.tabs.sendMessage(activeTab.id, { action: 'RESTORE_LAST_FORM' }).catch(() => {});

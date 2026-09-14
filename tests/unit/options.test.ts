@@ -475,6 +475,43 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       );
       expect(msg2).toBeDefined();
     });
+
+    it('handles mode switching when master password is not configured', async () => {
+      const { init } = await import('../../src/options/options');
+      (chrome.runtime.sendMessage as any).mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: { encryptionMode: 'none', disabledDomains: [] },
+          };
+        }
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: false, isUnlocked: false } };
+        }
+        if (msg.type === 'UPDATE_SETTINGS') {
+          sentMessages.push(msg);
+          return { success: true };
+        }
+        return { success: true };
+      });
+      await init();
+
+      const modeVault = document.getElementById('mode-vault') as HTMLElement;
+      const modeStandard = document.getElementById('mode-standard') as HTMLElement;
+      const modal = document.getElementById('password-modal') as HTMLElement;
+
+      // 1. Click modeVault opens password modal because hasMasterPassword is false (line 193)
+      modeVault.click();
+      expect(modal.classList.contains('is-visible')).toBe(true);
+
+      // Close modal
+      modal.classList.remove('is-visible');
+
+      // 2. Click modeStandard when hasMasterPassword is false (lines 186-187)
+      modeStandard.click();
+      await new Promise((r) => setTimeout(r, 40));
+      expect(modeStandard.classList.contains('is-selected')).toBe(true);
+    });
   });
 
   describe('Master Password Modal & Strength Meter', () => {
@@ -498,6 +535,16 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       inputPass.value = 'short';
       inputPass.dispatchEvent(new Event('input'));
       expect(strengthLabel.textContent).toBe('Password strength: Weak');
+
+      // Short (<8) with symbol, upper, digit: still weak (kills pwd.length >= 12 -> true)
+      inputPass.value = 'P@1';
+      inputPass.dispatchEvent(new Event('input'));
+      expect(strengthLabel.textContent).toBe('Password strength: Weak');
+
+      // Moderate (8-11) with symbol, upper, digit: still moderate (kills pwd.length >= 12 -> true)
+      inputPass.value = 'P@ssword1!';
+      inputPass.dispatchEvent(new Event('input'));
+      expect(strengthLabel.textContent).toBe('Password strength: Moderate');
 
       // 2. Moderate (8+ chars, but lacking combination)
       inputPass.value = 'password123';
@@ -576,6 +623,8 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       expect(globalThis.alert).toHaveBeenCalledWith(
         'Master Password has been configured successfully.'
       );
+      const modeVault = document.getElementById('mode-vault') as HTMLElement;
+      expect(modeVault.classList.contains('is-selected')).toBe(true);
 
       // 5. Failed save (backend rejects)
       (chrome.runtime.sendMessage as any).mockImplementation(async (msg: any) => {
@@ -632,6 +681,18 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       expect(unblockBtn).not.toBeNull();
       expect(unblockBtn.getAttribute('data-domain')).toBe('blocked.com');
 
+      const tableBody = document.getElementById('domain-table-body') as HTMLElement;
+      expect(tableBody.children.length).toBe(1);
+      expect(tableBody.textContent).toContain('blocked.com');
+
+      (chrome.runtime.sendMessage as any).mockImplementation(async (msg: any) => {
+        sentMessages.push(msg);
+        if (msg.type === 'GET_SETTINGS') {
+          return { success: true, data: { disabledDomains: ['remaining.com'] } };
+        }
+        return { success: true };
+      });
+
       unblockBtn.click();
       await new Promise((r) => setTimeout(r, 40));
 
@@ -639,6 +700,9 @@ describe('Options Page Controller (src/options/options.ts)', () => {
         (m) => m.type === 'ENABLE_DOMAIN' && m.payload?.domain === 'blocked.com'
       );
       expect(enableMsg).toBeDefined();
+      expect(tableBody.children.length).toBe(1);
+      expect(tableBody.textContent).not.toContain('blocked.com');
+      expect(tableBody.textContent).toContain('remaining.com');
     });
 
     it('renders empty table notice when no domains are disabled', async () => {
@@ -691,16 +755,22 @@ describe('Options Page Controller (src/options/options.ts)', () => {
     });
 
     it('exports all recovery data as a JSON file download', async () => {
-      globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:test-export');
+      let createdBlob: any;
+      globalThis.URL.createObjectURL = vi.fn((blob) => {
+        createdBlob = blob;
+        return 'blob:test-export';
+      });
       globalThis.URL.revokeObjectURL = vi.fn();
 
       let clickedDownload = false;
+      let downloadedFileName = '';
       const origCreateElement = document.createElement.bind(document);
-      vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+      const createSpy = vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
         const el = origCreateElement(tag);
         if (tag === 'a') {
           el.click = () => {
             clickedDownload = true;
+            downloadedFileName = (el as HTMLAnchorElement).download;
           };
         }
         return el;
@@ -713,9 +783,22 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       btnExport.click();
       await new Promise((r) => setTimeout(r, 40));
 
+      createSpy.mockRestore();
+
       const exportMsg = sentMessages.find((m) => m.type === 'EXPORT_DATA');
       expect(exportMsg).toBeDefined();
       expect(clickedDownload).toBe(true);
+      expect(downloadedFileName).toMatch(/^lazarus-recovery-export-\d+\.json$/);
+      expect(createdBlob).toBeDefined();
+      expect(createdBlob.type).toBe('application/json');
+      expect(createdBlob.size).toBeGreaterThan(0);
+      const text = await createdBlob.text();
+      expect(JSON.parse(text)).toEqual({
+        version: '4.0.0',
+        forms: [{ id: 'f1' }],
+        fields: [],
+        domains: [],
+      });
       expect(globalThis.URL.createObjectURL).toHaveBeenCalled();
       expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith('blob:test-export');
     });
@@ -762,6 +845,408 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       expect(wipeModal.classList.contains('is-visible')).toBe(true);
       btnCancel.click();
       expect(wipeModal.classList.contains('is-visible')).toBe(false);
+    });
+  });
+
+  describe('Options Full Branch Coverage', () => {
+    it('covers missing diagnostic-version element, manifest without version, and storage undefined', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      // Remove diagnostic-version to hit if (versionEl) false branch
+      document.getElementById('diagnostic-version')?.remove();
+
+      // Manifest without version to hit manifest?.version || '0.0.1'
+      vi.spyOn(chrome.runtime, 'getManifest').mockReturnValue({} as any);
+
+      // Navigator without storage to hit if (navigator.storage && navigator.storage.estimate) false branch
+      const origStorage = navigator.storage;
+      delete (navigator as any).storage;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const label = document.getElementById('storage-estimate-label');
+      expect(label?.textContent).toBe('');
+      expect(label?.textContent).not.toBe('Storage estimate unavailable.');
+
+      (navigator as any).storage = origStorage;
+    });
+
+    it('covers loadSettings failure and disabledDomains undefined', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      // 1. GET_SETTINGS fails
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') return { success: false, data: null };
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // 2. GET_SETTINGS returns null disabledDomains
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: {
+              savePasswords: false,
+              filterCreditCards: false,
+              expireFormsInterval: 10,
+              autoLockMinutes: 15,
+              encryptionMode: 'standard',
+              disabledDomains: null as any,
+            },
+          };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+    });
+
+    it('covers storage calculation with undefined usage, quota=0, and estimate error', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      // 1. Storage estimate with usage undefined and non-zero quota
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockResolvedValue({ usage: undefined, quota: 100 * 1024 * 1024 }),
+        },
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const label = document.getElementById('storage-estimate-label');
+      expect(label?.textContent).toContain('Using ~0.00 MB of 100 MB available storage quota');
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('0%');
+
+      // 1a. Storage estimate with usage defined and quota 0/undefined
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockResolvedValue({ usage: 2 * 1024 * 1024, quota: undefined }),
+        },
+      });
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-estimate-label')?.textContent).toContain(
+        '0 MB available storage quota'
+      );
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('0%');
+
+      // 1b. Storage estimate where usage > quota (clamped to 100%)
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi
+            .fn()
+            .mockResolvedValue({ usage: 200 * 1024 * 1024, quota: 100 * 1024 * 1024 }),
+        },
+      });
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-progress-bar')?.style.width).toBe('100%');
+
+      // 2. Storage estimate throws error
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      Object.assign(navigator, {
+        storage: {
+          estimate: vi.fn().mockRejectedValue(new Error('StorageError')),
+        },
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+      expect(document.getElementById('storage-estimate-label')?.textContent).toBe(
+        'Storage estimate unavailable.'
+      );
+    });
+
+    it('covers export data failure and wipe confirm with non-DELETE text', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'EXPORT_DATA') return { success: false };
+        if (msg.type === 'GET_SETTINGS') {
+          return { success: true, data: { disabledDomains: [] } };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // Click export data when it fails
+      const btnExport = document.getElementById('btn-export-data') as HTMLButtonElement;
+      btnExport.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Click confirm wipe when value is not DELETE
+      const btnConfirm = document.getElementById('btn-confirm-wipe') as HTMLButtonElement;
+      const inputConfirm = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      inputConfirm.value = 'NOT_DELETE';
+      btnConfirm.disabled = false;
+      btnConfirm.click();
+      await new Promise((r) => setTimeout(r, 20));
+      expect(globalThis.alert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Options Mutation Killer Suite', () => {
+    it('kills settings and display survivors', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: {
+              savePasswords: false,
+              filterCreditCards: true,
+              expireFormsInterval: 10,
+              autoLockMinutes: 30,
+              encryptionMode: 'standard',
+              disabledDomains: undefined,
+            },
+          };
+        }
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return {
+            success: true,
+            data: {
+              hasMasterPassword: false,
+              isUnlocked: false,
+              securityMode: 'standard',
+            },
+          };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const passwordsWarning = document.getElementById('passwords-warning') as HTMLElement;
+      expect(passwordsWarning.style.display).toBe('none');
+
+      const prefAutolockSelect = document.getElementById(
+        'pref-autolock-select'
+      ) as HTMLSelectElement;
+      expect(prefAutolockSelect.value).toBe('30');
+
+      const domainTableBody = document.getElementById('domain-table-body') as HTMLElement;
+      const emptyTd = domainTableBody.querySelector('td');
+      expect(emptyTd?.textContent).toBe('No disabled domains yet.');
+      expect(emptyTd?.style.color).toBe('var(--lz-text-muted)');
+      expect(emptyTd?.style.textAlign).toBe('center');
+
+      // Test standard mode click when hasMasterPassword is false
+      const modeStandard = document.getElementById('mode-standard') as HTMLElement;
+      const sendSpy = vi
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockResolvedValue({ success: true } as any);
+      modeStandard.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(modeStandard.classList.contains('is-selected')).toBe(true);
+      expect(sendSpy).toHaveBeenCalledWith({
+        type: 'UPDATE_SETTINGS',
+        payload: { settings: { encryptionMode: 'none' } },
+      });
+    });
+
+    it('kills password modal and boundary survivors', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return {
+            success: true,
+            data: {
+              savePasswords: true,
+              filterCreditCards: true,
+              expireFormsInterval: 10,
+              autoLockMinutes: 15,
+              encryptionMode: 'standard',
+              disabledDomains: ['blocked.com'],
+            },
+          };
+        }
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return {
+            success: true,
+            data: {
+              hasMasterPassword: false,
+              isUnlocked: false,
+              securityMode: 'standard',
+            },
+          };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // Verify domain row styling
+      const domainRow = document.getElementById('domain-table-body')?.querySelector('tr');
+      const tdDomain = domainRow?.querySelectorAll('td')[0] as HTMLElement;
+      const tdAction = domainRow?.querySelectorAll('td')[1] as HTMLElement;
+      const unblockBtn = tdAction.querySelector('button') as HTMLButtonElement;
+
+      expect(tdDomain.style.fontFamily).toBe('var(--lz-font-mono)');
+      expect(tdDomain.style.fontWeight).toBe('500');
+      expect(tdAction.style.textAlign).toBe('right');
+      expect(unblockBtn.style.padding).toBe('3px 8px');
+      expect(unblockBtn.style.fontSize).toBe('11px');
+      expect(unblockBtn.textContent).toBe('Unblock');
+
+      // Test open password modal resets values, sets focus, and sets title
+      const inputMasterPass = document.getElementById('input-master-pass') as HTMLInputElement;
+      const inputMasterPassConfirm = document.getElementById(
+        'input-master-pass-confirm'
+      ) as HTMLInputElement;
+      const modalTitle = document.getElementById('password-modal-title') as HTMLElement;
+      const btnConfigure = document.getElementById('btn-configure-password') as HTMLElement;
+
+      inputMasterPass.value = 'pre-existing';
+      inputMasterPassConfirm.value = 'pre-existing';
+
+      btnConfigure.click();
+      expect(inputMasterPass.value).toBe('');
+      expect(inputMasterPassConfirm.value).toBe('');
+      expect(modalTitle.textContent).toBe('Set Master Password');
+      expect(document.activeElement).toBe(inputMasterPass);
+
+      // Test password strength thresholds:
+      // Exactly 12 with upper, digit, symbol: Strong
+      const strengthLabel = document.getElementById('password-strength-label') as HTMLElement;
+      inputMasterPass.value = 'Aa1!Aa1!Aa1!';
+      inputMasterPass.dispatchEvent(new Event('input'));
+      expect(strengthLabel.textContent).toBe(
+        'Password strength: Strong (PBKDF2-SHA256, 100k iterations)'
+      );
+
+      // Exactly 8 characters: Moderate
+      inputMasterPass.value = 'abcdefgh';
+      inputMasterPass.dispatchEvent(new Event('input'));
+      expect(strengthLabel.textContent).toBe('Password strength: Moderate');
+
+      // 7 characters: Weak
+      inputMasterPass.value = 'abcdefg';
+      inputMasterPass.dispatchEvent(new Event('input'));
+      expect(strengthLabel.textContent).toBe('Password strength: Weak');
+
+      // Test saving password with exactly 6 characters (kills p1.length <= 6)
+      inputMasterPass.value = '123456';
+      inputMasterPassConfirm.value = '123456';
+      const btnSave = document.getElementById('btn-save-master-pass') as HTMLButtonElement;
+      const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+      const sendSpy = vi
+        .spyOn(chrome.runtime, 'sendMessage')
+        .mockResolvedValue({ success: true } as any);
+
+      btnSave.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(sendSpy).toHaveBeenCalledWith({
+        type: 'SET_MASTER_PASSWORD',
+        payload: { password: '123456' },
+      });
+      expect(alertSpy).toHaveBeenCalledWith('Master Password has been configured successfully.');
+
+      // Test set master password failure with custom error
+      sendSpy.mockResolvedValueOnce({ success: false, error: 'Weak key error' } as any);
+      btnSave.click();
+      await new Promise((r) => setTimeout(r, 20));
+      expect(alertSpy).toHaveBeenCalledWith('Failed to set password: Weak key error');
+    });
+
+    it('kills wipe trim survivors and verifies uppercase trimming', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'GET_SETTINGS') {
+          return { success: true, data: { disabledDomains: [] } };
+        }
+        if (msg.type === 'CLEAR_ALL_HISTORY') {
+          return { success: true };
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      // Test wipe history with surrounding whitespace: '  DELETE  '
+      const btnWipeHistory = document.getElementById('btn-wipe-history') as HTMLButtonElement;
+      const inputWipeConfirm = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      const btnConfirmWipe = document.getElementById('btn-confirm-wipe') as HTMLButtonElement;
+      const wipeModal = document.getElementById('wipe-modal') as HTMLElement;
+      const alertSpy = vi.spyOn(globalThis, 'alert').mockImplementation(() => {});
+
+      btnWipeHistory.click();
+      expect(wipeModal.classList.contains('is-visible')).toBe(true);
+      expect(document.activeElement).toBe(inputWipeConfirm);
+      expect(btnConfirmWipe.disabled).toBe(true);
+
+      // Typing with spaces enables button if trimmed
+      inputWipeConfirm.value = '  DELETE  ';
+      inputWipeConfirm.dispatchEvent(new Event('input'));
+      expect(btnConfirmWipe.disabled).toBe(false);
+
+      // Confirm wipe with spaces
+      btnConfirmWipe.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(wipeModal.classList.contains('is-visible')).toBe(false);
+      expect(alertSpy).toHaveBeenCalledWith('All recorded history and drafts have been wiped.');
+    });
+
+    it('kills null/undefined response optional chaining mutants', async () => {
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      // sendMessage returns null
+      vi.spyOn(chrome.runtime, 'sendMessage').mockResolvedValue(null as any);
+
+      await expect(import('../../src/options/options')).resolves.toBeDefined();
+      await new Promise((r) => setTimeout(r, 40));
+
+      // Click mode standard when remove master password returns null
+      const modeStandard = document.getElementById('mode-standard') as HTMLElement;
+      modeStandard.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Click export data when returns null
+      const btnExport = document.getElementById('btn-export-data') as HTMLButtonElement;
+      btnExport.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      // Click save master password when returns null
+      const btnSave = document.getElementById('btn-save-master-pass') as HTMLButtonElement;
+      const inputMasterPass = document.getElementById('input-master-pass') as HTMLInputElement;
+      const inputMasterPassConfirm = document.getElementById(
+        'input-master-pass-confirm'
+      ) as HTMLInputElement;
+      inputMasterPass.value = '123456';
+      inputMasterPassConfirm.value = '123456';
+      btnSave.click();
+      await new Promise((r) => setTimeout(r, 20));
     });
   });
 });

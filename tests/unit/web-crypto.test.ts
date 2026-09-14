@@ -16,6 +16,7 @@ describe('WebCryptoVault Unit Tests', () => {
       expect((key.algorithm as any).length).toBe(256);
       expect(key.usages).toContain('encrypt');
       expect(key.usages).toContain('decrypt');
+      expect(key.extractable).toBe(false);
     });
 
     it('should derive functionally equivalent keys given identical credentials', async () => {

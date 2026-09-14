@@ -1,5 +1,5 @@
 import { db } from './lazarus-db';
-import { IDBForm, IDBField } from '../types/schema';
+import { IDBForm } from '../types/schema';
 import { ExtensionSettings, DEFAULT_SETTINGS } from '../types/config';
 import { FormSnapshot } from '../types/messages';
 import { vault } from '../crypto/vault';
@@ -25,8 +25,6 @@ export function normalizeDomainId(domain: string): string {
 export function matchesDomainPattern(hostname: string, pattern: string): boolean {
   const normHost = hostname.toLowerCase();
   const normPattern = pattern.toLowerCase().trim();
-
-  if (normHost === normPattern) return true;
 
   // Convert wildcard pattern to regex
   const regexPattern =
@@ -93,7 +91,7 @@ export class LazarusRepository {
       const domainId = normalizeDomainId(domain);
       await db.forms.where('domainId').equals(domainId).delete();
       await db.fields.where('domainId').equals(domainId).delete();
-      await db.domains.where('id').equals(domainId).delete();
+      await db.domains.delete(domainId);
     }
   }
 
@@ -122,22 +120,12 @@ export class LazarusRepository {
     const formInstanceId = snapshot.formInstanceId || 'form_default';
 
     // 1. Find existing revisions for this domain and formInstanceId
-    let existingRevisions: IDBForm[] = [];
-    try {
-      existingRevisions = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    } catch {
-      existingRevisions = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    }
+    const existingRevisions = await db.forms
+      .where('[domainId+lastModified]')
+      .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
+      .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
+      .toArray();
+    existingRevisions.sort((a, b) => b.lastModified - a.lastModified);
 
     const latestRevision = existingRevisions[0];
     const maxRevisionNumber = existingRevisions.reduce(
@@ -149,19 +137,12 @@ export class LazarusRepository {
     const MILESTONE_DURATION_MS = 5 * 60 * 1000;
     const SESSION_IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 
-    let revisionCreationTime = now;
-    if (latestRevision?.revisionId) {
-      const parts = latestRevision.revisionId.split('_');
-      const parsedTime = parseInt(parts[1], 10);
-      if (!isNaN(parsedTime)) {
-        revisionCreationTime = parsedTime;
-      }
-    }
+    const revisionCreationTime = Number(latestRevision?.revisionId?.split('_')[1]) || now;
 
     const isRevisionMilestoneReached = now - revisionCreationTime >= MILESTONE_DURATION_MS;
-    const isIdleTimeout = latestRevision
-      ? now - latestRevision.lastModified >= SESSION_IDLE_TIMEOUT_MS
-      : true;
+    const isIdleTimeout = Boolean(
+      latestRevision && now - latestRevision.lastModified >= SESSION_IDLE_TIMEOUT_MS
+    );
 
     const shouldSpawnNewRevision =
       forceNewRevision ||
@@ -242,13 +223,11 @@ export class LazarusRepository {
     }
 
     // 6. Revision pruning: Cap at 10 revisions per form instance
-    if (existingRevisions.length >= 10) {
-      const revisionsToPrune = existingRevisions.slice(9);
-      for (const oldRev of revisionsToPrune) {
-        if (!oldRev.isFinalSubmit) {
-          await db.forms.delete(oldRev.id);
-          await db.fields.where('formId').equals(oldRev.id).delete();
-        }
+    const revisionsToPrune = existingRevisions.slice(9);
+    for (const oldRev of revisionsToPrune) {
+      if (!oldRev.isFinalSubmit) {
+        await db.forms.delete(oldRev.id);
+        await db.fields.where('formId').equals(oldRev.id).delete();
       }
     }
 
@@ -267,37 +246,19 @@ export class LazarusRepository {
     const domainId = normalizeDomainId(domain);
 
     // 1. Exact match by [domainId+name+type]
-    let fields: IDBField[] = [];
-    try {
-      fields = await db.fields
-        .where('[domainId+name+type]')
-        .equals([domainId, fieldName, fieldType])
-        .filter((f) => f.status === 0 && f.value.trim().length > 0)
-        .reverse()
-        .sortBy('lastModified');
-    } catch {
-      fields = await db.fields
-        .where('domainId')
-        .equals(domainId)
-        .filter(
-          (f) =>
-            f.status === 0 &&
-            f.name === fieldName &&
-            f.type === fieldType &&
-            f.value.trim().length > 0
-        )
-        .reverse()
-        .sortBy('lastModified');
-    }
+    let fields = await db.fields
+      .where('[domainId+name+type]')
+      .equals([domainId, fieldName, fieldType])
+      .filter((f) => f.status === 0 && Boolean(f.value.trim()))
+      .toArray();
 
     // 2. Fallback to any field with this name on domain
     if (fields.length === 0) {
       fields = await db.fields
         .where('domainId')
         .equals(domainId)
-        .filter((f) => f.status === 0 && f.name === fieldName && f.value.trim().length > 0)
-        .reverse()
-        .sortBy('lastModified');
+        .filter((f) => f.status === 0 && f.name === fieldName && Boolean(f.value.trim()))
+        .toArray();
     }
 
     // 3. Fallback to any recent field on domain
@@ -305,9 +266,8 @@ export class LazarusRepository {
       fields = await db.fields
         .where('domainId')
         .equals(domainId)
-        .filter((f) => f.status === 0 && f.value.trim().length > 0)
-        .reverse()
-        .sortBy('lastModified');
+        .filter((f) => f.status === 0 && Boolean(f.value.trim()))
+        .toArray();
     }
 
     // Sort newest first (DESC)
@@ -334,16 +294,15 @@ export class LazarusRepository {
     );
 
     // Deduplicate unique values across revisions, keeping the latest timestamp
-    const uniqueValues: any[] = [];
     const seenValues = new Set<string>();
-
-    for (const item of decryptedList) {
+    const uniqueValues = decryptedList.filter((item) => {
       const normalized = item.value.trim();
       if (!seenValues.has(normalized)) {
         seenValues.add(normalized);
-        uniqueValues.push(item);
+        return true;
       }
-    }
+      return false;
+    });
 
     return uniqueValues.slice(0, 10);
   }
@@ -353,22 +312,12 @@ export class LazarusRepository {
    */
   public async getFormRevisions(domain: string, formInstanceId: string): Promise<any[]> {
     const domainId = normalizeDomainId(domain);
-    let forms: IDBForm[] = [];
-    try {
-      forms = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    } catch {
-      forms = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    }
+    const forms = await db.forms
+      .where('[domainId+lastModified]')
+      .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
+      .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
+      .toArray();
+    forms.sort((a, b) => b.lastModified - a.lastModified);
 
     return await Promise.all(forms.map((f) => this.formatFormOutput(f)));
   }
@@ -378,22 +327,12 @@ export class LazarusRepository {
    */
   public async getLatestFormRevisions(domain: string, limit = 5): Promise<any[]> {
     const domainId = normalizeDomainId(domain);
-    let forms: IDBForm[] = [];
-    try {
-      forms = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    } catch {
-      forms = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    }
+    const forms = await db.forms
+      .where('[domainId+lastModified]')
+      .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
+      .filter((f) => f.status === 0)
+      .toArray();
+    forms.sort((a, b) => b.lastModified - a.lastModified);
 
     return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }
@@ -421,8 +360,8 @@ export class LazarusRepository {
       })
     );
 
-    let decryptedUrl = form?.url || '';
-    if (form?.encryption === 'hybrid-aes-gcm') {
+    let decryptedUrl: string | undefined;
+    if (form) {
       try {
         decryptedUrl = await vault.decrypt(form.url, form.encryption);
       } catch {
@@ -443,10 +382,7 @@ export class LazarusRepository {
     const lowerQuery = query.toLowerCase().trim();
 
     if (!lowerQuery) {
-      const forms = await db.forms.where('status').equals(0).sortBy('lastModified');
-      forms.sort((a, b) => b.lastModified - a.lastModified);
-
-      return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
+      return await this.getAllHistory(limit);
     }
 
     // 1. Search in Forms by title, domain, or decrypted URL
@@ -454,13 +390,11 @@ export class LazarusRepository {
     const matchingFormIds = new Set<string>();
 
     for (const form of allForms) {
-      let url = form.url || '';
-      if (form.encryption === 'hybrid-aes-gcm') {
-        try {
-          url = await vault.decrypt(form.url, form.encryption);
-        } catch {
-          url = '';
-        }
+      let url: string;
+      try {
+        url = await vault.decrypt(form.url, form.encryption);
+      } catch {
+        url = '';
       }
 
       if (
@@ -478,13 +412,11 @@ export class LazarusRepository {
       if (field.name?.toLowerCase().includes(lowerQuery)) {
         matchingFormIds.add(field.formId);
       } else {
-        let val = field.value || '';
-        if (field.encryption && field.encryption !== 'none') {
-          try {
-            val = await vault.decrypt(field.value, field.encryption);
-          } catch {
-            val = '';
-          }
+        let val: string;
+        try {
+          val = await vault.decrypt(field.value, field.encryption);
+        } catch {
+          val = '';
         }
         if (val.toLowerCase().includes(lowerQuery)) {
           matchingFormIds.add(field.formId);
@@ -504,7 +436,7 @@ export class LazarusRepository {
    * Retrieves all forms across domains.
    */
   public async getAllHistory(limit = 50): Promise<any[]> {
-    const forms = await db.forms.where('status').equals(0).sortBy('lastModified');
+    const forms = await db.forms.where('status').equals(0).toArray();
     forms.sort((a, b) => b.lastModified - a.lastModified);
 
     return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
@@ -515,22 +447,12 @@ export class LazarusRepository {
    */
   public async getDomainHistory(domain: string, limit = 20): Promise<any[]> {
     const domainId = normalizeDomainId(domain);
-    let forms: IDBForm[] = [];
-    try {
-      forms = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    } catch {
-      forms = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.status === 0)
-        .reverse()
-        .sortBy('lastModified');
-    }
+    const forms = await db.forms
+      .where('[domainId+lastModified]')
+      .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
+      .filter((f) => f.status === 0)
+      .toArray();
+    forms.sort((a, b) => b.lastModified - a.lastModified);
 
     return await Promise.all(forms.slice(0, limit).map((f) => this.formatFormOutput(f)));
   }
@@ -596,12 +518,10 @@ export class LazarusRepository {
    */
   private async formatFormOutput(form: IDBForm): Promise<{ form: any; fields: any[] }> {
     let url = form.url;
-    if (form.encryption === 'hybrid-aes-gcm') {
-      try {
-        url = await vault.decrypt(form.url, form.encryption);
-      } catch {
-        url = '[Encrypted URL]';
-      }
+    try {
+      url = await vault.decrypt(form.url, form.encryption);
+    } catch {
+      url = '[Encrypted URL]';
     }
 
     const rawFields = await db.fields

@@ -6,7 +6,6 @@ import {
 } from '../../core/ports/outbound/form-repository.port';
 import { db } from '../../common/db/lazarus-db';
 import { repository, normalizeDomainId } from '../../common/db/repository';
-import Dexie from 'dexie';
 
 export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
   public async saveFormRecord(form: StoredFormRecord): Promise<void> {
@@ -37,20 +36,11 @@ export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
     domainId: string,
     formInstanceId: string
   ): Promise<StoredFormRecord[]> {
-    let forms: any[] = [];
-    try {
-      forms = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .sortBy('lastModified');
-    } catch {
-      forms = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
-        .sortBy('lastModified');
-    }
+    const forms = await db.forms
+      .where('domainId')
+      .equals(domainId)
+      .filter((f) => f.formInstanceId === formInstanceId && f.status === 0)
+      .sortBy('lastModified');
     return (forms as StoredFormRecord[]).reverse();
   }
 
@@ -58,20 +48,11 @@ export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
     domainId: string,
     limit = 5
   ): Promise<StoredFormRecord[]> {
-    let forms: any[] = [];
-    try {
-      forms = await db.forms
-        .where('[domainId+lastModified]')
-        .between([domainId, Dexie.minKey], [domainId, Dexie.maxKey])
-        .filter((f) => f.status === 0)
-        .sortBy('lastModified');
-    } catch {
-      forms = await db.forms
-        .where('domainId')
-        .equals(domainId)
-        .filter((f) => f.status === 0)
-        .sortBy('lastModified');
-    }
+    const forms = await db.forms
+      .where('domainId')
+      .equals(domainId)
+      .filter((f) => f.status === 0)
+      .sortBy('lastModified');
     return forms.reverse().slice(0, limit) as StoredFormRecord[];
   }
 
@@ -93,26 +74,17 @@ export class DexieFormRepositoryAdapter implements IFormRepositoryPort {
     fieldType: string
   ): Promise<StoredFieldRecord[]> {
     const domainId = normalizeDomainId(domain);
-    let fields: any[] = [];
-    try {
-      fields = await db.fields
-        .where('[domainId+name+type]')
-        .equals([domainId, fieldName, fieldType])
-        .filter((f) => f.status === 0 && f.value.trim().length > 0)
-        .sortBy('lastModified');
-    } catch {
-      fields = await db.fields
-        .where('domainId')
-        .equals(domainId)
-        .filter(
-          (f) =>
-            f.status === 0 &&
-            f.name === fieldName &&
-            f.type === fieldType &&
-            f.value.trim().length > 0
-        )
-        .sortBy('lastModified');
-    }
+    const fields = await db.fields
+      .where('domainId')
+      .equals(domainId)
+      .filter(
+        (f) =>
+          f.status === 0 &&
+          f.name === fieldName &&
+          f.type === fieldType &&
+          f.value.trim().length > 0
+      )
+      .sortBy('lastModified');
     return (fields as StoredFieldRecord[]).reverse();
   }
 

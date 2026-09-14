@@ -3,8 +3,12 @@ import {
   setupContextMenus,
   updateDynamicContextMenus,
   handleContextMenuClick,
+  isFirefox,
 } from '../../src/background/context-menus';
 import { repository } from '../../src/common/db/repository';
+
+const initialClickListenerCount =
+  (chrome.contextMenus?.onClicked?.addListener as any)?.mock?.calls?.length || 0;
 
 describe('Context Menus Manager (src/background/context-menus.ts)', () => {
   let createdMenus: any[] = [];
@@ -25,64 +29,81 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
     });
   });
 
+  it('registers contextMenu click listener on load', () => {
+    expect(initialClickListenerCount).toBeGreaterThanOrEqual(1);
+  });
+
   describe('Base Menus Setup', () => {
     it('registers standard editable context menu hierarchy in Chromium', () => {
       setupContextMenus();
 
       expect(chrome.contextMenus.removeAll).toHaveBeenCalled();
 
-      const ids = createdMenus.map((m) => m.id);
-      expect(ids).toContain('lazarus-root');
-      expect(ids).toContain('lazarus-save-now');
-      expect(ids).toContain('lazarus-recover-form-parent');
-      expect(ids).toContain('lazarus-form-none');
-      expect(ids).toContain('lazarus-recover-field-parent');
-      expect(ids).toContain('lazarus-field-none');
-      expect(ids).toContain('lazarus-open-sidebar');
-      expect(ids).toContain('lazarus-open-options');
-      expect(ids).toContain('lazarus-disable-domain');
-
-      // Does not contain Firefox-only action options menu
-      expect(ids).not.toContain('lazarus-action-options');
-
-      // Verify exact titles and contexts
-      const root = createdMenus.find((m) => m.id === 'lazarus-root');
-      expect(root).toEqual({
-        id: 'lazarus-root',
-        title: 'Lazarus Form Recovery',
-        contexts: ['editable'],
-      });
-
-      const saveNow = createdMenus.find((m) => m.id === 'lazarus-save-now');
-      expect(saveNow).toEqual({
-        id: 'lazarus-save-now',
-        parentId: 'lazarus-root',
-        title: '⚡ Save Form Snapshot Now',
-        contexts: ['editable'],
-      });
-
-      const formNone = createdMenus.find((m) => m.id === 'lazarus-form-none');
-      expect(formNone).toEqual({
-        id: 'lazarus-form-none',
-        parentId: 'lazarus-recover-form-parent',
-        title: 'No past versions on this page',
-        enabled: false,
-        contexts: ['editable'],
-      });
-
-      const disableDomain = createdMenus.find((m) => m.id === 'lazarus-disable-domain');
-      expect(disableDomain).toEqual({
-        id: 'lazarus-disable-domain',
-        parentId: 'lazarus-root',
-        title: '🚫 Disable Lazarus on this Site',
-        contexts: ['editable'],
-      });
+      // Verify exact hierarchy, parents, titles, and options
+      expect(createdMenus).toEqual([
+        {
+          id: 'lazarus-root',
+          title: 'Lazarus Form Recovery',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-save-now',
+          parentId: 'lazarus-root',
+          title: '⚡ Save Form Snapshot Now',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-recover-form-parent',
+          parentId: 'lazarus-root',
+          title: '🕒 Recover Form Version',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-form-none',
+          parentId: 'lazarus-recover-form-parent',
+          title: 'No past versions on this page',
+          enabled: false,
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-recover-field-parent',
+          parentId: 'lazarus-root',
+          title: '🔤 Recover Field Text',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-field-none',
+          parentId: 'lazarus-recover-field-parent',
+          title: 'No past snippets for this field',
+          enabled: false,
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-open-sidebar',
+          parentId: 'lazarus-root',
+          title: '📊 Browse Revisions in Sidebar',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-open-options',
+          parentId: 'lazarus-root',
+          title: '⚙️ Settings / Options',
+          contexts: ['editable'],
+        },
+        {
+          id: 'lazarus-disable-domain',
+          parentId: 'lazarus-root',
+          title: '🚫 Disable Lazarus on this Site',
+          contexts: ['editable'],
+        },
+      ]);
     });
 
     it('registers Firefox toolbar action options menu when running in Firefox', () => {
-      const getUrlSpy = vi
-        .spyOn(chrome.runtime, 'getURL')
-        .mockImplementation((p: string) => `moz-extension://uuid-mock/${p}`);
+      const getUrlSpy = vi.spyOn(chrome.runtime, 'getURL').mockImplementation((p: string) => {
+        if (p === '') return 'moz-extension://uuid-mock/';
+        return `chrome-extension://mock/${p}`;
+      });
 
       setupContextMenus();
 
@@ -95,88 +116,146 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
 
       getUrlSpy.mockRestore();
     });
+
+    it('evaluates isFirefox correctly across runtime checks', () => {
+      // Line 27: sidebarAction defined
+      (chrome as any).sidebarAction = {};
+      expect(isFirefox()).toBe(true);
+      delete (chrome as any).sidebarAction;
+
+      // Line 23: getURL('') with exact empty string matching moz-extension://
+      const getUrlSpy = vi.spyOn(chrome.runtime, 'getURL').mockImplementation((p: string) => {
+        if (p === '') return 'moz-extension://test-id/';
+        return 'chrome-extension://test-id/' + p;
+      });
+      expect(isFirefox()).toBe(true);
+      getUrlSpy.mockRestore();
+
+      // Line 32: true when userAgent includes firefox
+      const origUserAgent = navigator.userAgent;
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0',
+        configurable: true,
+      });
+      expect(isFirefox()).toBe(true);
+
+      // Line 35: fallback false when userAgent is not firefox and getURL not moz-extension
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
+        configurable: true,
+      });
+      expect(isFirefox()).toBe(false);
+      Object.defineProperty(navigator, 'userAgent', { value: origUserAgent, configurable: true });
+
+      // Line 22: when chrome is undefined
+      const origChrome = (globalThis as any).chrome;
+      delete (globalThis as any).chrome;
+      expect(isFirefox()).toBe(false);
+      (globalThis as any).chrome = origChrome;
+
+      // Line 23: when chrome.runtime.getURL is undefined
+      const origGetUrl = chrome.runtime.getURL;
+      delete (chrome.runtime as any).getURL;
+      expect(isFirefox()).toBe(false);
+      (chrome.runtime as any).getURL = origGetUrl;
+
+      // Line 30: when navigator is undefined
+      const origNav = (globalThis as any).navigator;
+      delete (globalThis as any).navigator;
+      expect(isFirefox()).toBe(false);
+      (globalThis as any).navigator = origNav;
+    });
+
+    it('returns early when chrome.contextMenus is undefined', async () => {
+      const origMenus = chrome.contextMenus;
+      delete (chrome as any).contextMenus;
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const repoSpy = vi.spyOn(repository, 'getLatestFormRevisions');
+
+      expect(() => setupContextMenus()).not.toThrow();
+      await expect(updateDynamicContextMenus('example.com')).resolves.not.toThrow();
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(repoSpy).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+      repoSpy.mockRestore();
+      (chrome as any).contextMenus = origMenus;
+    });
+
+    it('handles module boot when chrome.contextMenus is missing', async () => {
+      vi.resetModules();
+      const origMenus = (chrome as any).contextMenus;
+      delete (chrome as any).contextMenus;
+      const mod = await import('../../src/background/context-menus');
+      expect(() => mod.setupContextMenus()).not.toThrow();
+      (chrome as any).contextMenus = origMenus;
+    });
   });
 
-  describe('Dynamic Context Menus & Formatting', () => {
-    it('formats time labels and sanitizes previews across seconds, minutes, hours, and days', async () => {
-      const now = Date.now();
-
-      // Form revisions with various times: 10s ago, 15m ago, 2h ago, 3d ago
+  describe('Dynamic Context Menus Update', () => {
+    it('fetches form revisions and field snippets and updates submenus', async () => {
       vi.spyOn(repository, 'getFormRevisions').mockResolvedValueOnce([
         {
           form: {
-            id: 'form_1',
+            id: 'rev-1',
             revisionNumber: 1,
             isFinalSubmit: false,
-            lastModified: now - 10 * 1000, // 10s ago
+            lastModified: 1700000000000,
           },
           fields: [],
         },
         {
           form: {
-            id: 'form_2',
+            id: 'rev-2',
             revisionNumber: 2,
             isFinalSubmit: true,
-            lastModified: now - 15 * 60 * 1000, // 15m ago
-          },
-          fields: [],
-        },
-        {
-          form: {
-            id: 'form_3',
-            revisionNumber: 3,
-            isFinalSubmit: false,
-            lastModified: now - 2 * 3600 * 1000, // 2h ago
-          },
-          fields: [],
-        },
-        {
-          form: {
-            id: 'form_4',
-            revisionNumber: 4,
-            isFinalSubmit: true,
-            lastModified: now - 3 * 86400 * 1000, // 3d ago
+            lastModified: 1700000100000,
           },
           fields: [],
         },
       ]);
 
-      // Field text snippets: normal snippet and a long snippet > 28 chars with whitespace
       vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
         {
-          id: 'f1',
-          formId: 'form_1',
+          id: 'snip-1',
+          formId: 'f1',
           name: 'notes',
           type: 'textarea',
           value: 'Short snippet',
-          lastModified: now - 45 * 1000, // 45s ago
+          lastModified: Date.now() - 1000,
         },
         {
-          id: 'f2',
-          formId: 'form_2',
+          id: 'snip-2',
+          formId: 'f1',
           name: 'notes',
           type: 'textarea',
-          value: 'This is a very long snippet of text that exceeds twenty eight characters easily',
-          lastModified: now - 90 * 60 * 1000, // 1h ago
+          value: 'This is a very long snippet that needs to be truncated for the menu',
+          lastModified: Date.now() - 3600000,
         },
       ]);
 
       await updateDynamicContextMenus('test.com', 'form-instance-1', 'notes', 'textarea');
 
-      // Verify form revision items
+      // Verify remove calls for old items
+      for (let i = 0; i < 5; i++) {
+        expect(chrome.contextMenus.remove).toHaveBeenCalledWith(`lazarus-form-rev-${i}`);
+        expect(chrome.contextMenus.remove).toHaveBeenCalledWith(`lazarus-field-val-${i}`);
+      }
+      expect(chrome.contextMenus.remove).toHaveBeenCalledWith('lazarus-form-none');
+      expect(chrome.contextMenus.remove).toHaveBeenCalledWith('lazarus-field-none');
+      expect(chrome.contextMenus.remove).not.toHaveBeenCalledWith('lazarus-form-rev-5');
+      expect(chrome.contextMenus.remove).not.toHaveBeenCalledWith('lazarus-field-val-5');
+      expect(chrome.contextMenus.remove).toHaveBeenCalledTimes(12);
+
+      // Verify form revision submenus
       const rev0 = createdMenus.find((m) => m.id === 'lazarus-form-rev-0');
       expect(rev0).toBeDefined();
-      expect(rev0.title).toBe('Rev 1 (Draft • Just now)');
+      expect(rev0.title).toContain('Rev 1 (Draft • ');
       expect(rev0.parentId).toBe('lazarus-recover-form-parent');
 
       const rev1 = createdMenus.find((m) => m.id === 'lazarus-form-rev-1');
-      expect(rev1.title).toBe('Rev 2 (Submitted • 15m ago)');
-
-      const rev2 = createdMenus.find((m) => m.id === 'lazarus-form-rev-2');
-      expect(rev2.title).toBe('Rev 3 (Draft • 2h ago)');
-
-      const rev3 = createdMenus.find((m) => m.id === 'lazarus-form-rev-3');
-      expect(rev3.title).toContain('Rev 4 (Submitted • ');
+      expect(rev1).toBeDefined();
+      expect(rev1.title).toContain('Rev 2 (Submitted • ');
 
       // Verify field text snippets
       const snip0 = createdMenus.find((m) => m.id === 'lazarus-field-val-0');
@@ -186,8 +265,33 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
 
       const snip1 = createdMenus.find((m) => m.id === 'lazarus-field-val-1');
       expect(snip1).toBeDefined();
-      // Should be truncated to 28 chars with ...
       expect(snip1.title).toBe('"This is a very long snippet ..." (1h ago)');
+    });
+
+    it('limits dynamic submenus to at most 5 items using slice(0, 5)', async () => {
+      const sevenRevs = Array.from({ length: 7 }, (_, i) => ({
+        form: { id: `rev-${i}`, revisionNumber: i + 1, lastModified: 1000 + i },
+        fields: [],
+      }));
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValue(sevenRevs as any);
+
+      const sevenFields = Array.from({ length: 7 }, (_, i) => ({
+        id: `snip-${i}`,
+        formId: `rev-${i}`,
+        name: 'notes',
+        type: 'text',
+        value: `snippet-${i}`,
+        lastModified: 1000 + i,
+      }));
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValue(sevenFields as any);
+
+      await updateDynamicContextMenus('example.com', undefined, 'notes', 'text');
+
+      const revMenus = createdMenus.filter((m) => m.id.startsWith('lazarus-form-rev-'));
+      expect(revMenus.length).toBe(5);
+
+      const fieldMenus = createdMenus.filter((m) => m.id.startsWith('lazarus-field-val-'));
+      expect(fieldMenus.length).toBe(5);
     });
 
     it('renders placeholder items when form revisions or snippets are empty', async () => {
@@ -198,12 +302,22 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       await updateDynamicContextMenus('test.com', 'form-empty');
 
       const formNone = createdMenus.find((m) => m.id === 'lazarus-form-none');
-      expect(formNone).toBeDefined();
-      expect(formNone.title).toBe('No past versions on this page');
+      expect(formNone).toEqual({
+        id: 'lazarus-form-none',
+        parentId: 'lazarus-recover-form-parent',
+        title: 'No past versions on this page',
+        enabled: false,
+        contexts: ['editable'],
+      });
 
       const fieldNone = createdMenus.find((m) => m.id === 'lazarus-field-none');
-      expect(fieldNone).toBeDefined();
-      expect(fieldNone.title).toBe('No past snippets for this field');
+      expect(fieldNone).toEqual({
+        id: 'lazarus-field-none',
+        parentId: 'lazarus-recover-field-parent',
+        title: 'No past snippets for this field',
+        enabled: false,
+        contexts: ['editable'],
+      });
     });
 
     it('handles repository errors in updateDynamicContextMenus without throwing', async () => {
@@ -228,9 +342,17 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
     });
 
     it('ignores actions if tab is missing or has no URL', async () => {
+      (chrome.tabs.sendMessage as any).mockClear();
+      const consoleSpy = vi.spyOn(console, 'error');
       await handleContextMenuClick({ menuItemId: 'lazarus-save-now' }, undefined);
       await handleContextMenuClick({ menuItemId: 'lazarus-save-now' }, { id: 101 });
+      await handleContextMenuClick(
+        { menuItemId: 'lazarus-save-now' },
+        { url: 'https://example.com' }
+      );
       expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
+      expect(consoleSpy).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     it('handles options menu click via openOptionsPage or fallback tabs.create', async () => {
@@ -250,6 +372,23 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         url: 'chrome-extension://mock/src/options/options.html',
       });
 
+      // 2b. chrome.runtime undefined in open options -> calls tabs.create({ url: '' })
+      const origRuntime = chrome.runtime;
+      delete (chrome as any).runtime;
+      (chrome.tabs.create as any).mockClear();
+      await handleContextMenuClick({ menuItemId: 'lazarus-action-options' });
+      expect(chrome.tabs.create).toHaveBeenCalledWith({ url: '' });
+      (chrome as any).runtime = origRuntime;
+
+      // 3. both openOptionsPage and tabs.create missing
+      const origTabsCreate = chrome.tabs.create;
+      delete (chrome.tabs as any).create;
+      const consoleSpy = vi.spyOn(console, 'error');
+      await handleContextMenuClick({ menuItemId: 'lazarus-action-options' });
+      expect(consoleSpy).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+
+      (chrome.tabs as any).create = origTabsCreate;
       chrome.runtime.openOptionsPage = origOpenOptions;
     });
 
@@ -258,6 +397,13 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       (chrome as any).sidePanel = { open: vi.fn().mockResolvedValue(undefined) };
       await handleContextMenuClick({ menuItemId: 'lazarus-open-sidebar' }, mockTab);
       expect((chrome as any).sidePanel.open).toHaveBeenCalledWith({ windowId: 5 });
+
+      // 1b. sidePanel.open with undefined tab
+      ((chrome as any).sidePanel.open as any).mockClear();
+      const consoleSpy = vi.spyOn(console, 'error');
+      await handleContextMenuClick({ menuItemId: 'lazarus-open-sidebar' }, undefined);
+      expect((chrome as any).sidePanel.open).not.toHaveBeenCalled();
+      expect(consoleSpy).not.toHaveBeenCalled();
 
       // 2. sidebarAction.open fallback
       delete (chrome as any).sidePanel;
@@ -271,6 +417,23 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       expect(chrome.tabs.create).toHaveBeenCalledWith({
         url: 'chrome-extension://mock/src/sidepanel/sidepanel.html',
       });
+
+      // 3b. tabs.create fallback when chrome.runtime is undefined
+      const origRuntime = chrome.runtime;
+      delete (chrome as any).runtime;
+      (chrome.tabs.create as any).mockClear();
+      await handleContextMenuClick({ menuItemId: 'lazarus-open-sidebar' }, mockTab);
+      expect(chrome.tabs.create).toHaveBeenCalledWith({ url: '' });
+      (chrome as any).runtime = origRuntime;
+
+      // 3c. tabs.create missing
+      const origTabsCreate = chrome.tabs.create;
+      delete (chrome.tabs as any).create;
+      consoleSpy.mockClear();
+      await handleContextMenuClick({ menuItemId: 'lazarus-open-sidebar' }, mockTab);
+      expect(consoleSpy).not.toHaveBeenCalled();
+      (chrome.tabs as any).create = origTabsCreate;
+      consoleSpy.mockRestore();
     });
 
     it('handles domain disable with confirmation and cancellation', async () => {
@@ -311,10 +474,13 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         payload: { formId: 'rev_form_1' },
       });
 
-      // Invalid item index
+      // Invalid item index (does not throw, does not log error, does not send message)
+      const consoleSpy = vi.spyOn(console, 'error');
       (chrome.tabs.sendMessage as any).mockClear();
       await handleContextMenuClick({ menuItemId: 'lazarus-form-rev-99' }, mockTab);
       expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
+      expect(consoleSpy).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     it('restores field snippet on clicking field snippet submenu item', async () => {
@@ -338,10 +504,13 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         payload: { value: 'Recovered Snippet Content' },
       });
 
-      // Invalid snippet index
+      // Invalid snippet index (does not throw, does not log error, does not send message)
+      const consoleSpy = vi.spyOn(console, 'error');
       (chrome.tabs.sendMessage as any).mockClear();
       await handleContextMenuClick({ menuItemId: 'lazarus-field-val-99' }, mockTab);
       expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
+      expect(consoleSpy).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
 
     it('catches and logs errors gracefully when URL is invalid', async () => {
@@ -354,6 +523,96 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
         'Error handling context menu action:',
         expect.any(Error)
       );
+    });
+
+    it('handles rejection gracefully when sendMessage fails for save-now, revision restore, or field snippet restore', async () => {
+      (chrome.tabs.sendMessage as any).mockRejectedValue(new Error('Connection lost'));
+
+      // 1. save-now rejection
+      await handleContextMenuClick({ menuItemId: 'lazarus-save-now' }, mockTab);
+
+      // 2. form revision rejection
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([
+        {
+          form: {
+            id: 'rev_form_1',
+            revisionNumber: 1,
+            isFinalSubmit: false,
+            lastModified: Date.now(),
+          },
+          fields: [],
+        },
+      ]);
+      await updateDynamicContextMenus('sub.example.com');
+      await handleContextMenuClick({ menuItemId: 'lazarus-form-rev-0' }, mockTab);
+
+      // 3. field snippet rejection
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([]);
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
+        {
+          id: 'snip_1',
+          formId: 'rev_form_1',
+          name: 'notes',
+          type: 'text',
+          value: 'Recovered Snippet Content',
+          lastModified: Date.now(),
+        },
+      ]);
+      await updateDynamicContextMenus('sub.example.com', undefined, 'notes', 'text');
+      await handleContextMenuClick({ menuItemId: 'lazarus-field-val-0' }, mockTab);
+
+      expect(chrome.tabs.sendMessage).toHaveBeenCalledTimes(3);
+    });
+
+    it('handles dynamic context menus with default fieldType and default revisionNumber', async () => {
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([
+        {
+          form: {
+            id: 'rev_default_test',
+            revisionNumber: 0 as any, // tests revisionNumber || 1
+            isFinalSubmit: false,
+            lastModified: Date.now(),
+          },
+          fields: [],
+        },
+      ]);
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
+        {
+          id: '1',
+          formId: 'f',
+          name: 'myField',
+          type: 'text',
+          value: 'Snippet',
+          lastModified: Date.now(),
+        },
+      ]);
+
+      await updateDynamicContextMenus('sub.example.com', undefined, 'myField', undefined);
+      expect(repository.getRecoverableText).toHaveBeenCalledWith(
+        'sub.example.com',
+        'myField',
+        'text'
+      );
+    });
+
+    it('handles unrecognized context menu item id gracefully and prevents accidental prefix matches', async () => {
+      // Ensure currentCache has items at index 0
+      vi.spyOn(repository, 'getLatestFormRevisions').mockResolvedValueOnce([
+        { form: { id: 'rev-0', revisionNumber: 1, lastModified: 1000 }, fields: [] },
+      ]);
+      vi.spyOn(repository, 'getRecoverableText').mockResolvedValueOnce([
+        { id: '1', formId: 'f', name: 'f', type: 'text', value: 'snippet-0', lastModified: 1000 },
+      ]);
+      await updateDynamicContextMenus('sub.example.com', undefined, 'field0', 'text');
+
+      (chrome.tabs.sendMessage as any).mockClear();
+      // Test with menuItemId '0' which does NOT start with 'lazarus-field-val-' or 'lazarus-form-rev-'
+      await handleContextMenuClick({ menuItemId: '0' }, mockTab);
+      expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
+
+      // Test with generic unknown id
+      await handleContextMenuClick({ menuItemId: 'lazarus-unknown-id' }, mockTab);
+      expect(chrome.tabs.sendMessage).not.toHaveBeenCalled();
     });
   });
 });

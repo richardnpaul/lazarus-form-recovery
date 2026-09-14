@@ -19,16 +19,18 @@ let currentCache: ContextMenuCache = {
 };
 
 export function isFirefox(): boolean {
-  if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
-    if (chrome.runtime.getURL('').startsWith('moz-extension://')) {
+  if (typeof chrome !== 'undefined' && chrome.runtime) {
+    if (chrome.runtime.getURL && chrome.runtime.getURL('').startsWith('moz-extension://')) {
+      return true;
+    }
+    if (typeof (chrome as any).sidebarAction !== 'undefined') {
       return true;
     }
   }
-  if (typeof (chrome as any)?.sidebarAction !== 'undefined') {
-    return true;
-  }
   if (typeof navigator !== 'undefined' && navigator.userAgent) {
-    return navigator.userAgent.toLowerCase().includes('firefox');
+    if (navigator.userAgent.toLowerCase().includes('firefox')) {
+      return true;
+    }
   }
   return false;
 }
@@ -175,16 +177,11 @@ export async function updateDynamicContextMenus(
 }
 
 function rebuildSubmenus() {
-  if (!chrome.contextMenus) return;
-
   // 1. Update Form Revisions Submenu
-  // Remove old items under form parent
-  try {
-    for (let i = 0; i < 6; i++) {
-      chrome.contextMenus.remove(`lazarus-form-rev-${i}`, () => chrome.runtime.lastError);
-    }
-    chrome.contextMenus.remove('lazarus-form-none', () => chrome.runtime.lastError);
-  } catch {}
+  for (let i = 0; i < 5; i++) {
+    chrome.contextMenus.remove(`lazarus-form-rev-${i}`);
+  }
+  chrome.contextMenus.remove('lazarus-form-none');
 
   if (currentCache.formRevisions.length === 0) {
     chrome.contextMenus.create({
@@ -210,12 +207,10 @@ function rebuildSubmenus() {
   }
 
   // 2. Update Field Text Submenu
-  try {
-    for (let i = 0; i < 6; i++) {
-      chrome.contextMenus.remove(`lazarus-field-val-${i}`, () => chrome.runtime.lastError);
-    }
-    chrome.contextMenus.remove('lazarus-field-none', () => chrome.runtime.lastError);
-  } catch {}
+  for (let i = 0; i < 5; i++) {
+    chrome.contextMenus.remove(`lazarus-field-val-${i}`);
+  }
+  chrome.contextMenus.remove('lazarus-field-none');
 
   if (currentCache.fieldTexts.length === 0) {
     chrome.contextMenus.create({
@@ -248,25 +243,23 @@ export async function handleContextMenuClick(info: any, tab?: any) {
 
     // Settings / Options handler (toolbar addon right-click or in-page root menu)
     if (itemId === 'lazarus-action-options' || itemId === 'lazarus-open-options') {
-      if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
+      if (chrome.runtime?.openOptionsPage) {
         chrome.runtime.openOptionsPage();
-      } else if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-        chrome.tabs.create({ url: chrome.runtime.getURL('src/options/options.html') });
+      } else if (chrome.tabs.create) {
+        chrome.tabs.create({ url: chrome.runtime?.getURL('src/options/options.html') || '' });
       }
       return;
     }
 
     // Sidebar handler
     if (itemId === 'lazarus-action-sidebar' || itemId === 'lazarus-open-sidebar') {
-      const spKey = ['side', 'Panel'].join('');
-      const sp = (chrome as any)?.[spKey];
-      const openFn = ['op', 'en'].join('');
-      if (typeof sp?.[openFn] === 'function' && tab?.windowId) {
-        await sp[openFn]({ windowId: tab.windowId });
-      } else if (typeof (chrome as any)?.sidebarAction?.open === 'function') {
+      const sp = (chrome as any).sidePanel;
+      if (typeof sp?.open === 'function' && tab?.windowId) {
+        await sp.open({ windowId: tab.windowId });
+      } else if (typeof (chrome as any).sidebarAction?.open === 'function') {
         (chrome as any).sidebarAction.open();
-      } else {
-        chrome.tabs.create({ url: chrome.runtime.getURL('src/sidepanel/sidepanel.html') });
+      } else if (chrome.tabs.create) {
+        chrome.tabs.create({ url: chrome.runtime?.getURL('src/sidepanel/sidepanel.html') || '' });
       }
       return;
     }

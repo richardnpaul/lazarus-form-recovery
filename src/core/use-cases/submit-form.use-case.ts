@@ -65,8 +65,7 @@ export class SubmitFormUseCase implements ISubmitFormUseCase {
       domainId,
       formInstanceId,
       effectiveNow,
-      true, // isFinalSubmit = true
-      false
+      true // isFinalSubmit = true
     );
 
     const { ciphertext: encUrl, mode: formEncMode } = await this.vault.encrypt(formSnapshot.url);

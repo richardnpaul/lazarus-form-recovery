@@ -1,5 +1,12 @@
 import { RuntimeResponse } from '../common/types/messages';
 import { ExtensionSettings, VaultStatus } from '../common/types/config';
+import { getExtensionVersion } from '../common/utils/version';
+import { getBrowserApi } from '../common/utils/runtime';
+
+async function sendOptionsMessage<T = any>(message: any): Promise<T> {
+  const api = getBrowserApi();
+  return (await api.runtime.sendMessage(message)) as T;
+}
 
 // Tab Elements
 const navItems = document.querySelectorAll('.nav-item');
@@ -63,11 +70,7 @@ export async function init() {
 function renderDiagnostics() {
   const versionEl = document.getElementById('diagnostic-version');
   if (versionEl) {
-    const version =
-      typeof chrome !== 'undefined' && chrome.runtime?.getManifest
-        ? chrome.runtime.getManifest()?.version || '0.0.1'
-        : '0.0.1';
-    versionEl.textContent = `${version} (Manifest V3)`;
+    versionEl.textContent = `${getExtensionVersion()} (Manifest V3)`;
   }
 }
 
@@ -85,7 +88,7 @@ function setupTabs() {
 }
 
 async function loadSettings() {
-  const res: RuntimeResponse<ExtensionSettings> = await chrome.runtime.sendMessage({
+  const res: RuntimeResponse<ExtensionSettings> = await sendOptionsMessage({
     type: 'GET_SETTINGS',
   });
   if (res?.success && res.data) {
@@ -110,17 +113,14 @@ async function loadSettings() {
 }
 
 async function saveSettings(patch: Partial<ExtensionSettings>) {
-  const res: RuntimeResponse<ExtensionSettings> = await chrome.runtime.sendMessage({
+  await sendOptionsMessage({
     type: 'UPDATE_SETTINGS',
     payload: { settings: patch },
   });
-  if (res?.success && res.data) {
-    currentSettings = res.data;
-  }
 }
 
 async function checkVault() {
-  const res: RuntimeResponse<VaultStatus> = await chrome.runtime.sendMessage({
+  const res: RuntimeResponse<VaultStatus> = await sendOptionsMessage({
     type: 'CHECK_VAULT_STATUS',
   });
   if (res?.success && res.data) {
@@ -138,13 +138,8 @@ async function checkVault() {
 }
 
 function updateModeCards(mode: string) {
-  if (mode === 'hybrid-aes-gcm') {
-    modeVault.classList.add('is-selected');
-    modeStandard.classList.remove('is-selected');
-  } else {
-    modeStandard.classList.add('is-selected');
-    modeVault.classList.remove('is-selected');
-  }
+  modeVault.classList.toggle('is-selected', mode === 'hybrid-aes-gcm');
+  modeStandard.classList.toggle('is-selected', mode === 'none');
 }
 
 // General Tab Event Handlers
@@ -170,11 +165,11 @@ modeStandard.addEventListener('click', async () => {
     if (confirm('Switching to Standard Mode will remove Master Password encryption. Continue?')) {
       const pwd = prompt('Enter your current Master Password to confirm:');
       if (pwd) {
-        const removeRes: RuntimeResponse = await chrome.runtime.sendMessage({
+        const removeRes: RuntimeResponse = await sendOptionsMessage({
           type: 'REMOVE_MASTER_PASSWORD',
           payload: { currentPassword: pwd },
         });
-        if (removeRes?.success) {
+        if (removeRes.success) {
           updateModeCards('none');
           await checkVault();
         } else {
@@ -250,7 +245,7 @@ btnSaveMasterPass.addEventListener('click', async () => {
     return;
   }
 
-  const res: RuntimeResponse = await chrome.runtime.sendMessage({
+  const res: RuntimeResponse = await sendOptionsMessage({
     type: 'SET_MASTER_PASSWORD',
     payload: { password: p1 },
   });
@@ -299,7 +294,7 @@ function renderDomainsTable(domains: string[]) {
     btn.textContent = 'Unblock';
 
     btn.addEventListener('click', async () => {
-      await chrome.runtime.sendMessage({
+      await sendOptionsMessage({
         type: 'ENABLE_DOMAIN',
         payload: { domain },
       });
@@ -317,7 +312,7 @@ btnAddDomain.addEventListener('click', async () => {
   const domain = inputNewDomain.value.trim();
   if (!domain) return;
 
-  await chrome.runtime.sendMessage({
+  await sendOptionsMessage({
     type: 'DISABLE_DOMAIN',
     payload: { domain, wipeExisting: false },
   });
@@ -346,7 +341,7 @@ async function calculateStorage() {
 }
 
 btnExportData.addEventListener('click', async () => {
-  const res: RuntimeResponse = await chrome.runtime.sendMessage({ type: 'EXPORT_DATA' });
+  const res: RuntimeResponse = await sendOptionsMessage({ type: 'EXPORT_DATA' });
   if (res?.success && res.data) {
     const jsonStr = JSON.stringify(res.data, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -376,7 +371,7 @@ btnCancelWipeModal.addEventListener('click', () => {
 
 btnConfirmWipe.addEventListener('click', async () => {
   if (inputWipeConfirm.value.trim() === 'DELETE') {
-    await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
+    await sendOptionsMessage({ type: 'CLEAR_ALL_HISTORY' });
     wipeModal.classList.remove('is-visible');
     await calculateStorage();
     alert('All recorded history and drafts have been wiped.');

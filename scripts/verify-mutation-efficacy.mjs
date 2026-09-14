@@ -20,7 +20,7 @@ const MUTANTS = [
     subsystem: 'PII & Vault Security',
     description: 'Bypass Luhn credit card checksum validation (always return false)',
     filePath: 'src/common/utils/pii.ts',
-    originalSnippet: 'return sum % 10 === 0;',
+    originalSnippet: 'return sum > 0 && sum % 10 === 0;',
     mutatedSnippet: 'return false;',
     targetTest: 'tests/unit/utils.test.ts',
   },

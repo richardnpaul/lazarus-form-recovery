@@ -1,9 +1,16 @@
 import { RuntimeMessage } from '../common/types/messages';
 import { attachRecoveryUI } from './shadow-ui/shadow-host';
-import { FieldExtractor } from './field-extractor';
+import { FieldExtractor, getFormActionIdentifier } from './field-extractor';
 import { findRichTextAdapter } from './rich-text';
 import { escapeCss } from '../common/utils/dom';
-import { isExtensionContextValid, safeSendMessage } from '../common/utils/runtime';
+import { getBrowserApi, isExtensionContextValid, safeSendMessage } from '../common/utils/runtime';
+
+function isCheckedValue(value: string | undefined): boolean {
+  if (!value || value === 'false' || value === '0') {
+    return false;
+  }
+  return true;
+}
 
 export class FormTracker {
   private autosaveTimer: any = null;
@@ -13,9 +20,8 @@ export class FormTracker {
   // Last focused or right-clicked element
   private lastInteractedElement: HTMLElement | null = null;
 
-  // Active editing time state per form: formInstanceId -> { start, last, totalSec }
-  private editingSessions: Map<string, { start: number; last: number; totalSec: number }> =
-    new Map();
+  // Active editing time state per form: formInstanceId -> { last, totalSec }
+  private editingSessions: Map<string, { last: number; totalSec: number }> = new Map();
 
   private onInput = this.handleInput.bind(this);
   private onCompositionEnd = this.handleInput.bind(this);
@@ -85,6 +91,11 @@ export class FormTracker {
     return true;
   }
 
+  private getMessageListenerApi(): any {
+    if (!isExtensionContextValid()) return null;
+    return getBrowserApi().runtime.onMessage;
+  }
+
   public start() {
     if (!this.ensureContextValid()) return;
 
@@ -106,9 +117,10 @@ export class FormTracker {
     }
 
     // Listen for background actions (e.g. from context menus)
-    try {
-      chrome.runtime.onMessage?.addListener(this.onRuntimeMessageBound);
-    } catch {}
+    const onMessage = this.getMessageListenerApi();
+    if (onMessage) {
+      onMessage.addListener(this.onRuntimeMessageBound);
+    }
   }
 
   public stop() {
@@ -128,11 +140,10 @@ export class FormTracker {
       window.removeEventListener('pagehide', this.onPageHide, true);
     }
 
-    try {
-      if (isExtensionContextValid()) {
-        chrome.runtime.onMessage?.removeListener(this.onRuntimeMessageBound);
-      }
-    } catch {}
+    const onMessage = this.getMessageListenerApi();
+    if (onMessage) {
+      onMessage.removeListener(this.onRuntimeMessageBound);
+    }
 
     if (this.autosaveTimer) {
       clearTimeout(this.autosaveTimer);
@@ -151,22 +162,26 @@ export class FormTracker {
     return FieldExtractor.isTrackable(target, false);
   }
 
+  private getFormId(formElement: HTMLElement | null): string {
+    if (!formElement) return 'fake_form';
+    return (
+      formElement.id ||
+      formElement.getAttribute('name') ||
+      getFormActionIdentifier(formElement as HTMLFormElement)
+    );
+  }
+
   private updateEditingTime(formInstanceId: string): number {
     const now = Date.now();
     let session = this.editingSessions.get(formInstanceId);
 
     if (!session) {
-      session = { start: now, last: now, totalSec: 0 };
+      session = { last: now, totalSec: 0 };
       this.editingSessions.set(formInstanceId, session);
     } else {
       const idleTime = now - session.last;
-      if (idleTime > this.EDITING_IDLE_TIME) {
-        // Idle period: reset current burst start
-        session.start = now;
-      } else {
-        // Accumulate active seconds
-        const deltaSec = Math.round((now - session.last) / 1000);
-        session.totalSec += deltaSec;
+      if (idleTime <= this.EDITING_IDLE_TIME) {
+        session.totalSec += Math.round(idleTime / 1000);
       }
       session.last = now;
     }
@@ -177,8 +192,6 @@ export class FormTracker {
   private handleFocus(event: Event) {
     if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
-    if (!target) return;
-
     if (this.isTrackable(target)) {
       this.lastInteractedElement = target;
       attachRecoveryUI(target);
@@ -188,8 +201,6 @@ export class FormTracker {
   private handleContextMenu(event: MouseEvent) {
     if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
-    if (!target) return;
-
     if (this.isTrackable(target)) {
       this.lastInteractedElement = target;
       const form = target.closest('form');
@@ -216,12 +227,9 @@ export class FormTracker {
   private handleInput(event: Event) {
     if (!this.ensureContextValid()) return;
     const target = (event.composedPath?.()[0] || event.target) as HTMLElement;
-    if (!target || !this.isTrackable(target)) return;
+    if (!this.isTrackable(target)) return;
 
     this.lastInteractedElement = target;
-    const formElement = target.closest('form');
-    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
-    this.updateEditingTime(formId);
 
     if (this.autosaveTimer) {
       clearTimeout(this.autosaveTimer);
@@ -238,7 +246,7 @@ export class FormTracker {
     if (!target || target.tagName !== 'FORM') return;
 
     // Capture snapshot right before form reset clears values
-    const editingTime = this.updateEditingTime(target.id || 'form_wrapper');
+    const editingTime = this.updateEditingTime(this.getFormId(target));
     const formSnapshot = FieldExtractor.buildFormSnapshot(target, editingTime);
 
     if (formSnapshot.fields.length > 0) {
@@ -260,11 +268,9 @@ export class FormTracker {
       this.autosaveTimer = null;
     }
 
-    const formEl = target.tagName === 'FORM' ? (target as HTMLFormElement) : target.closest('form');
+    const formEl = target.closest('form');
     const snapshotTarget = formEl || target;
-    const formId = formEl
-      ? formEl.id || formEl.getAttribute('name') || 'form_wrapper'
-      : 'fake_form';
+    const formId = this.getFormId(formEl);
     const editingTime = this.updateEditingTime(formId);
     const formSnapshot = FieldExtractor.buildFormSnapshot(snapshotTarget, editingTime);
 
@@ -281,7 +287,7 @@ export class FormTracker {
   private triggerAutosave(target: HTMLElement) {
     if (!this.ensureContextValid()) return;
     const formElement = target.closest('form');
-    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
+    const formId = this.getFormId(formElement);
     const editingTime = this.updateEditingTime(formId);
 
     const formSnapshot = FieldExtractor.buildFormSnapshot(target, editingTime);
@@ -300,26 +306,24 @@ export class FormTracker {
    */
   private async handleRuntimeMessage(message: any) {
     if (!this.ensureContextValid()) return;
-    if (!message || typeof message !== 'object') return;
 
-    if (message.action === 'RESTORE_LAST_FORM') {
-      await this.restoreLastForm();
-      return;
-    }
-
-    if (message.action === 'RESTORE_FORM_REVISION' && message.payload?.formId) {
-      await this.restoreFormFromId(message.payload.formId);
-      return;
-    }
-
-    if (message.action === 'RESTORE_FIELD_TEXT' && typeof message.payload?.value === 'string') {
-      this.restoreActiveField(message.payload.value);
-      return;
-    }
-
-    if (message.action === 'FORCE_SAVE_NOW') {
-      this.forceSaveCurrentForm();
-      return;
+    switch (message?.action) {
+      case 'RESTORE_LAST_FORM':
+        await this.restoreLastForm();
+        break;
+      case 'RESTORE_FORM_REVISION':
+        if (message.payload?.formId) {
+          await this.restoreFormFromId(message.payload.formId);
+        }
+        break;
+      case 'RESTORE_FIELD_TEXT':
+        if (typeof message.payload?.value === 'string') {
+          this.restoreActiveField(message.payload.value);
+        }
+        break;
+      case 'FORCE_SAVE_NOW':
+        this.forceSaveCurrentForm();
+        break;
     }
   }
 
@@ -327,23 +331,31 @@ export class FormTracker {
     if (!this.ensureContextValid()) return;
     try {
       const domain =
-        (typeof window !== 'undefined' && window.location?.hostname) ||
-        (typeof window !== 'undefined' && window.location?.protocol === 'file:'
-          ? 'local file'
-          : 'unknown');
+        window.location.hostname ||
+        (window.location.protocol === 'file:' ? 'local file' : 'unknown');
       const res = await safeSendMessage({
         type: 'GET_DOMAIN_HISTORY',
         payload: { domain, limit: 1 },
       });
-      if (res?.success && Array.isArray(res.data) && res.data.length > 0) {
-        const latestItem = res.data[0];
-        if (latestItem?.form?.id) {
-          await this.restoreFormFromId(latestItem.form.id);
-        }
+      if (!res?.success || !Array.isArray(res.data)) {
+        return;
+      }
+      const formId = res.data[0]?.form?.id;
+      if (formId) {
+        await this.restoreFormFromId(formId);
       }
     } catch (err) {
       console.error('Failed to restore last form:', err);
     }
+  }
+
+  private findFieldElement(container: ParentNode, safeName: string): HTMLElement | null {
+    return (
+      container.querySelector(`[name="${safeName}"]`) ||
+      container.querySelector(`#${safeName}`) ||
+      container.querySelector(`[placeholder="${safeName}"]`) ||
+      container.querySelector(`[aria-label="${safeName}"]`)
+    );
   }
 
   private async restoreFormFromId(formId: string) {
@@ -354,10 +366,10 @@ export class FormTracker {
         payload: { formId },
       });
 
-      if (!res?.success || !res.data) return;
-
-      const { fields } = res.data;
-      if (!Array.isArray(fields) || fields.length === 0) return;
+      if (!res?.success || !Array.isArray(res.data?.fields)) {
+        return;
+      }
+      const fields = res.data.fields;
 
       // Find target form in document
       let targetForm =
@@ -365,15 +377,16 @@ export class FormTracker {
 
       fields.forEach((field: any) => {
         let el: HTMLElement | null = null;
-        if (targetForm) {
-          el = targetForm.querySelector(
-            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
-          );
-        }
+        const safeName = escapeCss(field.name);
+        try {
+          if (targetForm) {
+            el = this.findFieldElement(targetForm, safeName);
+          }
+        } catch {}
         if (!el) {
-          el = document.querySelector(
-            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
-          );
+          try {
+            el = this.findFieldElement(document, safeName);
+          } catch {}
         }
 
         if (el) {
@@ -401,7 +414,7 @@ export class FormTracker {
     if (!target) return;
 
     const formElement = target.closest('form');
-    const formId = formElement ? formElement.id || 'form_wrapper' : 'fake_form';
+    const formId = this.getFormId(formElement);
     const editingTime = this.updateEditingTime(formId);
     const formSnapshot = FieldExtractor.buildFormSnapshot(target as HTMLElement, editingTime);
 
@@ -419,6 +432,11 @@ export class FormTracker {
     const adapter = findRichTextAdapter(element);
     if (adapter) {
       adapter.setValue(element, value);
+    } else if (
+      (element as HTMLInputElement).type === 'checkbox' ||
+      (element as HTMLInputElement).type === 'radio'
+    ) {
+      (element as HTMLInputElement).checked = isCheckedValue(value);
     } else if ('value' in element) {
       (element as HTMLInputElement).value = value;
     } else {

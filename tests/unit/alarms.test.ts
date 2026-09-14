@@ -87,38 +87,69 @@ describe('Alarms & Retention Cleanup Unit Tests', () => {
   });
 
   it('registers periodic alarms and handles onAlarm events', async () => {
+    vi.resetModules();
+    (chrome.alarms.onAlarm.addListener as any).mockClear();
+    (chrome.alarms.create as any).mockClear();
+
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
     const { setupAlarms } = await import('../../src/background/alarms');
+    const { repository: currentRepo } = await import('../../src/common/db/repository');
+    expect(chrome.alarms.onAlarm.addListener).toHaveBeenCalledTimes(1);
+
     setupAlarms();
     expect(chrome.alarms.create).toHaveBeenCalledWith('cleanup-expired-forms', {
       periodInMinutes: 30,
     });
 
-    const alarmListeners = (chrome.alarms.onAlarm.addListener as any).mock?.calls || [];
-    if (alarmListeners.length > 0) {
-      const alarmHandler = alarmListeners[0][0];
-      // 1. Alarm with cleanedCount > 0
-      const cleanupSpy = vi.spyOn(repository, 'cleanupExpiredForms').mockResolvedValueOnce(5);
-      await alarmHandler({ name: 'cleanup-expired-forms' });
-      expect(cleanupSpy).toHaveBeenCalledTimes(1);
+    const alarmHandler = (chrome.alarms.onAlarm.addListener as any).mock.calls[0][0];
 
-      // 1b. Alarm with cleanedCount === 0
-      cleanupSpy.mockResolvedValueOnce(0);
-      await alarmHandler({ name: 'cleanup-expired-forms' });
-      expect(cleanupSpy).toHaveBeenCalledTimes(2);
+    // 1. Alarm with cleanedCount > 0 (e.g. 5) -> must log message
+    logSpy.mockClear();
+    const cleanupSpy = vi.spyOn(currentRepo, 'cleanupExpiredForms').mockResolvedValueOnce(5);
+    await alarmHandler({ name: 'cleanup-expired-forms' });
+    expect(cleanupSpy).toHaveBeenCalledTimes(1);
+    expect(logSpy).toHaveBeenCalledWith('[Lazarus Alarm] Cleaned up 5 expired form records.');
 
-      // 2. Alarm with error
-      vi.spyOn(repository, 'cleanupExpiredForms').mockRejectedValueOnce(new Error('CleanupFailed'));
-      await alarmHandler({ name: 'cleanup-expired-forms' });
-      expect(cleanupSpy).toHaveBeenCalledTimes(3);
+    // 1b. Alarm with cleanedCount === 0 -> must NOT log message
+    logSpy.mockClear();
+    cleanupSpy.mockResolvedValueOnce(0);
+    await alarmHandler({ name: 'cleanup-expired-forms' });
+    expect(cleanupSpy).toHaveBeenCalledTimes(2);
+    expect(logSpy).not.toHaveBeenCalled();
 
-      // 3. Non-matching alarm name
-      await alarmHandler({ name: 'unknown-alarm' });
-      expect(cleanupSpy).toHaveBeenCalledTimes(3);
-    }
+    // 2. Alarm with error -> must log error message
+    errSpy.mockClear();
+    const cleanupErr = new Error('CleanupFailed');
+    cleanupSpy.mockRejectedValueOnce(cleanupErr);
+    await alarmHandler({ name: 'cleanup-expired-forms' });
+    expect(cleanupSpy).toHaveBeenCalledTimes(3);
+    expect(errSpy).toHaveBeenCalledWith('[Lazarus Alarm] Error running cleanup:', cleanupErr);
+
+    // 3. Non-matching alarm name
+    logSpy.mockClear();
+    errSpy.mockClear();
+    await alarmHandler({ name: 'unknown-alarm' });
+    expect(cleanupSpy).toHaveBeenCalledTimes(3);
+    expect(logSpy).not.toHaveBeenCalled();
+    expect(errSpy).not.toHaveBeenCalled();
+
+    logSpy.mockRestore();
+    errSpy.mockRestore();
 
     // 4. setupAlarms when chrome.alarms is missing
     const origAlarms = chrome.alarms;
     delete (chrome as any).alarms;
+    expect(() => setupAlarms()).not.toThrow();
+    (chrome as any).alarms = origAlarms;
+  });
+
+  it('handles missing chrome.alarms at module boot', async () => {
+    vi.resetModules();
+    const origAlarms = (chrome as any).alarms;
+    delete (chrome as any).alarms;
+    const { setupAlarms } = await import('../../src/background/alarms');
     expect(() => setupAlarms()).not.toThrow();
     (chrome as any).alarms = origAlarms;
   });

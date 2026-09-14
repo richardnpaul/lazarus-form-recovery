@@ -1,6 +1,9 @@
 import Dexie, { Table } from 'dexie';
 import { IDBDomain, IDBForm, IDBField, IDBSetting } from '../types/schema';
 
+/**
+ * Primary IndexedDB database definition using Dexie with multi-version schema evolution.
+ */
 export class LazarusDatabase extends Dexie {
   domains!: Table<IDBDomain, string>;
   forms!: Table<IDBForm, string>;

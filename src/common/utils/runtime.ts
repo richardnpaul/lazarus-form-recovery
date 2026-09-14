@@ -9,21 +9,37 @@
  * When an extension is reloaded or uninstalled, chrome.runtime.id becomes undefined
  * or falsy, and calling chrome APIs throws "Extension context invalidated" synchronously.
  */
+/**
+ * Resolves the active WebExtension API namespace.
+ * In Firefox, globalThis.browser is standard (native Promises).
+ * In Chromium, globalThis.chrome is standard.
+ */
+export function getBrowserApi(): any {
+  return (globalThis as any).browser ?? (globalThis as any).chrome;
+}
+
+/**
+ * Checks whether the extension context is currently valid.
+ * When an extension is reloaded or uninstalled, runtime.id becomes undefined
+ * or falsy, and calling extension APIs throws "Extension context invalidated" synchronously.
+ */
 export function isExtensionContextValid(): boolean {
-  try {
-    return Boolean(
-      typeof chrome !== 'undefined' &&
-      chrome.runtime &&
-      typeof chrome.runtime.id === 'string' &&
-      chrome.runtime.id.length > 0
-    );
-  } catch {
+  const api = getBrowserApi();
+  if (!api) {
     return false;
+  }
+  try {
+    return Boolean(api.runtime && api.runtime.id);
+  } catch (err: any) {
+    if (isContextInvalidatedError(err)) {
+      return false;
+    }
+    throw err;
   }
 }
 
 function isContextInvalidatedError(err: any): boolean {
-  const msg = String(err?.message || err || '');
+  const msg = String(err?.message ?? err);
   return (
     msg.includes('Extension context invalidated') ||
     msg.includes('Receiving end does not exist') ||
@@ -35,6 +51,7 @@ function isContextInvalidatedError(err: any): boolean {
  * Safely sends a message to the background service worker or extension runtime.
  * Catches both synchronous and asynchronous errors when the context is invalidated
  * or ports are disconnected. Re-throws other application-level errors for caller handling.
+ * Supports both Promise-based (Firefox browser.* / Chrome MV3) and callback-based APIs.
  *
  * @param message The message object to send
  * @returns The response from the runtime or null if delivery failed/context invalidated
@@ -44,19 +61,11 @@ export async function safeSendMessage<T = any>(message: any): Promise<T | null> 
     return null;
   }
 
+  const api = getBrowserApi();
   try {
-    const result = chrome.runtime.sendMessage(message);
-    if (result && typeof (result as Promise<any>).then === 'function') {
-      return await (result as Promise<any>).catch((err) => {
-        if (isContextInvalidatedError(err)) {
-          return null;
-        }
-        throw err;
-      });
-    }
-    return null;
+    const result = await api.runtime.sendMessage(message);
+    return result ?? null;
   } catch (err: any) {
-    // Synchronous throw in Chromium when extension context is invalidated
     if (isContextInvalidatedError(err)) {
       return null;
     }
@@ -74,8 +83,9 @@ export function safeGetURL(path: string): string | null {
   if (!isExtensionContextValid()) {
     return null;
   }
+  const api = getBrowserApi();
   try {
-    return chrome.runtime.getURL(path);
+    return api.runtime.getURL(path);
   } catch {
     return null;
   }

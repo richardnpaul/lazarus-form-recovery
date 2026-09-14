@@ -6,13 +6,8 @@ export class ContentEditableAdapter implements RichTextAdapter {
 
   public matches(element: HTMLElement): boolean {
     if (!element || typeof element.getAttribute !== 'function') return false;
-    const ce = element.contentEditable;
     return (
-      ce === 'true' ||
-      ce === '' ||
       element.isContentEditable === true ||
-      element.getAttribute('contenteditable') === 'true' ||
-      element.getAttribute('contenteditable') === '' ||
       element.closest('[contenteditable="true"], [contenteditable=""]') !== null
     );
   }
@@ -32,11 +27,7 @@ export class ContentEditableAdapter implements RichTextAdapter {
 
   public setValue(element: HTMLElement, value: string): void {
     const root = this.getRootElement(element);
-    if (value.includes('<') && value.includes('>')) {
-      safeSetHtml(root, value);
-    } else {
-      root.textContent = value;
-    }
+    safeSetHtml(root, value);
   }
 
   public getName(element: HTMLElement): string {
