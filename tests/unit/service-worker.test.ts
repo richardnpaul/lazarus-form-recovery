@@ -1,20 +1,28 @@
 import { describe, it, expect, vi } from 'vitest';
 import {
+  initBackgroundServiceWorker,
   onRuntimeMessage,
   setupSidePanelBehavior,
   injectContentScriptIntoOpenTabs,
 } from '../../src/background/service-worker';
 import { sessionStorageManager } from '../../src/background/storage-manager';
 
-const initialAlarmsCalls = (chrome.alarms.create as any).mock.calls.length;
-const initialRemoveAllCalls = (chrome.contextMenus.removeAll as any).mock.calls.length;
-const initialSetPanelBehaviorCalls = (chrome.sidePanel.setPanelBehavior as any).mock.calls.length;
-
 describe('Background Service Worker (src/background/service-worker.ts)', () => {
   it('executes top-level initialization on load', () => {
-    expect(initialAlarmsCalls).toBeGreaterThanOrEqual(1);
-    expect(initialRemoveAllCalls).toBeGreaterThanOrEqual(1);
-    expect(initialSetPanelBehaviorCalls).toBeGreaterThanOrEqual(1);
+    expect((globalThis as any).__LAZARUS_SW_INITIALIZED__).toBe(true);
+  });
+
+  it('initializes alarms, context menus, and side panel behavior', () => {
+    vi.clearAllMocks();
+    const result = initBackgroundServiceWorker();
+    expect(result).toBe(true);
+    expect(chrome.alarms.create).toHaveBeenCalledWith('cleanup-expired-forms', {
+      periodInMinutes: 30,
+    });
+    expect(chrome.contextMenus.removeAll).toHaveBeenCalled();
+    expect(chrome.sidePanel.setPanelBehavior).toHaveBeenCalledWith({
+      openPanelOnActionClick: true,
+    });
   });
 
   it('handles side panel behavior initialization', async () => {

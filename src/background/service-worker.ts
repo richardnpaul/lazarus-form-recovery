@@ -35,21 +35,22 @@ export async function injectContentScriptIntoOpenTabs() {
 }
 
 // Initialize alarms, context menus, and side panel behavior
-setupAlarms();
-setupContextMenus();
-setupSidePanelBehavior();
-
-chrome.runtime.onInstalled.addListener(() => {
+export function initBackgroundServiceWorker(): boolean {
   setupAlarms();
   setupContextMenus();
   setupSidePanelBehavior();
+  return true;
+}
+
+(globalThis as any).__LAZARUS_SW_INITIALIZED__ = initBackgroundServiceWorker();
+
+chrome.runtime.onInstalled.addListener(() => {
+  initBackgroundServiceWorker();
   injectContentScriptIntoOpenTabs();
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  setupAlarms();
-  setupContextMenus();
-  setupSidePanelBehavior();
+  initBackgroundServiceWorker();
   injectContentScriptIntoOpenTabs();
 });
 
