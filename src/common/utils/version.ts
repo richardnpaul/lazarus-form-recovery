@@ -1,10 +1,13 @@
+import { getBrowserApi } from './runtime';
+
 /**
  * Retrieves the extension version dynamically from the WebExtension runtime manifest.
  * Single source of truth is package.json, which is injected into manifest.json at build time.
  */
 export function getExtensionVersion(): string {
-  if (typeof chrome !== 'undefined' && chrome.runtime?.getManifest) {
-    const manifest = chrome.runtime.getManifest();
+  const api = getBrowserApi();
+  if (api?.runtime?.getManifest) {
+    const manifest = api.runtime.getManifest();
     if (manifest?.version) {
       return manifest.version;
     }

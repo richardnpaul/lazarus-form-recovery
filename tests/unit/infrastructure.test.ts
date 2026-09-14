@@ -26,9 +26,11 @@ import { FormSnapshotData } from '../../src/core/domain/form-revision';
 
 describe('Infrastructure Adapters', () => {
   const originalChrome = (globalThis as any).chrome;
+  const originalBrowser = (globalThis as any).browser;
 
   beforeEach(async () => {
     (globalThis as any).chrome = originalChrome;
+    (globalThis as any).browser = originalBrowser;
     await db.domains.clear();
     await db.forms.clear();
     await db.fields.clear();
@@ -38,6 +40,7 @@ describe('Infrastructure Adapters', () => {
 
   afterEach(() => {
     (globalThis as any).chrome = originalChrome;
+    (globalThis as any).browser = originalBrowser;
     vi.restoreAllMocks();
   });
 
@@ -374,6 +377,11 @@ describe('Infrastructure Adapters', () => {
       (globalThis as any).chrome = {};
       await expect(adapter.saveEphemeralDraft(101, form)).resolves.toBeUndefined();
       expect(warnSpy).not.toHaveBeenCalled();
+
+      (globalThis as any).chrome = undefined;
+      (globalThis as any).browser = undefined;
+      await expect(adapter.saveEphemeralDraft(101, form)).resolves.toBeUndefined();
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('getTabDrafts retrieves and filters matching drafts by prefix', async () => {
@@ -437,6 +445,11 @@ describe('Infrastructure Adapters', () => {
       (globalThis as any).chrome = {};
       expect(await adapter.getTabDrafts(101)).toEqual([]);
       expect(warnSpy).not.toHaveBeenCalled();
+
+      (globalThis as any).chrome = undefined;
+      (globalThis as any).browser = undefined;
+      expect(await adapter.getTabDrafts(101)).toEqual([]);
+      expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it('clearTabDrafts removes matching keys when present and skips remove when empty', async () => {
@@ -496,6 +509,11 @@ describe('Infrastructure Adapters', () => {
       expect(warnSpy).not.toHaveBeenCalled();
 
       (globalThis as any).chrome = {};
+      await expect(adapter.clearTabDrafts(101)).resolves.toBeUndefined();
+      expect(warnSpy).not.toHaveBeenCalled();
+
+      (globalThis as any).chrome = undefined;
+      (globalThis as any).browser = undefined;
       await expect(adapter.clearTabDrafts(101)).resolves.toBeUndefined();
       expect(warnSpy).not.toHaveBeenCalled();
     });

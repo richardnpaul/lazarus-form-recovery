@@ -131,6 +131,22 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       testTracker.stop();
       expect(removeListenerSpy).not.toHaveBeenCalled();
       ctxSpy.mockRestore();
+
+      // 4. start and stop when chrome.runtime.onMessage is undefined
+      const origOnMsg = chrome.runtime.onMessage;
+      delete (chrome.runtime as any).onMessage;
+      const noMsgTracker = new FormTracker(root);
+      expect(() => noMsgTracker.start()).not.toThrow();
+      expect(() => noMsgTracker.stop()).not.toThrow();
+      (chrome.runtime as any).onMessage = origOnMsg;
+
+      // 5. start and stop when chrome.runtime is undefined
+      const origRuntime = (chrome as any).runtime;
+      delete (chrome as any).runtime;
+      const noRuntimeTracker = new FormTracker(root);
+      expect(() => noRuntimeTracker.start()).not.toThrow();
+      expect(() => noRuntimeTracker.stop()).not.toThrow();
+      (chrome as any).runtime = origRuntime;
     });
   });
 
@@ -1016,6 +1032,113 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
       expect(consoleSpy).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
+    });
+
+    it('restores fields by ID, placeholder, aria-label, and handles checkbox/radio/select states', async () => {
+      root.innerHTML = '';
+      const form = document.createElement('form');
+
+      // 1. By ID only (no name)
+      const inputId = document.createElement('input');
+      inputId.id = 'only_id';
+      inputId.value = 'old_id';
+      form.appendChild(inputId);
+
+      // 2. By placeholder only (no name, no id)
+      const inputPh = document.createElement('input');
+      inputPh.setAttribute('placeholder', 'only_ph');
+      inputPh.value = 'old_ph';
+      form.appendChild(inputPh);
+
+      // 3. By aria-label only (no name, no id, no placeholder)
+      const inputAria = document.createElement('input');
+      inputAria.setAttribute('aria-label', 'only_aria');
+      inputAria.value = 'old_aria';
+      form.appendChild(inputAria);
+
+      // 4. Checkbox toggles: 'on', 'false', '0', ''
+      const cbOn = document.createElement('input');
+      cbOn.type = 'checkbox';
+      cbOn.name = 'cb_on';
+      cbOn.checked = false;
+      form.appendChild(cbOn);
+
+      const cbFalse = document.createElement('input');
+      cbFalse.type = 'checkbox';
+      cbFalse.name = 'cb_false';
+      cbFalse.checked = true;
+      form.appendChild(cbFalse);
+
+      const cbZero = document.createElement('input');
+      cbZero.type = 'checkbox';
+      cbZero.name = 'cb_zero';
+      cbZero.checked = true;
+      form.appendChild(cbZero);
+
+      const cbEmpty = document.createElement('input');
+      cbEmpty.type = 'checkbox';
+      cbEmpty.name = 'cb_empty';
+      cbEmpty.checked = true;
+      form.appendChild(cbEmpty);
+
+      // 5. Radio buttons
+      const radioFalse = document.createElement('input');
+      radioFalse.type = 'radio';
+      radioFalse.name = 'r_false';
+      radioFalse.checked = true;
+      form.appendChild(radioFalse);
+
+      const radioOne = document.createElement('input');
+      radioOne.type = 'radio';
+      radioOne.name = 'r_one';
+      radioOne.checked = false;
+      form.appendChild(radioOne);
+
+      // 6. Select dropdown
+      const selectEl = document.createElement('select');
+      selectEl.name = 'sel_field';
+      const opt1 = document.createElement('option');
+      opt1.value = 'v1';
+      const opt2 = document.createElement('option');
+      opt2.value = 'v2';
+      selectEl.appendChild(opt1);
+      selectEl.appendChild(opt2);
+      selectEl.value = 'v1';
+      form.appendChild(selectEl);
+
+      root.appendChild(form);
+
+      customResponses.push({
+        success: true,
+        data: {
+          form: { id: 'rev-attr-test' },
+          fields: [
+            { name: 'only_id', value: 'new_id_val' },
+            { name: 'only_ph', value: 'new_ph_val' },
+            { name: 'only_aria', value: 'new_aria_val' },
+            { name: 'cb_on', value: 'on' },
+            { name: 'cb_false', value: 'false' },
+            { name: 'cb_zero', value: '0' },
+            { name: 'cb_empty', value: '' },
+            { name: 'r_false', value: 'false' },
+            { name: 'r_one', value: '1' },
+            { name: 'sel_field', value: 'v2' },
+          ],
+        },
+      });
+
+      await (tracker as any).restoreFormFromId('rev-attr-test');
+
+      expect(inputId.value).toBe('new_id_val');
+      expect(inputPh.value).toBe('new_ph_val');
+      expect(inputAria.value).toBe('new_aria_val');
+      expect(cbOn.checked).toBe(true);
+      expect(cbFalse.checked).toBe(false);
+      expect(cbZero.checked).toBe(false);
+      expect(cbEmpty.checked).toBe(false);
+      expect(radioFalse.checked).toBe(false);
+      expect(radioOne.checked).toBe(true);
+      expect(selectEl.value).toBe('v2');
     });
 
     it('covers forceSaveCurrentForm target resolution, safeSendMessage null check, and flashConfirmation', async () => {

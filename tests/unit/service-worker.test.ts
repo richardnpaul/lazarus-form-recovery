@@ -292,6 +292,10 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
       target: { tabId: 102, allFrames: true },
       files: ['src/content/content-script.iife.js'],
     });
+    expect(chrome.scripting.executeScript).toHaveBeenCalledTimes(2);
+    expect(chrome.scripting.executeScript).not.toHaveBeenCalledWith(
+      expect.objectContaining({ target: expect.objectContaining({ tabId: undefined }) })
+    );
 
     // 2. Tab rejection is caught cleanly
     (chrome.tabs.query as any).mockResolvedValueOnce([{ id: 103, url: 'https://rejected.com' }]);
@@ -316,10 +320,22 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
     expect(chrome.tabs.query).not.toHaveBeenCalled();
     (chrome as any).scripting = origScripting;
 
-    // 5. Missing chrome.tabs returns early
+    // 5. Missing chrome.tabs returns early without error
     const origTabs = chrome.tabs;
     delete (chrome as any).tabs;
+    const warnSpyTabs = vi.spyOn(console, 'warn');
     await expect(injectContentScriptIntoOpenTabs()).resolves.not.toThrow();
+    expect(warnSpyTabs).not.toHaveBeenCalled();
+    warnSpyTabs.mockRestore();
     (chrome as any).tabs = origTabs;
+
+    // 6. Missing browserApi entirely returns early
+    const origChrome = (globalThis as any).chrome;
+    const origBrowser = (globalThis as any).browser;
+    delete (globalThis as any).chrome;
+    delete (globalThis as any).browser;
+    await expect(injectContentScriptIntoOpenTabs()).resolves.not.toThrow();
+    (globalThis as any).chrome = origChrome;
+    (globalThis as any).browser = origBrowser;
   });
 });

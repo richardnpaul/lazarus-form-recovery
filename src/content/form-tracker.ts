@@ -1,9 +1,16 @@
 import { RuntimeMessage } from '../common/types/messages';
 import { attachRecoveryUI } from './shadow-ui/shadow-host';
-import { FieldExtractor } from './field-extractor';
+import { FieldExtractor, getFormActionIdentifier } from './field-extractor';
 import { findRichTextAdapter } from './rich-text';
 import { escapeCss } from '../common/utils/dom';
-import { isExtensionContextValid, safeSendMessage } from '../common/utils/runtime';
+import { getBrowserApi, isExtensionContextValid, safeSendMessage } from '../common/utils/runtime';
+
+function isCheckedValue(value: string | undefined): boolean {
+  if (!value || value === 'false' || value === '0') {
+    return false;
+  }
+  return true;
+}
 
 export class FormTracker {
   private autosaveTimer: any = null;
@@ -84,6 +91,11 @@ export class FormTracker {
     return true;
   }
 
+  private getMessageListenerApi(): any {
+    if (!isExtensionContextValid()) return null;
+    return getBrowserApi().runtime.onMessage;
+  }
+
   public start() {
     if (!this.ensureContextValid()) return;
 
@@ -105,9 +117,10 @@ export class FormTracker {
     }
 
     // Listen for background actions (e.g. from context menus)
-    try {
-      chrome.runtime.onMessage.addListener(this.onRuntimeMessageBound);
-    } catch {}
+    const onMessage = this.getMessageListenerApi();
+    if (onMessage) {
+      onMessage.addListener(this.onRuntimeMessageBound);
+    }
   }
 
   public stop() {
@@ -127,11 +140,10 @@ export class FormTracker {
       window.removeEventListener('pagehide', this.onPageHide, true);
     }
 
-    try {
-      if (isExtensionContextValid()) {
-        chrome.runtime.onMessage.removeListener(this.onRuntimeMessageBound);
-      }
-    } catch {}
+    const onMessage = this.getMessageListenerApi();
+    if (onMessage) {
+      onMessage.removeListener(this.onRuntimeMessageBound);
+    }
 
     if (this.autosaveTimer) {
       clearTimeout(this.autosaveTimer);
@@ -152,7 +164,11 @@ export class FormTracker {
 
   private getFormId(formElement: HTMLElement | null): string {
     if (!formElement) return 'fake_form';
-    return formElement.id || formElement.getAttribute('name') || 'form_wrapper';
+    return (
+      formElement.id ||
+      formElement.getAttribute('name') ||
+      getFormActionIdentifier(formElement as HTMLFormElement)
+    );
   }
 
   private updateEditingTime(formInstanceId: string): number {
@@ -333,6 +349,15 @@ export class FormTracker {
     }
   }
 
+  private findFieldElement(container: ParentNode, safeName: string): HTMLElement | null {
+    return (
+      container.querySelector(`[name="${safeName}"]`) ||
+      container.querySelector(`#${safeName}`) ||
+      container.querySelector(`[placeholder="${safeName}"]`) ||
+      container.querySelector(`[aria-label="${safeName}"]`)
+    );
+  }
+
   private async restoreFormFromId(formId: string) {
     if (!this.ensureContextValid()) return;
     try {
@@ -352,15 +377,16 @@ export class FormTracker {
 
       fields.forEach((field: any) => {
         let el: HTMLElement | null = null;
-        if (targetForm) {
-          el = targetForm.querySelector(
-            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
-          );
-        }
+        const safeName = escapeCss(field.name);
+        try {
+          if (targetForm) {
+            el = this.findFieldElement(targetForm, safeName);
+          }
+        } catch {}
         if (!el) {
-          el = document.querySelector(
-            `[name="${escapeCss(field.name)}"], #${escapeCss(field.name)}`
-          );
+          try {
+            el = this.findFieldElement(document, safeName);
+          } catch {}
         }
 
         if (el) {
@@ -406,6 +432,11 @@ export class FormTracker {
     const adapter = findRichTextAdapter(element);
     if (adapter) {
       adapter.setValue(element, value);
+    } else if (
+      (element as HTMLInputElement).type === 'checkbox' ||
+      (element as HTMLInputElement).type === 'radio'
+    ) {
+      (element as HTMLInputElement).checked = isCheckedValue(value);
     } else if ('value' in element) {
       (element as HTMLInputElement).value = value;
     } else {

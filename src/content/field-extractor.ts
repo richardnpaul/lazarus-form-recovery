@@ -10,7 +10,7 @@ export interface ExtractorOptions {
 
 export class FieldExtractor {
   public static isTrackable(element: HTMLElement, savePasswords = false): boolean {
-    if (!element || !(element instanceof HTMLElement)) return false;
+    if (!element || element.nodeType !== 1) return false;
 
     const tag = element.tagName;
     if (tag === 'INPUT') {

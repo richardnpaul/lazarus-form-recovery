@@ -441,6 +441,13 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
     svgContainer.innerHTML = '<svg class="item"><circle></circle></svg><div class="item"></div>';
     const deepItems = queryAllDeep(svgContainer, '.item');
     expect(deepItems.length).toBe(1);
+
+    // queryAllDeep on detached document where defaultView is null
+    const docNoWin = document.implementation.createHTMLDocument('no-window');
+    const divNoWin = docNoWin.createElement('div');
+    divNoWin.className = 'detached-item';
+    docNoWin.body.appendChild(divNoWin);
+    expect(queryAllDeep(docNoWin, '.detached-item').length).toBe(1);
   });
 });
 

@@ -3,6 +3,7 @@ import { setupAlarms } from './alarms';
 import { setupContextMenus } from './context-menus';
 import { handleRuntimeMessage } from './message-router';
 import { sessionStorageManager } from './storage-manager';
+import { getBrowserApi } from '../common/utils/runtime';
 
 // Setup side panel behavior for Chrome (open on action click)
 export function setupSidePanelBehavior() {
@@ -14,12 +15,13 @@ export function setupSidePanelBehavior() {
 
 // Programmatically inject content scripts into open tabs upon extension load/reload
 export async function injectContentScriptIntoOpenTabs() {
-  if (!chrome.scripting || !chrome.tabs) return;
+  const api = getBrowserApi();
+  if (!api || !api.scripting || !api.tabs) return;
   try {
-    const tabs = await chrome.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] });
+    const tabs = await api.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] });
     for (const tab of tabs) {
-      if (tab.id) {
-        chrome.scripting
+      if (typeof tab.id === 'number') {
+        api.scripting
           .executeScript({
             target: { tabId: tab.id, allFrames: true },
             files: ['src/content/content-script.iife.js'],

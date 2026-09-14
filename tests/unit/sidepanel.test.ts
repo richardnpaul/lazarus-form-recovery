@@ -830,6 +830,13 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
       await import('../../src/sidepanel/sidepanel');
       (chrome.runtime as any).onMessage = origOnMsg;
 
+      // 2b. chrome.runtime undefined (kills 5103)
+      vi.resetModules();
+      const origRuntime = (chrome as any).runtime;
+      delete (chrome as any).runtime;
+      await expect(import('../../src/sidepanel/sidepanel')).resolves.toBeDefined();
+      (chrome as any).runtime = origRuntime;
+
       // 3. chrome undefined
       vi.resetModules();
       const origChrome = (globalThis as any).chrome;
@@ -1268,6 +1275,19 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
       expect(siteBeacon.classList.contains('is-disabled')).toBe(true);
       expect(domainToggle.disabled).toBe(true);
       expect(domainToggle.checked).toBe(false);
+
+      // 5b. Active tab exists but has no url (kills 4618, 4620)
+      sp.setCurrentUrl('previous-url');
+      sp.setCurrentDomain('previous-domain.com');
+      (chrome.tabs.query as any).mockResolvedValue([{ id: 99 }]);
+      const warnSpyNoUrl = vi.spyOn(console, 'warn');
+      await sp.resolveActiveTab();
+      expect(warnSpyNoUrl).not.toHaveBeenCalled();
+      warnSpyNoUrl.mockRestore();
+      expect(sp.getCurrentUrl()).toBe('');
+      expect(sp.getCurrentDomain()).toBe('');
+      expect(siteDomain.textContent).toBe('No active website');
+      expect(siteStatus.textContent).toBe('Non-web page');
 
       // 6. Query error -> caught and console.warn called with exact string (kills 73)
       const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

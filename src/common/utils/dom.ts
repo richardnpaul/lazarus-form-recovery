@@ -79,7 +79,9 @@ export function queryAllDeep(root: ParentNode, selector: string): HTMLElement[] 
   try {
     const matched = root.querySelectorAll(selector);
     matched.forEach((el) => {
-      if (el instanceof HTMLElement) results.push(el);
+      const win = el.ownerDocument.defaultView;
+      const htmlCtor = win?.HTMLElement || HTMLElement;
+      if (el instanceof htmlCtor) results.push(el);
     });
   } catch {}
 

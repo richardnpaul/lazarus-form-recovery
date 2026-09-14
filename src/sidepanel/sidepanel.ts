@@ -1,6 +1,7 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
 import { formatTimeAgo } from '../common/utils/text';
 import { safeSetHtml } from '../common/utils/dom';
+import { getBrowserApi, isExtensionContextValid } from '../common/utils/runtime';
 
 let currentFilter: 'all' | 'this_site' | 'today' | '7days' | '30days' = 'all';
 let currentDomain = '';
@@ -49,20 +50,22 @@ export async function resolveActiveTab(): Promise<void> {
   const siteBeaconEl = document.getElementById('site-beacon');
   const domainToggleEl = document.getElementById('domain-toggle') as HTMLInputElement | null;
 
+  const api = getBrowserApi();
   try {
-    let tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    let tabs = await api.tabs.query({ active: true, currentWindow: true });
     if (!tabs || tabs.length === 0) {
-      tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      tabs = await api.tabs.query({ active: true, lastFocusedWindow: true });
     }
     if (!tabs || tabs.length === 0) {
-      tabs = await chrome.tabs.query({ active: true });
+      tabs = await api.tabs.query({ active: true });
     }
 
     const activeTab = tabs && tabs[0];
-    if (activeTab && activeTab.url) {
-      currentUrl = activeTab.url;
+    const rawUrl = activeTab ? activeTab.url : null;
+    if (rawUrl) {
+      currentUrl = rawUrl;
       try {
-        const parsed = new URL(activeTab.url);
+        const parsed = new URL(rawUrl);
         if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
           currentDomain = parsed.hostname;
         } else {
@@ -99,7 +102,7 @@ export async function resolveActiveTab(): Promise<void> {
   if (domainToggleEl) domainToggleEl.disabled = false;
 
   try {
-    const res: RuntimeResponse = await chrome.runtime.sendMessage({
+    const res: RuntimeResponse = await api.runtime.sendMessage({
       type: 'IS_DOMAIN_ENABLED',
       payload: { domain: currentDomain },
     });
@@ -127,8 +130,9 @@ export async function loadHistory(query = '') {
       ? { type: 'SEARCH_HISTORY', payload: { query: trimmed } }
       : { type: 'GET_ALL_HISTORY', payload: { limit: 50 } };
 
+  const api = getBrowserApi();
   try {
-    const res: RuntimeResponse = await chrome.runtime.sendMessage(message);
+    const res: RuntimeResponse = await api.runtime.sendMessage(message);
     if (res && res.success && Array.isArray(res.data)) {
       const filtered = applyFilter(res.data);
       renderHistory(filtered);
@@ -321,7 +325,8 @@ export function renderHistory(items: any[]) {
     deleteBtn?.addEventListener('click', async (e) => {
       const formId = (e.currentTarget as HTMLElement).getAttribute('data-formid');
       if (formId) {
-        await chrome.runtime.sendMessage({
+        const api = getBrowserApi();
+        await api.runtime.sendMessage({
           type: 'DELETE_FORM',
           payload: { formId },
         });
@@ -389,7 +394,8 @@ export function initSidepanel() {
     clearHistoryBtn.onclick = async (e) => {
       e.preventDefault();
       if (confirm('Are you sure you want to clear all recovered form history?')) {
-        await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
+        const api = getBrowserApi();
+        await api.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
         loadHistory();
       }
     };
@@ -398,7 +404,7 @@ export function initSidepanel() {
   if (openOptionsBtn) {
     openOptionsBtn.onclick = (e) => {
       e.preventDefault();
-      chrome.runtime.openOptionsPage();
+      getBrowserApi().runtime.openOptionsPage();
     };
   }
 
@@ -407,18 +413,19 @@ export function initSidepanel() {
     domainToggle.onchange = async () => {
       if (!currentDomain) return;
       const willEnable = domainToggle.checked;
+      const api = getBrowserApi();
       if (!willEnable) {
         const confirmed = confirm(`Pause Lazarus form recovery on ${currentDomain}?`);
         if (!confirmed) {
           domainToggle.checked = true;
           return;
         }
-        await chrome.runtime.sendMessage({
+        await api.runtime.sendMessage({
           type: 'DISABLE_DOMAIN',
           payload: { domain: currentDomain, wipeExisting: false },
         });
       } else {
-        await chrome.runtime.sendMessage({
+        await api.runtime.sendMessage({
           type: 'ENABLE_DOMAIN',
           payload: { domain: currentDomain },
         });
@@ -452,31 +459,36 @@ export function stopSidepanelHeartbeat() {
 }
 
 // Active Tab Listeners: detect active tab navigation and tab switching
-if (typeof chrome !== 'undefined' && chrome.tabs) {
-  chrome.tabs.onActivated.addListener(async () => {
-    await resolveActiveTab();
-    refreshIfThisSite();
-  });
+if (isExtensionContextValid()) {
+  const api = getBrowserApi();
+  if (api.tabs && api.tabs.onActivated) {
+    api.tabs.onActivated.addListener(async () => {
+      await resolveActiveTab();
+      refreshIfThisSite();
+    });
+  }
 
-  chrome.tabs.onUpdated.addListener(async () => {
-    await resolveActiveTab();
-    refreshIfThisSite();
-  });
+  if (api.tabs && api.tabs.onUpdated) {
+    api.tabs.onUpdated.addListener(async () => {
+      await resolveActiveTab();
+      refreshIfThisSite();
+    });
+  }
+
+  // Live Reactive Sync listener (registers once)
+  if (api.runtime && api.runtime.onMessage) {
+    api.runtime.onMessage.addListener((message: any) => {
+      if (message && (message.type === 'FORM_SAVED' || message.type === 'REFRESH_HISTORY')) {
+        loadHistory(getSearchQuery());
+      }
+    });
+  }
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('focus', async () => {
     await resolveActiveTab();
     refreshIfThisSite();
-  });
-}
-
-// Live Reactive Sync listener (registers once)
-if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message && (message.type === 'FORM_SAVED' || message.type === 'REFRESH_HISTORY')) {
-      loadHistory(getSearchQuery());
-    }
   });
 }
 

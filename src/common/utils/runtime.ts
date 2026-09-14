@@ -9,13 +9,27 @@
  * When an extension is reloaded or uninstalled, chrome.runtime.id becomes undefined
  * or falsy, and calling chrome APIs throws "Extension context invalidated" synchronously.
  */
+/**
+ * Resolves the active WebExtension API namespace.
+ * In Firefox, globalThis.browser is standard (native Promises).
+ * In Chromium, globalThis.chrome is standard.
+ */
+export function getBrowserApi(): any {
+  return (globalThis as any).browser ?? (globalThis as any).chrome;
+}
+
+/**
+ * Checks whether the extension context is currently valid.
+ * When an extension is reloaded or uninstalled, runtime.id becomes undefined
+ * or falsy, and calling extension APIs throws "Extension context invalidated" synchronously.
+ */
 export function isExtensionContextValid(): boolean {
-  const c = (globalThis as any).chrome;
-  if (!c) {
+  const api = getBrowserApi();
+  if (!api) {
     return false;
   }
   try {
-    return Boolean(c.runtime && c.runtime.id);
+    return Boolean(api.runtime && api.runtime.id);
   } catch (err: any) {
     if (isContextInvalidatedError(err)) {
       return false;
@@ -37,6 +51,7 @@ function isContextInvalidatedError(err: any): boolean {
  * Safely sends a message to the background service worker or extension runtime.
  * Catches both synchronous and asynchronous errors when the context is invalidated
  * or ports are disconnected. Re-throws other application-level errors for caller handling.
+ * Supports both Promise-based (Firefox browser.* / Chrome MV3) and callback-based APIs.
  *
  * @param message The message object to send
  * @returns The response from the runtime or null if delivery failed/context invalidated
@@ -46,8 +61,9 @@ export async function safeSendMessage<T = any>(message: any): Promise<T | null> 
     return null;
   }
 
+  const api = getBrowserApi();
   try {
-    const result = await chrome.runtime.sendMessage(message);
+    const result = await api.runtime.sendMessage(message);
     return result ?? null;
   } catch (err: any) {
     if (isContextInvalidatedError(err)) {
@@ -67,8 +83,9 @@ export function safeGetURL(path: string): string | null {
   if (!isExtensionContextValid()) {
     return null;
   }
+  const api = getBrowserApi();
   try {
-    return chrome.runtime.getURL(path);
+    return api.runtime.getURL(path);
   } catch {
     return null;
   }
