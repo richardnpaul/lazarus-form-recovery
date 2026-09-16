@@ -72,6 +72,7 @@
   top: 30px;
   right: 0;
   width: 320px;
+  max-width: calc(100vw - 20px);
   max-height: 390px;
   background: var(--lz-bg-surface-glass, hsla(0, 0%, 100%, 0.95));
   backdrop-filter: var(--lz-blur-glass, blur(16px) saturate(180%));
@@ -258,4 +259,21 @@
 .lz-icon-link:hover {
   border-color: var(--lz-accent-primary, hsl(160, 84%, 39%));
   color: var(--lz-accent-primary, hsl(160, 84%, 39%));
+}
+
+/* Touch Device Optimizations */
+@media (pointer: coarse) {
+  .lz-trigger-btn::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    pointer-events: auto;
+  }
+
+  .lz-snippet-item {
+    padding: 12px 14px;
+  }
 }

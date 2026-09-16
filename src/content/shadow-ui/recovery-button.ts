@@ -75,6 +75,13 @@ export class RecoveryButton {
     window.removeEventListener('scroll', this.onScrollBound, { capture: true });
     window.addEventListener('scroll', this.onScrollBound, { capture: true, passive: true });
 
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.onScrollBound);
+      window.visualViewport.removeEventListener('scroll', this.onScrollBound);
+      window.visualViewport.addEventListener('resize', this.onScrollBound, { passive: true });
+      window.visualViewport.addEventListener('scroll', this.onScrollBound, { passive: true });
+    }
+
     this.updatePosition();
     this.button.style.display = 'flex';
   }
@@ -86,6 +93,10 @@ export class RecoveryButton {
       this.currentTarget = null;
     }
     window.removeEventListener('scroll', this.onScrollBound, { capture: true });
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.onScrollBound);
+      window.visualViewport.removeEventListener('scroll', this.onScrollBound);
+    }
   }
 
   public updatePosition() {

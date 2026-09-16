@@ -54,13 +54,21 @@ export class RecoveryMenu {
     this.render();
 
     // Position menu card below or near the button
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-    const menuWidth = 320;
+    const vv = window.visualViewport;
+    const viewportWidth =
+      vv && vv.width > 0
+        ? vv.width
+        : window.innerWidth > 0
+          ? window.innerWidth
+          : document.documentElement.clientWidth;
+    const viewportLeft = vv && typeof vv.pageLeft === 'number' ? vv.pageLeft : window.scrollX || 0;
+    const menuWidth = Math.min(320, Math.max(200, viewportWidth - 20));
     const menuLeft = Math.max(
-      10,
-      Math.min(buttonLeft - menuWidth + 24, viewportWidth - menuWidth - 10)
+      viewportLeft + 10,
+      Math.min(buttonLeft - menuWidth + 24, viewportLeft + viewportWidth - menuWidth - 10)
     );
 
+    this.container.style.width = `${menuWidth}px`;
     this.container.style.left = `${menuLeft}px`;
     this.container.style.top = `${buttonTop + 28}px`;
     this.container.style.display = 'flex';

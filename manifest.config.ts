@@ -56,7 +56,10 @@ export default defineManifest({
         required: ['none'],
       },
     },
-  },
+    gecko_android: {
+      strict_min_version: '142.0',
+    },
+  } as any,
   permissions: isFirefox
     ? ['storage', 'alarms', 'contextMenus', 'tabs', 'scripting']
     : ['storage', 'alarms', 'contextMenus', 'sidePanel', 'tabs', 'scripting'],

@@ -1,6 +1,7 @@
 # Lazarus Form Recovery - Build Instructions for Mozilla Add-on Reviewers
 
 This extension is built from TypeScript source code using Vite and the CRXJS plugin.
+The build targets both Firefox Desktop and Firefox for Android (GeckoView / Fenix) using a single multi-platform package.
 Follow these steps to reproduce the exact build from the provided source archive.
 
 ## Prerequisites

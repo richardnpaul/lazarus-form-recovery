@@ -56,8 +56,8 @@ chrome.runtime.onStartup.addListener(() => {
   injectContentScriptIntoOpenTabs();
 });
 
-// Toolbar action click listener (Firefox sidebar toggle & Chrome fallback)
-chrome.action.onClicked.addListener(async (tab) => {
+// Toolbar action click listener (Firefox sidebar toggle, Chrome sidePanel, and Android/tab fallback)
+export async function handleActionClick(tab?: any) {
   const browserApi =
     typeof (globalThis as any).browser !== 'undefined' ? (globalThis as any).browser : chrome;
 
@@ -80,14 +80,31 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   const sp = (browserApi as any).sidePanel;
-  if (typeof sp?.open === 'function' && tab?.windowId) {
+  if (sp && typeof sp.open === 'function') {
+    if (tab && typeof tab.windowId === 'number') {
+      try {
+        await sp.open({ windowId: tab.windowId });
+      } catch (err) {
+        console.error('Failed to open sidePanel:', err);
+      }
+    }
+    return;
+  }
+
+  if (browserApi.tabs && typeof browserApi.tabs.create === 'function') {
     try {
-      await sp.open({ windowId: tab.windowId });
+      const url =
+        browserApi.runtime && typeof browserApi.runtime.getURL === 'function'
+          ? browserApi.runtime.getURL('src/sidepanel/sidepanel.html')
+          : 'src/sidepanel/sidepanel.html';
+      await browserApi.tabs.create({ url });
     } catch (err) {
-      console.error('Failed to open sidePanel:', err);
+      console.error('Failed to open sidepanel tab:', err);
     }
   }
-});
+}
+
+chrome.action.onClicked.addListener(handleActionClick);
 
 // Central Runtime Message Listener
 export function onRuntimeMessage(
