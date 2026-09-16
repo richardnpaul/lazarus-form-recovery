@@ -239,6 +239,50 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       btn.hide();
       expect(el.style.display).toBe('none');
     });
+
+    it('supports mobile visualViewport resize and scroll listener lifecycle', () => {
+      const btn = new RecoveryButton();
+      const target = document.createElement('input');
+      document.body.appendChild(target);
+
+      const addListenerSpy = vi.fn();
+      const removeListenerSpy = vi.fn();
+      const listeners: Record<string, Function> = {};
+      (window as any).visualViewport = {
+        width: 360,
+        height: 600,
+        pageLeft: 0,
+        pageTop: 0,
+        addEventListener: addListenerSpy.mockImplementation((event, fn) => {
+          listeners[event] = fn;
+        }),
+        removeEventListener: removeListenerSpy,
+      };
+
+      btn.attachTo(target);
+      expect(removeListenerSpy).toHaveBeenCalledTimes(2);
+      expect(removeListenerSpy).toHaveBeenNthCalledWith(1, 'resize', expect.any(Function));
+      expect(removeListenerSpy).toHaveBeenNthCalledWith(2, 'scroll', expect.any(Function));
+      expect(addListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function), {
+        passive: true,
+      });
+      expect(addListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function), {
+        passive: true,
+      });
+
+      removeListenerSpy.mockClear();
+
+      // Trigger resize from mobile keyboard
+      expect(() => listeners['resize']?.()).not.toThrow();
+
+      btn.hide();
+      expect(removeListenerSpy).toHaveBeenCalledTimes(2);
+      expect(removeListenerSpy).toHaveBeenNthCalledWith(1, 'resize', expect.any(Function));
+      expect(removeListenerSpy).toHaveBeenNthCalledWith(2, 'scroll', expect.any(Function));
+
+      delete (window as any).visualViewport;
+      target.remove();
+    });
   });
 
   describe('RecoveryMenu', () => {
@@ -367,6 +411,28 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       const expectedRightClamp =
         (window.innerWidth || document.documentElement.clientWidth) - 320 - 10;
       expect(container.style.left).toBe(`${expectedRightClamp}px`);
+
+      // Mobile visualViewport positioning adaptation
+      (window as any).visualViewport = {
+        width: 320,
+        pageLeft: 15,
+        pageTop: 20,
+      };
+      menu.show(target, items, 20, 100);
+      expect(container.style.width).toBe('300px'); // min(320, max(200, 320 - 20))
+      expect(container.style.left).toBe('25px'); // viewportLeft(15) + 10
+
+      // visualViewport with width <= 0 and non-number pageLeft falls back to window.scrollX
+      (window as any).visualViewport = {
+        width: 0,
+        pageLeft: null,
+      };
+      window.scrollX = 20;
+      menu.show(target, items, 20, 100);
+      expect(container.style.width).toBe('320px');
+      expect(container.style.left).toBe('30px'); // 20 + 10
+      window.scrollX = 0;
+      delete (window as any).visualViewport;
 
       menu.hide();
       expect(menu.isOpen()).toBe(false);
@@ -573,6 +639,7 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
         // Line 57: viewportWidth fallback, Line 219: empty previewText
         menu.show(input, [{ value: '   ', lastModified: 0 }], 100, 100);
+        expect(menu.getElement().style.width).toBe('320px');
       } finally {
         Object.defineProperty(window, 'innerWidth', { value: origWidth, configurable: true });
       }

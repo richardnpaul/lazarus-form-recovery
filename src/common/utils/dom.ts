@@ -60,13 +60,22 @@ export function computeButtonPosition(
   const btnX = isExternal ? left + rect.width + 4 : left + rect.width - btnWidth - 6;
   const btnY = top + (rect.height - btnHeight) / 2;
 
-  // Viewport clamping
+  // Viewport clamping (with visualViewport support for mobile virtual keyboards)
+  const vv = window.visualViewport;
   const viewportWidth =
-    window.innerWidth > 0 ? window.innerWidth : document.documentElement.clientWidth;
-  const maxX = scrollX + viewportWidth - btnWidth - 8;
+    vv && vv.width > 0
+      ? vv.width
+      : window.innerWidth > 0
+        ? window.innerWidth
+        : document.documentElement.clientWidth;
 
-  const clampedX = Math.min(Math.max(btnX, scrollX + 4), maxX);
-  const clampedY = Math.max(btnY, scrollY + 4);
+  const viewportLeft = vv && typeof vv.pageLeft === 'number' ? vv.pageLeft : scrollX;
+  const viewportTop = vv && typeof vv.pageTop === 'number' ? vv.pageTop : scrollY;
+
+  const maxX = viewportLeft + viewportWidth - btnWidth - 8;
+
+  const clampedX = Math.min(Math.max(btnX, viewportLeft + 4), maxX);
+  const clampedY = Math.max(btnY, viewportTop + 4);
 
   return { x: Math.round(clampedX), y: Math.round(clampedY), placement };
 }

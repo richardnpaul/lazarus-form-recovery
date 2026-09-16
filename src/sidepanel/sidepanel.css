@@ -369,3 +369,20 @@ input:checked + .slider:before {
 .sidepanel-footer a:hover {
   text-decoration: underline;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+
+  .action-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .filter-chip {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+}

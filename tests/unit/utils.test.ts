@@ -436,6 +436,46 @@ describe('DOM Utilities (src/common/utils/dom.ts)', () => {
     expect(posFallback.x).toBe(4);
     Object.defineProperty(window, 'innerWidth', { value: origInnerWidth, configurable: true });
 
+    // visualViewport tests for mobile devices and virtual keyboards
+    const origVV = (window as any).visualViewport;
+    // 1. visualViewport with active dimensions and offsets
+    (window as any).visualViewport = {
+      width: 400,
+      height: 600,
+      pageLeft: 10,
+      pageTop: 20,
+    };
+    target.getBoundingClientRect = () => ({
+      left: 5000,
+      top: -300,
+      width: 500,
+      height: 500,
+      right: 5500,
+      bottom: 200,
+      x: 5000,
+      y: -300,
+      toJSON: () => {},
+    });
+    const posVV = computeButtonPosition(target);
+    expect(posVV.x).toBe(378); // 10 + 400 - 24 - 8
+    expect(posVV.y).toBe(24); // 20 + 4
+
+    // 2. visualViewport with width <= 0 and non-number pageLeft/pageTop
+    (window as any).visualViewport = {
+      width: 0,
+      height: 600,
+      pageLeft: null,
+      pageTop: undefined,
+    };
+    window.scrollX = 15;
+    window.scrollY = 25;
+    const posVVFallback = computeButtonPosition(target);
+    expect(posVVFallback.x).toBe(15 + (window.innerWidth || 800) - 24 - 8);
+    expect(posVVFallback.y).toBe(29); // 25 + 4
+    window.scrollX = 0;
+    window.scrollY = 0;
+    (window as any).visualViewport = origVV;
+
     // queryAllDeep with non-HTMLElement (SVG)
     const svgContainer = document.createElement('div');
     svgContainer.innerHTML = '<svg class="item"><circle></circle></svg><div class="item"></div>';

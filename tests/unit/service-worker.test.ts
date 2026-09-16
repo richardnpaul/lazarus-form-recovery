@@ -4,6 +4,7 @@ import {
   onRuntimeMessage,
   setupSidePanelBehavior,
   injectContentScriptIntoOpenTabs,
+  handleActionClick,
 } from '../../src/background/service-worker';
 import { sessionStorageManager } from '../../src/background/storage-manager';
 
@@ -226,10 +227,81 @@ describe('Background Service Worker (src/background/service-worker.ts)', () => {
     sidePanelOpen.mockClear();
     await triggers.actionClick({});
     expect(sidePanelOpen).not.toHaveBeenCalled();
+    await handleActionClick({});
+    expect(sidePanelOpen).not.toHaveBeenCalled();
 
-    // 5. Tab is undefined
+    // 5. Tab is undefined or has invalid windowId
     await triggers.actionClick(undefined as any);
     expect(sidePanelOpen).not.toHaveBeenCalled();
+    await handleActionClick(undefined as any);
+    expect(sidePanelOpen).not.toHaveBeenCalled();
+    await handleActionClick({ windowId: 'not-a-number' as any });
+    expect(sidePanelOpen).not.toHaveBeenCalled();
+
+    // 6. SidePanel open is not a function
+    const notFnConsoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    (chrome as any).sidePanel = { open: 'not-fn' };
+    await handleActionClick({ windowId: 99 });
+    expect(sidePanelOpen).not.toHaveBeenCalled();
+    expect(notFnConsoleSpy).not.toHaveBeenCalled();
+    notFnConsoleSpy.mockRestore();
+    (chrome as any).sidePanel = origSidePanel;
+  });
+
+  it('handles action click: Firefox for Android tab creation fallback and error handling', async () => {
+    const origSidePanel = (chrome as any).sidePanel;
+    delete (chrome as any).sidePanel;
+
+    // 1. Success with runtime.getURL
+    (chrome.tabs.create as any).mockClear();
+    await handleActionClick({ id: 1 });
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'chrome-extension://mock/src/sidepanel/sidepanel.html',
+    });
+
+    // 2. Success when runtime.getURL is not a function
+    const origGetUrl = chrome.runtime.getURL;
+    (chrome.runtime as any).getURL = null;
+    (chrome.tabs.create as any).mockClear();
+    await handleActionClick({ id: 2 });
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'src/sidepanel/sidepanel.html',
+    });
+    chrome.runtime.getURL = origGetUrl;
+
+    // 2b. Success when runtime is missing entirely
+    const origRuntime = chrome.runtime;
+    delete (chrome as any).runtime;
+    (chrome.tabs.create as any).mockClear();
+    await handleActionClick({ id: 22 });
+    expect(chrome.tabs.create).toHaveBeenCalledWith({
+      url: 'src/sidepanel/sidepanel.html',
+    });
+    (chrome as any).runtime = origRuntime;
+
+    // 3. Error handling when tabs.create fails
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    (chrome.tabs.create as any).mockRejectedValueOnce(new Error('TabCreateFailed'));
+    await handleActionClick({ id: 3 });
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to open sidepanel tab:', expect.any(Error));
+    consoleSpy.mockRestore();
+
+    // 4. browserApi.tabs is undefined
+    const consoleSpy2 = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const origTabs = chrome.tabs;
+    delete (chrome as any).tabs;
+    await handleActionClick({ id: 4 });
+    expect(consoleSpy2).not.toHaveBeenCalled();
+    (chrome as any).tabs = origTabs;
+
+    // 5. browserApi.tabs.create is not a function
+    (chrome as any).tabs = { create: 'not-fn' };
+    await handleActionClick({ id: 5 });
+    expect(consoleSpy2).not.toHaveBeenCalled();
+    (chrome as any).tabs = origTabs;
+    consoleSpy2.mockRestore();
+
+    (chrome as any).sidePanel = origSidePanel;
   });
 
   it('handles onMessage async responses and errors', async () => {
