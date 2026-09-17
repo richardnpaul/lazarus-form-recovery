@@ -542,6 +542,37 @@ describe('FormTracker & Field Extractor Unit Tests', () => {
         fieldType: 'quill',
       });
 
+      // Case 4b: Rich text editor (ProseMirror)
+      sentMessages = [];
+      const pm = document.createElement('div');
+      pm.className = 'ProseMirror';
+      pm.id = 'pm-id';
+      root.appendChild(pm);
+
+      (tracker as any).handleContextMenu({ target: pm, composedPath: () => [pm] });
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload).toEqual({
+        domain: window.location.hostname,
+        formInstanceId: undefined,
+        fieldName: 'pm-id',
+        fieldType: 'prose-mirror',
+      });
+
+      // Case 4c: Rich text editor (TinyMCE)
+      sentMessages = [];
+      const tiny = document.createElement('div');
+      tiny.id = 'tinymce';
+      root.appendChild(tiny);
+
+      (tracker as any).handleContextMenu({ target: tiny, composedPath: () => [tiny] });
+      expect(sentMessages.length).toBe(1);
+      expect(sentMessages[0].payload).toEqual({
+        domain: window.location.hostname,
+        formInstanceId: undefined,
+        fieldName: 'tinymce',
+        fieldType: 'tinymce',
+      });
+
       // Case 5: Non-trackable target (div)
       sentMessages = [];
       const div = document.createElement('div');

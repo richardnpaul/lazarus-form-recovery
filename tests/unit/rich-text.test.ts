@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ProseMirrorAdapter } from '../../src/content/rich-text/prose-mirror';
 import { TinyMceAdapter } from '../../src/content/rich-text/tinymce-adapter';
 import { ContentEditableAdapter } from '../../src/content/rich-text/contenteditable';
@@ -7,9 +7,15 @@ import { findRichTextAdapter } from '../../src/content/rich-text';
 
 describe('Rich Text Adapters (src/content/rich-text/)', () => {
   describe('ProseMirrorAdapter', () => {
-    const adapter = new ProseMirrorAdapter();
+    let adapter: ProseMirrorAdapter;
+
+    beforeEach(() => {
+      adapter = new ProseMirrorAdapter();
+    });
 
     it('has the correct adapter name', () => {
+      const freshAdapter = new ProseMirrorAdapter();
+      expect(freshAdapter.name).toBe('prose-mirror');
       expect(adapter.name).toBe('prose-mirror');
     });
 
@@ -100,9 +106,15 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
   });
 
   describe('TinyMceAdapter', () => {
-    const adapter = new TinyMceAdapter();
+    let adapter: TinyMceAdapter;
+
+    beforeEach(() => {
+      adapter = new TinyMceAdapter();
+    });
 
     it('has the correct adapter name', () => {
+      const freshAdapter = new TinyMceAdapter();
+      expect(freshAdapter.name).toBe('tinymce');
       expect(adapter.name).toBe('tinymce');
     });
 
@@ -161,9 +173,15 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
   });
 
   describe('ContentEditableAdapter', () => {
-    const adapter = new ContentEditableAdapter();
+    let adapter: ContentEditableAdapter;
+
+    beforeEach(() => {
+      adapter = new ContentEditableAdapter();
+    });
 
     it('has the correct adapter name', () => {
+      const freshAdapter = new ContentEditableAdapter();
+      expect(freshAdapter.name).toBe('contenteditable');
       expect(adapter.name).toBe('contenteditable');
     });
 
@@ -230,9 +248,15 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
   });
 
   describe('QuillAdapter', () => {
-    const adapter = new QuillAdapter();
+    let adapter: QuillAdapter;
+
+    beforeEach(() => {
+      adapter = new QuillAdapter();
+    });
 
     it('has the correct adapter name', () => {
+      const freshAdapter = new QuillAdapter();
+      expect(freshAdapter.name).toBe('quill');
       expect(adapter.name).toBe('quill');
     });
 
@@ -315,6 +339,18 @@ describe('Rich Text Adapters (src/content/rich-text/)', () => {
       const quill = document.createElement('div');
       quill.className = 'ql-editor';
       expect(findRichTextAdapter(quill)?.name).toBe('quill');
+
+      const proseMirror = document.createElement('div');
+      proseMirror.className = 'ProseMirror';
+      expect(findRichTextAdapter(proseMirror)?.name).toBe('prose-mirror');
+
+      const tinyMce = document.createElement('div');
+      tinyMce.id = 'tinymce';
+      expect(findRichTextAdapter(tinyMce)?.name).toBe('tinymce');
+
+      const contentEditable = document.createElement('div');
+      contentEditable.setAttribute('contenteditable', 'true');
+      expect(findRichTextAdapter(contentEditable)?.name).toBe('contenteditable');
 
       const normal = document.createElement('input');
       expect(findRichTextAdapter(normal)).toBeNull();
