@@ -38,6 +38,10 @@ export default defineManifest({
   ...(isFirefox
     ? {
         sidebar_action: {
+          default_icon: {
+            '16': 'icons/icon-16.png',
+            '32': 'icons/icon-32.png',
+          },
           default_panel: 'src/sidepanel/sidepanel.html',
           default_title: 'Lazarus: Form Recovery',
           open_at_install: false,
