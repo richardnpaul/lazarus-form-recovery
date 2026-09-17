@@ -10,10 +10,10 @@ import { resolve } from 'node:path';
 const SUMMARY_FILE = resolve(process.cwd(), 'coverage/coverage-summary.json');
 
 const THRESHOLDS = {
-  lines: 96,
-  statements: 95,
-  functions: 95,
-  branches: 80,
+  lines: 100,
+  statements: 100,
+  functions: 100,
+  branches: 100,
 };
 
 function main() {
