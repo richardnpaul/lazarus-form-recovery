@@ -1,0 +1,10 @@
+version: "0.2"
+language: en-GB
+words:
+  - CCPA
+  - dbaeumer
+  - esbenp
+  - formatjs
+  - Hijri
+minWordLength: 4
+allowCompoundWords: true
