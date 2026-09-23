@@ -164,7 +164,7 @@ Apply this patch? (Review first — AI-generated patches may need adjustment)
 
 📋 SCAN COVERAGE
   Files scanned:     <n>
-  Lines analyzed:    <n>
+  Lines analysed:    <n>
   Scan duration:     <time>
 
 ⚡ NEXT STEPS

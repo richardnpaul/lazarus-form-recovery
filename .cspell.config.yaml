@@ -6,5 +6,10 @@ words:
   - esbenp
   - formatjs
   - Hijri
+  - rgba
+  - serde
+  - SSTI
+  - unsafety
+  - Unserialize
 minWordLength: 4
 allowCompoundWords: true
