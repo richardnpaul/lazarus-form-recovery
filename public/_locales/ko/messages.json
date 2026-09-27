@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: 양식 복구",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "양식 데이터, 댓글, 텍스트 초안을 다시는 잃어버리지 마세요. 안전하고 암호화된 로컬 양식 복구 확장 프로그램입니다.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: 양식 복구",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "현재 페이지에서 마지막으로 수정한 양식 복구",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "방금 전",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "알 수 없는 시간",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus 양식 복구",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ 지금 양식 스냅샷 저장",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 양식 버전 복구",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "이 페이지에 이전 버전이 없습니다",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 필드 텍스트 복구",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "이 필드에 저장된 스니펫이 없습니다",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 사이드바에서 수정 기록 탐색",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ 설정 / 옵션",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 이 사이트에서 Lazarus 비활성화",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ 옵션",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "수정본 $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "제출됨",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "임시저장",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus 제어 센터",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "활성",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "현재 탭 확인 중...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "감지 중...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "활성 웹사이트 없음",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "비웹 페이지",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "추적 활성화됨",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "추적 일시 중지됨",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "이 도메인에서 Lazarus 추적 켜기/끄기",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "저장된 양식 기록 검색...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "모든 사이트",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "현재 사이트",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "오늘",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "지난 7일",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "지난 30일",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "저장된 초안",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "로딩 중...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "초안 1개",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "초안 $COUNT$개",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$에 저장된 양식 데이터가 없습니다",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "이 사이트에서 입력하는 동안 초안이 자동으로 저장됩니다.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "모든 사이트 보기",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "저장된 양식 데이터가 없습니다",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "웹페이지에서 양식을 작성하면 Lazarus가 초안을 안전하게 자동으로 보관합니다.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "복사",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "복사됨!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "전체 복사",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "전체 복사됨!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "삭제",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "수정본 $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • 제출됨",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "제목 없는 양식",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "직접 입력",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "표시되는 필드 없음",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ 전체 지우기",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ 설정",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "복구된 모든 양식 기록을 삭제하시겠습니까?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$에서 Lazarus 양식 복구를 일시 중지하시겠습니까?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus 양식 복구 — 설정",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ 일반 기본 설정",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 보안 및 금고",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 비활성화된 도메인",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 저장소 및 데이터",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ 정보 및 진단",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "일반 기본 설정",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "입력 가로채기 정책 및 데이터 보관 기간을 설정합니다.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "비밀번호 필드 저장",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "비밀번호 필드에 입력된 내용을 기록하고 복구합니다.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "보안 알림:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "비밀번호 입력을 디스크에 저장하면 기기에 접근하는 모든 사람에게 자격 증명이 노출될 수 있습니다. 마스터 비밀번호 모드를 켜두는 것을 권장합니다.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "신용카드 및 개인정보 자동 마스킹",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn 알고리즘으로 13~19자리 신용카드를 감지하고 CVV가 로컬 저장소에 저장되지 않도록 방지합니다.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "데이터 보관 기간",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "지정된 기간보다 오래된 양식 초안을 자동으로 삭제합니다.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$일",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "보안 및 암호화 금고",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "암호화 저장소 및 마스터 비밀번호 보호를 관리합니다.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "암호화 모드",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "표준 모드 (로컬 전용)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "설정 없이 바로 사용 가능. 양식은 브라우저 프로필에 격리된 로컬 IndexedDB에 저장됩니다.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "마스터 비밀번호 금고 (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 키 파생을 사용하는 군사 등급 AES-256 암호화. 초안을 읽으려면 비밀번호가 필요합니다.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "금고 상태",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "마스터 비밀번호가 설정되지 않았습니다.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "금고가 현재 메모리에서 잠금 해제되어 있습니다.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "금고가 구성되었으며 잠겨 있습니다.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "마스터 비밀번호 설정",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "마스터 비밀번호 변경",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "비활성 자동 잠금 시간 초과",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "일정 시간 동안 활동이 없으면 파생된 복호화 키를 메모리에서 자동으로 제거합니다.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "5분",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "15분",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "30분",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "1시간",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "세션 동안 잠그지 않음",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "비활성화된 도메인",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "양식 기록에서 특정 사이트 또는 와일드카드 패턴을 제외합니다.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "제외할 도메인 추가",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "예: *.bank.com 또는 localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "도메인 차단",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "제외된 도메인 목록",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "도메인 패턴",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "작업",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "비활성화된 도메인이 없습니다.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "차단 해제",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "저장소 및 유지 관리",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "저장소 사용량을 확인하거나 암호화된 백업을 내보내거나 모든 기록을 삭제합니다.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB 저장소 용량",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "저장 공간 계산 중...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "사용 가능한 $QUOTA$ MB 중 약 ~$USAGE$ MB 사용 중.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "저장소 추정치를 사용할 수 없습니다.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "양식 기록 내보내기",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "전체 양식 기록을 JSON 백업 파일로 다운로드합니다.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON 내보내기",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "위험 구역: 완전 초기화",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "기록된 모든 도메인, 양식, 필드 초안을 영구적으로 삭제합니다.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "모든 기록 삭제",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "정보 및 진단",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "확장 프로그램 버전 및 백그라운드 서비스 워커 진단 정보입니다.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "확장 프로그램 버전",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "대상 엔진",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium 및 Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "암호화 엔진",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "데이터베이스 엔진",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "백그라운드 상태",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● 활성",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "마스터 비밀번호 설정",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "마스터 비밀번호 변경",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "새 마스터 비밀번호",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "안전한 비밀번호를 입력하세요...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "비밀번호 확인",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "비밀번호를 다시 입력하세요...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "비밀번호 강도: 비어 있음",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "비밀번호 강도: 취약",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "비밀번호 강도: 보통",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "비밀번호 강도: 안전 (PBKDF2-SHA256, 10만 회 반복)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "취소",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "마스터 비밀번호 저장",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "전체 기록 삭제 확인",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "이 작업은 취소할 수 없습니다. 저장된 모든 양식 기록, 초안 및 로그가 영구적으로 삭제됩니다.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "삭제",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "확인하려면 $KEYWORD$을(를) 입력하세요:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "영구 삭제",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "비밀번호를 입력하세요.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "비밀번호가 일치하지 않습니다.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "비밀번호는 최소 6자 이상이어야 합니다.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "마스터 비밀번호가 성공적으로 설정되었습니다.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "비밀번호 설정 실패: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "잘못된 마스터 비밀번호입니다.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "기록된 모든 데이터와 초안이 삭제되었습니다.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "표준 모드로 전환하면 마스터 비밀번호 암호화가 해제됩니다. 계속하시겠습니까?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "확인을 위해 현재 마스터 비밀번호를 입력하세요:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus 양식 복구",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "양식 초안 복구 (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus 복구",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "초안 1개",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "초안 $COUNT$개",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "필드 기록 검색...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "전체 양식 복구",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "양식",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus 설정",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus 복구 열기",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "양식 데이터 복구",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "검색...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "양식 복구",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "양식 복구",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "설정",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "이 사이트에서 비활성화",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$에서 Lazarus를 비활성화하시겠습니까?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "초안을 찾을 수 없음",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "입력을 시작하면 자동으로 저장됩니다",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "초안 1개",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "초안 $COUNT$개",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "단어 1개",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "단어 $COUNT$개",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(비어 있음)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

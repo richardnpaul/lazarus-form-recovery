@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: ການກູ້ຄືນແບບຟອມ",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "ຢ່າເສຍຂໍ້ມູນແບບຟອມ, ຄວາມຄິດເຫັນ ຫຼື ສະບັບຮ່າງອີກຕໍ່ໄປ. ການກູ້ຄືນແບບຟອມທີ່ປອດໄພ, ເຂົ້າລະຫັດ ແລະ ຢູ່ໃນເຄື່ອງ.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: ການກູ້ຄືනແບບຟອມ",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "ກູ້ຄືນແບບຟອມທີ່ແກ້ໄຂຫຼ້າສຸດໃນໜ້ານີ້",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "ຫາກໍ່ດຽວນີ້",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "ບໍ່ຮູ້ເວລາ",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus ການກູ້ຄືນແບບຟອມ",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ ບັນທຶກພາບຖ່າຍແບບຟອມດຽວນີ້",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 ກູ້ຄືນເວີຊັນແບບຟອມ",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "ບໍ່ມີເວີຊັນກ່ອນໜ້ານີ້ໃນໜ້ານີ້",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 ກູ້ຄືນຂໍ້ຄວາມຊ່ອງຂໍ້ມູນ",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "ບໍ່ມີຂໍ້ຄວາມກ່ອນໜ້ານີ້ສຳລັບຊ່ອງນີ້",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 ເບິ່ງເວີຊັນໃນແຖບດ້ານຂ້າງ",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ ການຕັ້ງຄ່າ...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 ປິດ Lazarus ໃນເວັບໄຊນີ້",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ ຕົວເລືອກ",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "ເວີຊັນ $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "ສົ່ງແລ້ວ",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "ຮ່າງ",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "ສູນຄວບຄຸມ Lazarus",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "ໃຊ້ງານຢູ່",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "ກຳລັງກວດສອບແຖບປະຈຸບັນ...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "ກຳລັງກວດຫາ...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "ບໍ່ມີເວັບໄຊທີ່ໃຊ້ງານ",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "ບໍ່ແມ່ນໜ້າເວັບ",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ການຕິດຕາມເປີດຢູ່",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ການຕິດຕາມຢຸດຊົ່ວຄາວ",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "ເປີດ/ປິດ ການຕິດຕາມ Lazarus ໃນໂດເມນນີ້",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "ຄົ້ນຫາປະຫວັດແບບຟອມ...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "ທຸກເວັບໄຊ",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "ເວັບໄຊນີ້",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "ມື້ນີ້",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "7 ມື້ຜ່ານມາ",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "30 ມື້ຜ່ານມາ",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "ສະບັບຮ່າງທີ່ບັນທຶກໄວ້",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "ກຳລັງໂຫລດ...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "1 ສະບັບຮ່າງ",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$ ສະບັບຮ່າງ",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "ບໍ່ມີຂໍ້ມູນແບບຟອມສຳລັບ $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "ສະບັບຮ່າງຈະຖືກບັນທຶກໂດຍອັດຕະໂນມັດເມື່ອທ່ານພິມໃນເວັບໄຊນີ້.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "ເບິ່ງທຸກເວັບໄຊ",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "ບໍ່ພົບຂໍ້ມູນແບບຟອມທີ່ບັນທຶກໄວ້",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "ເຂົ້າໄປທີ່ໜ້າເວັບໃດກໍໄດ້ ແລະ ຕື່ມແບບຟອມເພື່ອໃຫ້ Lazarus ບັນທຶກສະບັບຮ່າງຂອງທ່ານ.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "ສຳເນົາ",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "ສຳເນົາແລ້ວ!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "ສຳເນົາທັງໝົດ",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "ສຳເນົາທັງໝົດແລ້ວ!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "ລຶບ",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "ເວີຊັນ $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • ສົ່ງແລ້ວ",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "ແບບຟອມທີ່ບໍ່ມີຫົວຂໍ້",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "ການປ້ອນໂດຍກົງ",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "ບໍ່ມີຊ່ອງຂໍ້ມູນທີ່ເຫັນໄດ້",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ ລຶບລ້າງທັງໝົດ",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ ການຕັ້ງຄ່າ",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລ້າງປະຫວັດແບບຟອມທັງໝົດ?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "ຢຸດການກູ້ຄືນ Lazarus ຊົ່ວຄາວໃນ $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus ການກູ້ຄືນແບບຟອມ — ການຕັ້ງຄ່າ",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ ທົ່ວໄປ",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 ຄວາມປອດໄພ & ຕູ້ນິລະໄພ",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 ໂດເມນທີ່ປິດໃຊ້ງານ",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 ພື້ນທີ່ຈັດເກັບ & ຂໍ້ມູນ",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ ກ່ຽວກັບ & ການວິນິດໄສ",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "ການຕັ້ງຄ່າທົ່ວໄປ",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "ກຳນົດນະໂຍບາຍການເກັບກຳຂໍ້ມູນ ແລະ ໄລຍະເວລາການເກັບຮັກສາ.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "ບັນທຶກຊ່ອງລະຫັດຜ່ານ",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "ບັນທຶກ ແລະ ກູ້ຄືນຂໍ້ຄວາມທີ່ພິມໃນຊ່ອງລະຫັດຜ່ານ.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "ແຈ້ງການຄວາມປອດໄພ:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "ການບັນທຶກລະຫັດຜ່ານໄວ້ໃນດິສກ໌ອາດຈະເປີດເຜີຍຂໍ້ມູນລັບ. ຄວນເປີດໃຊ້ງານໂໝດລະຫັດຜ່ານຫຼັກ.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "ການເຊື່ອງຂໍ້ມູນບັດເຄຣດິດອັດຕະໂນມັດ",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "ກວດຫາເລກບັດດ້ວຍ Luhn algorithm ແລະ ປ້ອງກັນບໍ່ໃຫ້ CVV ຖືກບັນທຶກໃນເຄື່ອງ.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "ໄລຍະເວລາການເກັບຮັກສາຂໍ້ມູນ",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "ລຶບສະບັບຮ່າງທີ່ເກົ່າກວ່າໄລຍະເວລາທີ່ກຳນົດໂດຍອັດຕະໂນມັດ.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ ມື້",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "ຄວາມປອດໄພ & ຕູ້ນິລະໄພເຂົ້າລະຫັດ",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "ຈັດການພື້ນທີ່ຈັດເກັບຂໍ້ມູນທີ່ເຂົ້າລະຫັດດ້ວຍລະຫັດຜ່ານຫຼັກ.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "ໂໝດການເຂົ້າລະຫັດ",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "ໂໝດມາດຕະຖານ (ໃນເຄື່ອງເທົ່ານັ້ນ)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "ບໍ່ຕ້ອງຕັ້ງຄ່າເພີ່ມເຕີມ. ຂໍ້ມູນຖືກເກັບໄວ້ໃນ IndexedDB ຂອງບຣາວເຊີ.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "ຕູ້ນິລະໄພລະຫັດຜ່ານຫຼັກ (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "ການເຂົ້າລະຫັດ AES-256 ດ້ວຍ PBKDF2. ຕ້ອງໃຊ້ລະຫັດຜ່ານເພື່ອເປີດອ່ານສະບັບຮ່າງ.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "ສະຖານະຕູ້ນິລະໄພ",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "ລະຫັດຜ່ານຫຼັກຍັງບໍ່ໄດ້ຕັ້ງຄ່າ.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "ຕູ້ນິລະໄພຖືກປົດລັອກຢູ່ໃນໜ່ວຍຄວາມຈຳ.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "ຕູ້ນິລະໄພຖືກລັອກຢູ່.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "ຕັ້ງລະຫັດຜ່ານຫຼັກ",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "ປ່ຽນລະຫັດຜ່ານຫຼັກ",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "ລັອກອັດຕະໂນມັດເມື່ອບໍ່ມີການເຄື່ອນໄຫວ",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "ລຶບຄີຖອດລະຫັດອອກຈາກໜ່ວຍຄວາມຈຳຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "5 ນາທີ",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "15 ນາທີ",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "30 ນາທີ",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "1 ຊົ່ວໂມງ",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "ບໍ່ລັອກໃນລະຫວ່າງເຊດຊັນ",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "ໂດເມນທີ່ປິດໃຊ້ງານ",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "ຍົກເວັ້ນເວັບໄຊສະເພາະຈາກການບັນທຶກແບບຟອມ.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "ເພີ່ມໂດເມນທີ່ຍົກເວັ້ນ",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "ຕົວຢ່າງ: *.bank.com ຫຼື localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "ບລັອກໂດເມນ",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "ລາຍຊື່ໂດເມນທີ່ຍົກເວັ້ນ",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "ຮູບແບບໂດເມນ",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "ການກະທຳ",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "ຍັງບໍ່ມີໂດເມນທີ່ຖືກປິດໃຊ້ງານ.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "ປົດບລັອກ",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "ພື້ນທີ່ຈັດເກັບ & ການບຳລຸງຮັກສາ",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "ກວດສອບການໃຊ້ພື້ນທີ່, ສົ່ງອອກຂໍ້ມູນສຳຮອງ ຫຼື ລຶບຂໍ້ມູນທັງໝົດ.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "ຄວາມຈຸພື້ນທີ່ IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "ກຳລັງຄິດໄລ່ພື້ນທີ່ຈັດເກັບ...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "ກຳລັງໃຊ້ ~$USAGE$ MB ຈາກ $QUOTA$ MB ທີ່ມີຢູ່.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "ບໍ່ສາມາດປະເມີນພື້ນທີ່ຈັດເກັບໄດ້.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "ສົ່ງອອກປະຫວັດແບບຟອມ",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "ດາວໂຫລດປະຫວັດທັງໝົດເປັນໄຟລ໌ສຳຮອງ JSON.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "ສົ່ງອອກ JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "ເຂດອັນຕະລາຍ: ການລຶບລ້າງທັງໝົດ",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "ລຶບໂດເມນ, ແບບຟອມ ແລະ ສະບັບຮ່າງທັງໝົດອອກຢ່າງຖາວອນ.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "ລຶບປະຫວັດທັງໝົດ",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "ກ່ຽວກັບ & ການວິນິດໄສ",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "ເວີຊັນສ່ວນຂະຫຍາຍ ແລະ ສະຖານະການເຮັດວຽກເບື້ອງຫຼັງ.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "ເວີຊັນສ່ວນຂະຫຍາຍ",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "ເຄື່ອງຈັກເປົ້າໝາຍ",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "ເຄື່ອງຈັກລະຫັດລັບ",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "ເຄື່ອງຈັກຖານຂໍ້ມູນ",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "ສະຖານະເບື້ອງຫຼັງ",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● ໃຊ້ງານຢູ່",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "ຕັ້ງລະຫັດຜ່ານຫຼັກ",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "ປ່ຽນລະຫັດຜ່ານຫຼັກ",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "ລະຫັດຜ່ານຫຼັກໃໝ່",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "ປ້ອນລະຫັດຜ່ານທີ່ປອດໄພ...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "ຢືນຢັນລະຫັດຜ່ານ",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "ພິມລະຫັດຜ່ານອີກຄັ້ງ...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "ຄວາມປອດໄພຂອງລະຫັດຜ່ານ: ວ່າງ",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "ຄວາມປອດໄພຂອງລະຫັດຜ່ານ: ອ່ອນ",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "ຄວາມປອດໄພຂອງລະຫັດຜ່ານ: ປານກາງ",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "ຄວາມປອດໄພຂອງລະຫັດຜ່ານ: ແຂງແຮງ (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "ຍົກເລີກ",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "ບັນທຶກລະຫັດຜ່ານຫຼັກ",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "ຢືນຢັນການລຶບປະຫວັດທັງໝົດ",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ສະບັບຮ່າງ ແລະ ຂໍ້ມູນທັງໝົດຈະຖືກລຶບຖາວອນ.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "ລຶບ",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "ພິມ $KEYWORD$ ເພື່ອຢືນຢັນ:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "ລຶບຖາວອນ",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "ກະລຸນາປ້ອນລະຫັດຜ່ານ.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "ລະຫັດຜ່ານບໍ່ກົງກັນ.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "ລະຫັດຜ່ານຕ້ອງມີຢ່າງໜ້ອຍ 6 ຕົວອັກສອນ.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "ຕັ້ງຄ່າລະຫັດຜ່ານຫຼັກສຳເລັດແລ້ວ.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "ຕັ້ງລະຫັດຜ່ານບໍ່ສຳເລັດ: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "ລະຫັດຜ່ານຫຼັກບໍ່ຖືກຕ້ອງ.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "ລຶບປະຫວັດ ແລະ ສະບັບຮ່າງທັງໝົດແລ້ວ.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "ການປ່ຽນເປັນໂໝດມາດຕະຖານຈະເອົາການເຂົ້າລະຫັດລະຫັດຜ່ານຫຼັກອອກ. ສືບຕໍ່ບໍ່?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "ປ້ອນລະຫັດຜ່ານຫຼັກປະຈຸບັນເພື່ອຢືນຢັນ:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus ການກູ້ຄືນແບບຟອມ",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "ກູ້ຄືນສະບັບຮ່າງແບບຟອມ (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "ການກູ້ຄືන Lazarus",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "1 ສະບັບຮ່າງ",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$ ສະບັບຮ່າງ",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "ຄົ້ນຫາປະຫວັດຊ່ອງຂໍ້ມູນ...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "ກູ້ຄືນແບບຟອມທັງໝົດ",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "ແບບຟອມ",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "ການຕັ້ງຄ່າ Lazarus",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "ເປີດການກູ້ຄືන Lazarus",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "ກູ້ຄືනຂໍ້ມູນແບບຟອມ",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "ຄົ້ນຫາ...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "ກູ້ຄືනແບບຟອມ",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "ກູ້ຄືනແບບຟອມ",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "ການຕັ້ງຄ່າ",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "ປິດໃຊ້ງານໃນເວັບໄຊນີ້",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "ປິດ Lazarus ໃນ $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "ບໍ່ພົບສະບັບຮ່າງ",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "ເລີ່ມພິມເພື່ອບັນທຶກສະບັບຮ່າງ",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "ບັນທຶກແລ້ວ 1 ສະບັບຮ່າງ",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "ບັນທຶກແລ້ວ $COUNT$ ສະບັບຮ່າງ",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "1 ຄຳ",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ ຄຳ",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(ວ່າງ)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

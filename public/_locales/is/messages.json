@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: Endurheimt eyðublaða",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "Týndu aldrei aftur gögnum úr eyðublöðum, athugasemdum eða textadrögum. Örugg, dulkóðuð og staðbundin endurheimt.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: Endurheimt eyðublaða",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "Endurheimta síðast breytta eyðublaðið á núverandi síðu",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "rétt í þessu",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "Óþekktur tími",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus Endurheimt eyðublaða",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ Vista skyndimynd af eyðublaði núna",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 Endurheimta útgáfu eyðublaðs",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "Engar fyrri útgáfur á þessari síðu",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 Endurheimta texta reits",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "Engin fyrri brot fyrir þennan reit",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 Skoða útgáfur í hliðarstiku",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ Stillingar...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 Gera Lazarus óvirkan á þessu vefsvæði",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ Stillingar",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "Útg. $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "Sent inn",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "Drög",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus Stjórnborð",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "Virkt",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "Athuga núverandi flipa...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "Greini...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "Ekkert virkt vefsvæði",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "Ekki vefsíða",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "Vöktun virk",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "Vöktun í pásu",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "Kveikja eða slökkva á vöktun Lazarus á þessu léni",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "Leita í skráðri sögu eyðublaða...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "Öll vefsvæði",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "Þetta vefsvæði",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "Í dag",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "Síðustu 7 daga",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "Síðustu 30 daga",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "Vistuð drög",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "Hleð...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "1 drög",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$ drög",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "Engin vistuð eyðublaðagögn fyrir $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "Drög eru vistuð sjálfkrafa um leið og þú skrifar.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "Skoða öll vefsvæði",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "Engin vistuð eyðublaðagögn fundust",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Farðu á hvaða vefsíðu sem er og fylltu út eyðublöð til að Lazarus visti drögin þín sjálfkrafa.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "Afrita",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "Afritað!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "Afrita allt",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "Allt afritað!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "Eyða",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "Útg. $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • Sent inn",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "Ónefnt eyðublað",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "Bein innsláttur",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "Engir sýnilegir reitir",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ Hreinsa allt",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ Stillingar",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "Ertu viss um að þú viljir hreinsa alla sögu endurheimtra eyðublaða?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "Setja endurheimt Lazarus í pásu á $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus Endurheimt eyðublaða — Stillingar",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ Almennt",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 Öryggi & Hólf",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 Óvirk lén",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 Geymsla & Gögn",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ Um & Greining",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "Almennar stillingar",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "Stilla vistunarstefnur fyrir innslátt og varðveislutíma gagna.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "Vista lykilorðareiti",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "Skrá og endurheimta texta sem sleginn er inn í lykilorðareiti.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "Öryggistilkynning:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "Að vista lykilorð á diski getur veitt öðrum aðgang að viðkvæmum upplýsingum. Haltu aðallykilorði virku.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "Sjálfvirk greining á kreditkortaupplýsingum",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Greinir 13–19 stafa kreditkortanúmer með Luhn-reikniriti og kemur í veg fyrir að CVV vistist í staðbundinni geymslu.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "Varðveislutími gagna",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "Hreinsa sjálfkrafa drög sem eru eldri en tilgreindur tími.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ dagar",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "Öryggi & Dulkóðunarhólf",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "Stjórna dulkóðuðu geymsluplássi og aðallykilorðsvörn.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "Dulkóðunarstilling",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "Staðalbúnaður (Aðeins staðbundið)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "Engin stilling nauðsynleg. Gögn eru geymd í IndexedDB vafra.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "Aðallykilorðshólf (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "Öflug AES-256 dulkóðun með PBKDF2 lyklagerð. Lykilorðs er krafist til að opna drög.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "Staða hólfs",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "Aðallykilorð er ekki stillt.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "Hólfið er opið í minni.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "Hólfið er stillt og læst.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "Stilla aðallykilorð",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "Breyta aðallykilorði",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "Sjálfvirk læsing við óvirkni",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "Eyða dulkóðunarlyklum úr minni eftir tiltekinn tíma án virkni.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "5 mínútur",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "15 mínútur",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "30 mínútur",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "1 klukkustund",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "Aldrei á meðan vafralota stendur",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "Óvirk lén",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "Útiloka tiltekin vefsvæði frá skráningu eyðublaða.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "Bæta við útilokuðu léni",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "t.d. *.banki.is eða localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "Loka á lén",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "Listi yfir útilokuð lén",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "Lénamynstur",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "Aðgerð",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "Engin útilokuð lén ennþá.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "Afskrá",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "Geymsla & Viðhald",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "Skoða geymslunotkun, flytja út dulkóðuð afrit eða hreinsa öll gögn.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB geymslurými",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "Reikna geymslunotkun...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "Notar ~$USAGE$ MB af $QUOTA$ MB tiltæku rými.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "Geymslumat ekki tiltækt.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "Flytja út sögu eyðublaða",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "Hlaða niður fullkominni sögu í JSON öryggisafriti.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "Flytja út JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "Hættusvæði: Algjör hreinsun",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "Eyða öllum skráðum lénum, eyðublöðum og drögum varanlega.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "Eyða allri sögu",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "Um & Greining",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "Upplýsingar um útgáfu viðbótar og bakgrunnsþjónustu.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "Útgáfa viðbótar",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "Markvél",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "Dulkóðunarvél",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "Gagnagrunnsvél",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "Bakgrunnsstaða",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● Virkt",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "Stilla aðallykilorð",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "Breyta aðallykilorði",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "Nýtt aðallykilorð",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "Sláðu inn öruggt lykilorð...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "Staðfesta lykilorð",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "Sláðu inn lykilorð aftur...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "Styrkur lykilorðs: Tómt",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "Styrkur lykilorðs: Veikt",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "Styrkur lykilorðs: Miðlungs",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "Styrkur lykilorðs: Sterkt (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "Hætta við",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "Vista aðallykilorð",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "Staðfesta eyðingu allrar sögu",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "Ekki er hægt að afturkalla þessa aðgerð. Öllum gögnum og drögum verður eytt varanlega.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "EYÐA",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "Sláðu inn $KEYWORD$ til að staðfesta:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "Eyða varanlega",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "Vinsamlegast sláðu inn lykilorð.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "Lykilorðin stemma ekki.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "Lykilorð verður að vera að minnsta kosti 6 stafir.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "Aðallykilorð hefur verið stillt.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "Mistókst að stilla lykilorð: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "Rangt aðallykilorð.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "Öll skráð saga og drög hafa verið hreinsuð.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "Að skipta yfir í staðalbúnað fjarlægir aðallykilorðsdulkóðun. Halda áfram?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "Sláðu inn núverandi aðallykilorð til að staðfesta:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus Endurheimt eyðublaða",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "Endurheimta drög eyðublaðs (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus Endurheimt",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "1 drög",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$ drög",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "Leita í sögu reits...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "Endurheimta allt eyðublaðið",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "Eyðublað",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus stillingar",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Opna Lazarus Endurheimt",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "Endurheimta eyðublaðagögn",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "Leita...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "Endurheimta eyðublað",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "Endurheimta eyðublað",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "Stillingar",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "Gera óvirkt á þessu vefsvæði",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "Gera Lazarus óvirkan á $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "Engin drög fundust",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "Prófaðu að skrifa til að vista drög",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "1 vistað drög",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "$COUNT$ vistuð drög",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "1 orð",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ orð",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(tómt)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

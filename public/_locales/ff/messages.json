@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: Kettal Formilær",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "Woto majju kadi keɓe formilær, miijooji, walla binndi kuɓɓaaɗi. Kettal formilær kisngal, sirrugal e nder nokku.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: Kettal Formilær",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "Hetto formilær baylagal sakkitiingal e ndee hello",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "jooni jooni",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "Waktu anndaaka",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Kettal Formilær Lazarus",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ Res Natal Formilær Jooni",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 Hetto Yamre Formilær",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "Yamre ɓennunde alaa e ndee hello",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 Hetto Binndi Nokku",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "Taɓɓere deŋgal alaa e oo nokku",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 Yiilo Bayle e Palal Senngo",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ Teeltooji / Cuɓe",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 Haɗ Lazarus e Ndee Lowre",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ Cuɓe",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "Waylude $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "Neldaama",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "Koppi",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Hakkunde Kalfal Lazarus",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "Ina gollora",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "Yeewtude tab jooni...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "Yiytude...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "Lowre gollorende alaa",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "Wonaa hello geese",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "Rewindaade ina gollora",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "Rewindaade darniima",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "Waylu rewindaade Lazarus e ndee lowre",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "Yiylo daartol formilær heɓaaɗo...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "Lowre Fof",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "Ndee Lowre",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "Hannde",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "Balɗe 7 Ɓennuɗe",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "Balɗe 30 Ɓennuɗe",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "Koppiiji Deŋgaaɗi",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "Ina loowa...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "Koppi 1",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "Koppiiji $COUNT$",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "Keɓe formilær alaa deŋgaaɗi e $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "Koppiiji ina ndesee nde mbindataa e ndee lowre.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "Yiy Lowre Fof",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "Keɓe formilær deŋgaaɗi yiytaaka",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Yillo kala hello geese tawa ina kebbina formilær ngam Lazarus resa koppiiji maa.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "Natto",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "Nattaama!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "Natto Fof",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "Fof Nattaama!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "Momtu",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "Waylude $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • Neldaama",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "Formilær Alaa Innde",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "Naatgol Laaɓngol",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "Nokku jiyteteeɗo alaa",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ Momtu Fof",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ Teeltooji",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "Aɗa felliti aɗa yiɗi momtude daartol formilær kettiraaɗo fof?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "Darnu kettal Lazarus e $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Kettal Formilær Lazarus — Teeltooji",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ Cuɓe Kuuɓtidinɗe",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 Kisal e Suudu Sirru",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 Lowre Haɗaaɗe",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 Resorde e Keɓe",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ Baɗte e Ƴeewndo",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "Cuɓe Kuuɓtidinɗe",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "Teeltoo jamirooje nanngugol naatgol e dumunnaaji deŋgol.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "Res Nokkuuji Helmere Sirru",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "Nanngu e ketto ko winndaa e nokkuuji helmere sirru.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "Tintinol Kisal:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "Deŋgol kelme sirru e diski ina hollita keɓe cuuɗiiɗe e kala kuutortooɗo masiŋ maa. Wuurnu laawol Helmere Sirru Mawnde.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "Suuɗgol Karta Banke e PII e Jaawgol",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Yiytu karte limooje 13-19 e peeje Luhn te haɗ CVV naatde e resorde.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "Duumagol Deŋgol Keɓe",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "Momtu e jaawgol koppiiji kiiddol ɓurɗi dumunna cuɓaaɗo.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "Balɗe $DAYS$",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "Kisal e Suudu Sirru Dokkal",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "Toppito resorde cuuɗiinde e ndeenka helmere sirru mawnde.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "Mbayka Cuuɗgol",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "Mbayka Goowkaango (Nokku Tan)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "Alaa teeltagol goɗngol. Formilær ina resa e IndexedDB nokkuwal e profiil wanngorde maa.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "Suudu Helmere Sirru Mawnde (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "Cuuɗgol kisal konu AES-256 huutortoongal saafgol PBKDF2. Helmere sirru ina sokla ngam janngude koppiiji.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "Gollal Suudu Sirru",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "Helmere sirru mawnde teeltaaka naino.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "Suudu sirru ina udditii e miijo jooni.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "Suudu sirru ina teeltaa te ina uddii.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "Waɗ Helmere Sirru Mawnde",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "Waylu Helmere Sirru Mawnde",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "Uddagol e Jaawgol So Gollal Alaa",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "Momtu saafotooɗe cuuɗgol e jaawgol so waktu ɓennii tawa gollaaka.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "Hoƴom 5",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "Hoƴom 15",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "Hoƴom 30",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "Waktu 1",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "Fey e ndee sahaa",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "Lowre Haɗaaɗe",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "Woppu lowre heeriinde e nanngude formilær.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "Ɓeydu Lowre Haɗaande",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "yeru: *.bank.com walla localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "Haɗ Lowre",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "Doggol Lowre Haɗaaɗe",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "Mbayka Lowre",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "Kewu",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "Lowre haɗaande alaa tawo.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "Uddit",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "Resorde e Toptagol",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "Ƴeew kuutoragol resorde, yaltin koppiiji cuuɗaaɗi, walla momtu binndanɗe fof.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "Baawal Resorde IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "Ina hiisoo njaajeendi resorde...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "Kuutoragol ~$USAGE$ MB e nder $QUOTA$ MB mo heɓotoo.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "Hiisaagol resorde heɓotaako.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "Yaltin Daartol Formilær",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "Aawto daartol formilær fof e fiilde JSON.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "Yaltin JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "Nokku Kulɓiniiɗo: Momtugol Timpungol",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "Momtu haa poomaa lowre, formilær e koppiiji nanngaaɗi fof.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "Momtu Daartol Fof",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "Baɗte e Ƴeewndo",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "Yamre ɓeydugol e ƴeewndo gollal caggal.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "Yamre Ɓeydugol",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "Masiŋ Paandaaɗo",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium e Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "Masiŋ Cuuɗgol",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "Masiŋ Keɓe",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "Gollal Caggal",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● Ina gollora",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "Waɗ Helmere Sirru Mawnde",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "Waylu Helmere Sirru Mawnde",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "Helmere Sirru Mawnde Hesere",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "Naatnu helmere sirru hisnde...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "Teeŋtin Helmere Sirru",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "Winnditu helmere sirru...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "Semmbe helmere sirru: Meh",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "Semmbe helmere sirru: Jaasɗo",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "Semmbe helmere sirru: Hakindo",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "Semmbe helmere sirru: Tiiɗɗo (PBKDF2-SHA256, 100k)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "Haaytu",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "Res Helmere Sirru Mawnde",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "Teeŋtin Momtugol Daartol Timpungol",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "Ngoo gollal ruttataako. Daartol formilær, koppiiji e bayle fof maa momte haa poomaa.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "MOOMTU",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "Winndu $KEYWORD$ ngam teeŋtinde:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "Momtu Haa Poomaa",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "Tiiɗno naatnu helmere sirru.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "Kelme sirru nanndaani.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "Helmere sirru foti ɓurde alkule 6.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "Helmere sirru mawnde teeltaama no moƴƴi.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "Teeltagol helmere sirru woppiima: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "Helmere sirru mawnde wonaa janngeteeɗo.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "Daartol e koppiiji deŋgaaɗi fof momtaama.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "Waylude e mbayka goowkaango maa ittu cuuɗgol helmere sirru mawnde. Aɗa jokki?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "Naatnu helmere sirru mawnde jooni ngam teeŋtinde:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Kettal Formilær Lazarus",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "Hetto koppiiji formilær (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Kettal Lazarus",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "Koppi 1",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "Koppiiji $COUNT$",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "Yiylo daartol nokku...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "Hetto formilær oo fof",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "Formilær",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Teeltooji Lazarus",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Uddit Kettal Lazarus",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "Hetto Keɓe Formilær",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "Yiylo...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "Hetto Formilær",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "Hetto formilær",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "Teeltooji",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "Haɗ e ndee lowre",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "Haɗ Lazarus e $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "Koppi heɓaaka",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "Eto winndude ngam resa gooto",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "Koppi 1",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "Koppiiji $COUNT$",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "Kongol 1",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "Konge $COUNT$",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(meh)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: Ho Khutlisa Foromo",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "Le ka mohla o se hlole o lahleheloa ke dintlha tsa foromo, maikutlo, kapa dingolwa tsa moraorao. Ho khutlisa foromo ho bolokehileng, ho patilweng le hahae.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: Ho Khutlisa Foromo",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "Khutlisa foromo ya ho qetela e fetotsweng leqepheng lena",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "hona jwale",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "Nako e sa tsejweng",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Ho Khutlisa Foromo ha Lazarus",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ Boloka Setshwantsho sa Foromo Hona Jwale",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 Khutlisa Phetolelo ya Foromo",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "Ha ho diphetolelo tsa nakong e fetileng leqepheng lena",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 Khutlisa Sengolwa sa Sebaka",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "Ha ho dikarolwana tse bolokilweng bakeng sa sebaka sena",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 Batla Diphetolelo ho Sidebar",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ Di-setting / Dikgetho",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 Tima Lazarus Saeteng Ena",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ Dikgetho",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "Phetolelo $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "E rometswe",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "Moralo",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Setsi sa Taolo sa Lazarus",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "E a sebetsa",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "E hlahloba thebo ya jwale...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "E a lemoha...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "Ha ho webosaete e sebetsang",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "Ha se leqephe la web",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "Ho latela ho a sebetsa",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "Ho latela ho kgaoditswe",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "Tima/Bulela ho latela ha Lazarus sebakeng sena",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "Batla nalaneng ya diforomo tse bolokilweng...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "Disaete Tsohle",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "Saete Ena",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "Kajeno",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "Matsatsi a 7 a Fetileng",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "Matsatsi a 30 a Fetileng",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "Meralo e Bolokilweng",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "E a laolla...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "Moralo o 1",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "Meralo e $COUNT$",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "Ha ho dintlha tsa foromo tse bolokilweng bakeng sa $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "Meralo e bolokwa ha o ntse o ngola saeteng ena.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "Bona Disaete Tsohle",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "Ha ho dintlha tsa foromo tse bolokilweng tse fumanweng",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Etela leqephe lefe kapa lefe la web o tlatse diforomo e le hore Lazarus e boloke meralo ya hao ka boyona.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "Kopitsa",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "E kopitswe!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "Kopitsa Tsohle",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "Tsohle di Kopitswe!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "Hlakola",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "Phetolelo $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • E rometswe",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "Foromo e Seng Nang Sehlooho",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "Kenyelletso e Ngotsweng",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "Ha ho dibaka tse bonahalang",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ Hlakola Tsohle",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ Di-setting",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "Na o na le bonnete ba hore o batla ho hlakola nalane yohle ya diforomo tse khutlisitsweng?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "Kgaotsa ho khutlisa ha Lazarus ho $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Ho Khutlisa Foromo ha Lazarus — Di-setting",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ Dikgetho tse Akaretsang",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 Tshireletso le Vault",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 Ditshebeletso tse Kwetsweng",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 Polokelo le Dintlha",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ Mabapi le Tlhahlobo",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "Dikgetho tse Akaretsang",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "Hlophisa maano a ho nka dingolwa le nako ya ho boloka.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "Boloka Dibaka tsa Phasewete",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "Rekota le ho khutlisa mongolo o kentsweng dibakeng tsa phasewete.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "Tlhokomediso ya Tshireletso:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "Ho boloka phasewete ho disk ho ka senola dintlha tsa lekunutu ho mang kapa mang ya sebedisang sesebediswa sena. Boloka mokgwa wa Master Password Vault o sebetsa.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "Ho Pata Dikarata tsa Banka le PII ka Boyona",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Lemoha dikarata tse nang le dinomoro tse 13–19 ka Luhn mme o thibele CVV ho kena polokelong.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "Nako ya ho Boloka Dintlha",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "Hlakola ka boyona meralo ya kgale e fetang nako e kgethilweng.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "Matsatsi a $DAYS$",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "Tshireletso le Vault e Patilweng",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "Laola polokelo e patilweng le tshireletso ya phasewete e kgolo.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "Mokgwa wa ho Pata",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "Mokgwa o Tlwaelehileng (Wa Hahae Feela)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "Ha ho tlhophiso e nngwe e hlokehang. Diforomo di bolokwa ho IndexedDB ya hahae profaeleng ya hao ya sebatli.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "Master Password Vault (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "Tshireletso e phahameng ya sesole ya AES-256 e sebedisang senotlolo sa PBKDF2. Phasewete e a hlokahala ho bala meralo.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "Boemo ba Vault",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "Phasewete e kgolo ha e eso hlophiswe.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "Vault e butswe mohopolong ha jwale.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "Vault e hlophisitswe mme e notletswe.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "Seta Phasewete e Kgolo",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "Fetola Phasewete e Kgolo",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "Ho Notlela ka Boyona ha ho se Mosebetsi",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "Hlakola dinotlolo tsa ho bula ka boyona kamora nako e itseng ho se mosebetsi.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "Metsotso e 5",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "Metsotso e 15",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "Metsotso e 30",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "Hora e 1",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "Le ka mohla nakong ena",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "Ditshebeletso tse Kwetsweng",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "Kgetha disaete tse itseng hore di se ke tsa rekotwa diforomo.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "Kenya Saete e Kwetsweng",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "mohlala: *.bank.com kapa localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "Kwala Saete",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "Lethathamo la Disaete tse Kwetsweng",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "Sebopeho sa Saete",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "Ketso",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "Ha ho disaete tse kwetsweng ha jwale.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "Bula",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "Polokelo le Tlhokomelo",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "Hlahloba tshebediso ya polokelo, romela dikopi tse patilweng, kapa o hlakole direkoto tsohle.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "Boholo ba Polokelo ya IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "E balla boholo ba polokelo...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "E sebedisa ~$USAGE$ MB ho tse $QUOTA$ MB tse teng.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "Tekanyetso ya polokelo ha e fumanehe.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "Romela Nalane ya Foromo Ntle",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "Jarolla nalane yohle ya diforomo faeleng ya JSON.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "Romela JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "Sebaka se Kotsi: Hlakola Tsohle Ruri",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "Hlakola ruri disaete tsohle, diforomo, le meralo e rekotilweng.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "Hlakola Nalane Yohle",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "Mabapi le Tlhahlobo",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "Phetolelo ya katoloso le tlhahlobo ya mosebeletsi wa ka morao.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "Phetolelo ya Katoloso",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "Enjene e Lebisitsweng",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium le Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "Enjene ya ho Pata",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "Enjene ya Database",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "Boemo ba Kamorao",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● E a sebetsa",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "Seta Phasewete e Kgolo",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "Fetola Phasewete e Kgolo",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "Phasewete e Ntjha e Kgolo",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "Kenya phasewete e bolokehileng...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "Netefatsa Phasewete",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "Ngola phasewete hape...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "Matla a phasewete: Ha a yo",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "Matla a phasewete: A fokolang",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "Matla a phasewete: A mahareng",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "Matla a phasewete: A matla (PBKDF2-SHA256, 100k)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "Hlakola",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "Boloka Phasewete e Kgolo",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "Netefatsa ho Hlakola Nalane Yohle",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "Ketso ena ha e kgutlisetswe morao. Nalane yohle ya diforomo, meralo le diphetolelo di tla hlakolwa ruri.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "HLAKOLA",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "Ngola $KEYWORD$ ho netefatsa:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "Hlakola Ruri",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "Ka kopo kenya phasewete.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "Diphasewete ha di tshwane.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "Phasewete e tlameha ho ba le ditlhaku tse seng ka tlase ho 6.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "Phasewete e kgolo e setilwe ka katleho.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "Ho seta phasewete ho hlolehile: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "Phasewete e kgolo ha se yona.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "Nalane yohle le meralo e rekotilweng di hlakotswe.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "Ho fetolela ho Standard Mode ho tla tlosa tshireletso ya phasewete e kgolo. O batla ho tswela pele?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "Kenya phasewete ya hao e kgolo ya jwale ho netefatsa:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Ho Khutlisa Foromo ha Lazarus",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "Khutlisa meralo ya foromo (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Ho Khutlisa ha Lazarus",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "Moralo o 1",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "Meralo e $COUNT$",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "Batla nalaneng ya sebaka...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "Khutlisa foromo yohle",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "Foromo",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Di-setting tsa Lazarus",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Bula ho Khutlisa ha Lazarus",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "Khutlisa Dintlha tsa Foromo",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "Batla...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "Khutlisa Foromo",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "Khutlisa foromo",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "Di-setting",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "Tima saeteng ena",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "Tima Lazarus ho $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "Ha ho meralo e fumanweng",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "Leka ho ngola ho boloka e nngwe",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "Moralo o 1",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "Meralo e $COUNT$",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "Lentswe le 1",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "Mantswe a $COUNT$",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(ha ho letho)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

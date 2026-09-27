@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: படிவ மீட்பு",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "படிவத் தரவு, கருத்துகள் அல்லது உரை வரைவுகளை இனி இழக்க வேண்டாம். பாதுகாப்பான, மறைகுறியாக்கப்பட்ட மற்றும் உள்ளூர் படிவ மீட்பு.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: படிவ மீட்பு",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "தற்போதைய பக்கத்தில் கடைசியாகத் திருத்தப்பட்ட படிவத்தை மீட்டெடுக்கவும்",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "சற்று முன்",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "தெரியாத நேரம்",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus படிவ மீட்பு",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ படிவ ஸ்னாப்ஷாட்டை இப்போது சேமிக்கவும்",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 படிவப் பதிப்பை மீட்டெடுக்கவும்",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "இந்தப் பக்கத்தில் முந்தைய பதிப்புகள் எதுவும் இல்லை",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 புலம் உரையை மீட்டெடுக்கவும்",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "இந்தப் புலத்திற்குச் சேமிக்கப்பட்ட துணுக்குகள் எதுவும் இல்லை",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 பக்கப்பட்டியில் திருத்தங்களை உலாவவும்",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ அமைப்புகள் / விருப்பங்கள்",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 இந்த தளத்தில் Lazarus ஐ முடக்கவும்",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ விருப்பங்கள்",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "பதிப்பு $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "சமர்ப்பிக்கப்பட்டது",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "வரைவு",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus கட்டுப்பாட்டு மையம்",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "செயலில் உள்ளது",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "தற்போதைய தாவலைச் சரிபார்க்கிறது...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "கண்டறியப்படுகிறது...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "செயலில் உள்ள இணையதளம் இல்லை",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "வலை அல்லாத பக்கம்",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "கண்காணிப்பு செயலில் உள்ளது",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "கண்காணிப்பு இடைநிறுத்தப்பட்டது",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "இந்த டொமைனில் Lazarus கண்காணிப்பை மாற்றவும்",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "சேமிக்கப்பட்ட படிவ வரலாற்றைத் தேடவும்...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "அனைத்து தளங்களும்",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "இந்த தளம்",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "இன்று",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "கடந்த 7 நாட்கள்",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "கடந்த 30 நாட்கள்",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "சேமிக்கப்பட்ட வரைவுகள்",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "ஏற்றுகிறது...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "1 வரைவு",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$ வரைவுகள்",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$ தளத்திற்குச் சேமிக்கப்பட்ட படிவத் தரவு எதுவும் இல்லை",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "இந்த தளத்தில் தட்டச்சு செய்யும் போது வரைவுகள் தானாகவே சேமிக்கப்படும்.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "அனைத்து தளங்களையும் காண்க",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "சேமிக்கப்பட்ட படிவத் தரவு எதுவும் கிடைக்கவில்லை",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "எந்தவொரு வலைப்பக்கத்திற்கும் சென்று படிவங்களை நிரப்பவும், Lazarus தானாகவே உங்கள் வரைவுகளைப் பாதுகாக்கும்.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "நகலெடு",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "நகலெடுக்கப்பட்டது!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "அனைத்தையும் நகலெடு",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "அனைத்தும் நகலெடுக்கப்பட்டது!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "நீக்கு",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "பதிப்பு $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • சமர்ப்பிக்கப்பட்டது",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "தலைப்பற்ற படிவம்",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "நேரடி உள்ளீடு",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "புலங்கள் எதுவும் தெரியவில்லை",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ அனைத்தையும் அழி",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ அமைப்புகள்",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "மீட்டெடுக்கப்பட்ட அனைத்து படிவ வரலாற்றையும் நிச்சயமாக அழிக்க விரும்புகிறீர்களா?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$ இல் Lazarus படிவ மீட்பை இடைநிறுத்தவா?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus படிவ மீட்பு — அமைப்புகள்",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ பொதுவான விருப்பத்தேர்வுகள்",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 பாதுகாப்பு & பெட்டகம்",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 முடக்கப்பட்ட டொமைன்கள்",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 சேமிப்பிடம் & தரவு",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ பற்றி & நோயறிதல்",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "பொதுவான விருப்பத்தேர்வுகள்",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "உள்ளீடு பிடிப்பு கொள்கைகள் மற்றும் தரவு தக்கவைப்பு காலத்தை உள்ளமைக்கவும்.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "கடவுச்சொல் புலங்களைச் சேமிக்கவும்",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "கடவுச்சொல் புலங்களில் தட்டச்சு செய்யப்பட்ட உரையைப் பதிவுசெய்து மீட்டெடுக்கவும்.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "பாதுகாப்பு அறிவிப்பு:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "கடவுச்சொற்களை வட்டில் சேமிப்பது உங்கள் சாதனத்தை அணுகும் எவருக்கும் முக்கிய சான்றுகளை வெளிப்படுத்தும். முதன்மை கடவுச்சொல் பயன்முறையை இயக்கத்தில் வைக்கவும்.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "தானியங்கி கிரெடிட் கார்டு & PII திருத்தம்",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn அல்காரிதம் மூலம் 13–19 இலக்க கிரெடிட் கார்டுகளைக் கண்டறிந்து CVV உள்ளூர் சேமிப்பகத்திற்குச் செல்வதைத் தடுக்கவும்.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "தரவு தக்கவைப்பு காலம்",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "குறிப்பிட்ட காலத்திற்கு மேல் பழைய படிவ வரைவுகளை தானாகவே நீக்கவும்.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ நாட்கள்",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "பாதுகாப்பு & மறைகுறியாக்க பெட்டகம்",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "மறைகுறியாக்க சேமிப்பிடம் மற்றும் முதன்மை கடவுச்சொல் பாதுகாப்பை நிர்வகிக்கவும்.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "மறைகுறியாக்க பயன்முறை",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "நிலையான பயன்முறை (உள்ளூர் மட்டும்)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "எந்த உள்ளமைவும் தேவையில்லை. உங்கள் உலாவி சுயவிவரத்தில் தனிமைப்படுத்தப்பட்ட உள்ளூர் IndexedDB இல் படிவங்கள் சேமிக்கப்படும்.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "முதன்மை கடவுச்சொல் பெட்டகம் (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 விசை வழித்தோன்றலைப் பயன்படுத்தி இராணுவ தர AES-256 மறைகுறியாக்கம். வரைவுகளைப் படிக்க கடவுச்சொல் தேவை.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "பெட்டக நிலை",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "முதன்மை கடவுச்சொல் உள்ளமைக்கப்படவில்லை.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "பெட்டகம் தற்போது நினைவகத்தில் திறக்கப்பட்டுள்ளது.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "பெட்டகம் உள்ளமைக்கப்பட்டு பூட்டப்பட்டுள்ளது.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "முதன்மை கடவுச்சொல்லை அமைக்கவும்",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "முதன்மை கடவுச்சொல்லை மாற்றவும்",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "செயலற்ற தானியங்கி பூட்டு நேரம்",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "குறிப்பிட்ட காலத்திற்கு செயலற்ற நிலையில் இருந்தால் நினைவகத்திலிருந்து மறைகுறியாக்க விசைகளை தானாகவே நீக்கவும்.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "5 நிமிடங்கள்",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "15 நிமிடங்கள்",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "30 நிமிடங்கள்",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "1 மணிநேரம்",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "அமர்வின் போது ஒருபோதும் இல்லை",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "முடக்கப்பட்ட டொமைன்கள்",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "படிவப் பதிவிலிருந்து குறிப்பிட்ட தளங்கள் அல்லது வைல்டு கார்டு வடிவங்களை விலக்கவும்.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "விலக்கப்பட்ட டொமைனைச் சேர்க்கவும்",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "எ.கா. *.bank.com அல்லது localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "டொமைனைத் தடு",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "விலக்கப்பட்ட டொமைன் பட்டியல்",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "டொமைன் வடிவம்",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "செயல்",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "இதுவரை முடக்கப்பட்ட டொமைன்கள் எதுவும் இல்லை.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "தடையை நீக்கு",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "சேமிப்பிடம் & பராமரிப்பு",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "சேமிப்பகப் பயன்பாட்டை ஆய்வு செய்யவும், மறைகுறியாக்கப்பட்ட காப்புப்பிரதிகளை ஏற்றுமதி செய்யவும் அல்லது அனைத்து பதிவுகளையும் அழிக்கவும்.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB சேமிப்பக திறன்",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "சேமிப்பக தடம் கணக்கிடப்படுகிறது...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "கிடைக்கக்கூடிய $QUOTA$ MB இல் தோராயமாக ~$USAGE$ MB பயன்படுத்தப்படுகிறது.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "சேமிப்பக மதிப்பீடு கிடைக்கவில்லை.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "படிவ வரலாற்றை ஏற்றுமதி செய்யவும்",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "முழு படிவ வரலாற்றையும் JSON காப்புப் பிரதி கோப்பாகப் பதிவிறக்கவும்.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON ஏற்றுமதி",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "ஆபத்து மண்டலம்: முழுமையான அழிப்பு",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "பதிவுசெய்யப்பட்ட அனைத்து டொமைன்கள், படிவங்கள் மற்றும் புலம் வரைவுகளை நிரந்தரமாக நீக்கவும்.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "அனைத்து வரலாற்றையும் அழிக்கவும்",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "பற்றி & நோயறிதல்",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "நீட்டிப்பு பதிப்பு மற்றும் பின்னணி சேவை பணியாளர் நோயறிதல் தகவல்.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "நீட்டிப்பு பதிப்பு",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "இலக்கு இயந்திரம்",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "மறைகுறியாக்க இயந்திரம்",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "தரவுத்தள இயந்திரம்",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "பின்னணி நிலை",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● செயலில் உள்ளது",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "முதன்மை கடவுச்சொல்லை அமைக்கவும்",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "முதன்மை கடவுச்சொல்லை மாற்றவும்",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "புதிய முதன்மை கடவுச்சொல்",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "பாதுகாப்பான கடவுச்சொல்லை உள்ளிடவும்...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "கடவுச்சொல்லை மீண்டும் தட்டச்சு செய்யவும்...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "கடவுச்சொல் வலிமை: காலியாக உள்ளது",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "கடவுச்சொல் வலிமை: பலவீனமானது",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "கடவுச்சொல் வலிமை: நடுத்தரமானது",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "கடவுச்சொல் வலிமை: வலுவானது (PBKDF2-SHA256, 100k மறு செய்கைகள்)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "ரத்துசெய்",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "முதன்மை கடவுச்சொல்லைச் சேமிக்கவும்",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "முழுமையான வரலாற்று அழிப்பை உறுதிப்படுத்தவும்",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "இந்தச் செயலைச் செயல்தவிர்க்க முடியாது. கைப்பற்றப்பட்ட அனைத்து படிவ வரலாறு, வரைவுகள் மற்றும் பதிவுகள் நிரந்தரமாக அழிக்கப்படும்.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "நீக்கு",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "உறுதிப்படுத்த $KEYWORD$ என தட்டச்சு செய்யவும்:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "நிரந்தரமாக அழிக்கவும்",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "கடவுச்சொல்லை உள்ளிடவும்.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "கடவுச்சொற்கள் பொருந்தவில்லை.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "கடவுச்சொல் குறைந்தது 6 எழுத்துகள் நீளமாக இருக்க வேண்டும்.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "முதன்மை கடவுச்சொல் வெற்றிகரமாக உள்ளமைக்கப்பட்டது.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "கடவுச்சொல்லை அமைக்க முடியவில்லை: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "தவறான முதன்மை கடவுச்சொல்.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "பதிவுசெய்யப்பட்ட அனைத்து வரலாறும் வரைவுகளும் அழிக்கப்பட்டன.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "நிலையான பயன்முறைக்கு மாறுவது முதன்மை கடவுச்சொல் மறைகுறியாக்கத்தை அகற்றும். தொடரவா?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "உறுதிப்படுத்த உங்கள் தற்போதைய முதன்மை கடவுச்சொல்லை உள்ளிடவும்:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus படிவ மீட்பு",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "படிவ வரைவுகளை மீட்டெடுக்கவும் (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus மீட்பு",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "1 வரைவு",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$ வரைவுகள்",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "புல வரலாற்றைத் தேடவும்...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "முழு படிவத்தையும் மீட்டெடுக்கவும்",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "படிவம்",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus அமைப்புகள்",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus மீட்பைத் திறக்கவும்",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "படிவத் தரவை மீட்டெடுக்கவும்",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "தேடவும்...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "படிவத்தை மீட்டெடுக்கவும்",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "படிவத்தை மீட்டெடுக்கவும்",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "அமைப்புகள்",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "இந்த தளத்தில் முடக்கவும்",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$ இல் Lazarus ஐ முடக்கவா?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "வரைவுகள் எதுவும் கிடைக்கவில்லை",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "வரைவைச் சேமிக்க தட்டச்சு செய்யத் தொடங்கவும்",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "1 வரைவு",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "$COUNT$ வரைவுகள்",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "1 சொல்",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ சொற்கள்",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(காலியாக உள்ளது)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

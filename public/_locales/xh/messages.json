@@ -1,70 +1,70 @@
 {
   "extensionName": {
-    "message": "Lazarus: Восстановление форм",
+    "message": "Lazarus: Ukubuyisela Ifomu",
     "description": "The title and name of the browser extension."
   },
   "extensionDescription": {
-    "message": "Никогда больше не теряйте данные форм, комментарии или черновики. Безопасное, зашифрованное локальное восстановление форм.",
+    "message": "Ungaze uphinde ulahlekelwe yidatha yefomu, izimvo, okanye idrafti zombhalo kwakhona. Ukubuyisela ifomu okukhuselekileyo, okuntsonkothileyo nokwasekhaya.",
     "description": "The description of the browser extension."
   },
   "actionTitle": {
-    "message": "Lazarus: Восстановление форм",
+    "message": "Lazarus: Ukubuyisela Ifomu",
     "description": "Tooltip for toolbar extension action button."
   },
   "commandRecoverLastFormDescription": {
-    "message": "Восстановить последнюю форму на текущей странице",
+    "message": "Buyisela ifomu yokugqibela ebihlelwe kweli phepha",
     "description": "Shortcut command description to recover last edited form."
   },
   "timeJustNow": {
-    "message": "только что",
+    "message": "ngoku nje",
     "description": "Relative time for events occurring in the last 30 seconds."
   },
   "timeUnknown": {
-    "message": "Неизвестное время",
+    "message": "Ixesha elingaziwayo",
     "description": "Fallback label when a timestamp is missing or invalid."
   },
   "contextMenuRoot": {
-    "message": "Восстановление форм Lazarus",
+    "message": "Ukubuyisela Ifomu kwe-Lazarus",
     "description": "Context menu top-level root item title."
   },
   "contextMenuSaveNow": {
-    "message": "⚡ Сохранить снимок формы сейчас",
+    "message": "⚡ Gcina Umfanekiso weFomu Ngoku",
     "description": "Context menu action to trigger an immediate snapshot."
   },
   "contextMenuRecoverForm": {
-    "message": "🕒 Восстановить версию формы",
+    "message": "🕒 Buyisela Inguqulelo yeFomu",
     "description": "Context menu parent item for form revisions."
   },
   "contextMenuNoFormVersions": {
-    "message": "Нет сохраненных версий на этой странице",
+    "message": "Akukho zinguqulelo zangaphambili kweli phepha",
     "description": "Disabled placeholder when no form revisions exist."
   },
   "contextMenuRecoverField": {
-    "message": "🔤 Восстановить текст поля",
+    "message": "🔤 Buyisela Umbhalo weNdawo",
     "description": "Context menu parent item for field text snippets."
   },
   "contextMenuNoFieldSnippets": {
-    "message": "Нет сохраненных фрагментов для этого поля",
+    "message": "Akukho zicatshulwa zigciniweyo zale ndawo",
     "description": "Disabled placeholder when no field snippets exist."
   },
   "contextMenuOpenSidebar": {
-    "message": "📊 Просмотреть версии на боковой панели",
+    "message": "📊 Khangela Iinguqulelo kwi-Sidebar",
     "description": "Context menu item to open extension side panel."
   },
   "contextMenuOpenOptions": {
-    "message": "⚙️ Настройки / Параметры",
+    "message": "⚙️ Iisetingi / Izikhetho",
     "description": "Context menu item to open settings page."
   },
   "contextMenuDisableDomain": {
-    "message": "🚫 Отключить Lazarus на этом сайте",
+    "message": "🚫 Khubaza i-Lazarus kule Sayithi",
     "description": "Context menu item to exclude the current domain."
   },
   "contextMenuOptionsFirefox": {
-    "message": "⚙️ Параметры",
+    "message": "⚙️ Izikhetho",
     "description": "Action toolbar context menu item for Firefox."
   },
   "contextMenuRevLabel": {
-    "message": "Версия $REV$ ($TYPE$ • $TIME$)",
+    "message": "Inguqulo $REV$ ($TYPE$ • $TIME$)",
     "description": "Label for form revision item in context menu.",
     "placeholders": {
       "rev": {
@@ -91,87 +91,87 @@
     }
   },
   "contextMenuTypeSubmitted": {
-    "message": "Отправлено",
+    "message": "Ithunyelwe",
     "description": "Revision status for final submitted form."
   },
   "contextMenuTypeDraft": {
-    "message": "Черновик",
+    "message": "Idrafti",
     "description": "Revision status for in-progress draft form."
   },
   "sidepanelHeaderTitle": {
-    "message": "Центр управления Lazarus",
+    "message": "Iziko Lolawulo le-Lazarus",
     "description": "Sidepanel header title."
   },
   "sidepanelStatusActive": {
-    "message": "Активно",
+    "message": "Iyasebenza",
     "description": "Sidepanel active status badge."
   },
   "sidepanelCheckingTab": {
-    "message": "Проверка текущей вкладки...",
+    "message": "Kujongwa ithebhu yangoku...",
     "description": "Initial status while detecting active tab."
   },
   "sidepanelDetecting": {
-    "message": "Определение...",
+    "message": "Kufunyanwa...",
     "description": "Initial domain status text."
   },
   "sidepanelNoActiveWebsite": {
-    "message": "Нет активного веб-сайта",
+    "message": "Akukho webhusayithi isebenzayo",
     "description": "Domain status when active tab is not a website."
   },
   "sidepanelNonWebPage": {
-    "message": "Служебная страница",
+    "message": "Iphepha elingelilo lewebhu",
     "description": "Domain status for browser internal or privileged pages."
   },
   "sidepanelTrackingActive": {
-    "message": "Отслеживание активно",
+    "message": "Ukulandelela kuyasebenza",
     "description": "Domain status when tracking is active on current site."
   },
   "sidepanelTrackingPaused": {
-    "message": "Отслеживание приостановлено",
+    "message": "Ukulandelela kunqunyanyisiwe",
     "description": "Domain status when tracking is disabled on current site."
   },
   "sidepanelToggleDomainTooltip": {
-    "message": "Переключить отслеживание Lazarus на этом домене",
+    "message": "Tshintsha ukulandelela kwe-Lazarus kule sayithi",
     "description": "Tooltip for active site domain toggle switch."
   },
   "sidepanelSearchPlaceholder": {
-    "message": "Поиск в истории сохраненных форм...",
+    "message": "Khangela imbali yefomu ebanjiweyo...",
     "description": "Placeholder for search input in sidepanel."
   },
   "sidepanelFilterAllSites": {
-    "message": "Все сайты",
+    "message": "Zonke Iisayithi",
     "description": "Filter button for all recorded websites."
   },
   "sidepanelFilterThisSite": {
-    "message": "Этот сайт",
+    "message": "Le Sayithi",
     "description": "Filter button for current website only."
   },
   "sidepanelFilterToday": {
-    "message": "Сегодня",
+    "message": "Namhlanje",
     "description": "Filter button for forms recorded today."
   },
   "sidepanelFilter7Days": {
-    "message": "Последние 7 дней",
+    "message": "Iintsuku Ezi-7 Ezidlulileyo",
     "description": "Filter button for forms recorded in the last 7 days."
   },
   "sidepanelFilter30Days": {
-    "message": "Последние 30 дней",
+    "message": "Iintsuku Ezingama-30 Ezidlulileyo",
     "description": "Filter button for forms recorded in the last 30 days."
   },
   "sidepanelSavedDrafts": {
-    "message": "Сохраненные черновики",
+    "message": "Iidrafti Ezilondoloziweyo",
     "description": "Section header for drafts list."
   },
   "sidepanelLoading": {
-    "message": "Загрузка...",
+    "message": "Iyalayisha...",
     "description": "Loading state label for drafts count."
   },
   "sidepanelDraftCount_one": {
-    "message": "1 черновик",
+    "message": "Idrafti e-1",
     "description": "Singular count for saved drafts."
   },
   "sidepanelDraftCount_other": {
-    "message": "$COUNT$ черновиков",
+    "message": "Iidrafti ezingama-$COUNT$",
     "description": "Plural count for saved drafts.",
     "placeholders": {
       "count": {
@@ -180,7 +180,7 @@
     }
   },
   "sidepanelEmptyThisSiteTitle": {
-    "message": "Нет сохраненных данных форм для $DOMAIN$",
+    "message": "Akukho datha yefomu igciniweyo ye-$DOMAIN$",
     "description": "Empty state title when filtering by current site.",
     "placeholders": {
       "domain": {
@@ -189,43 +189,43 @@
     }
   },
   "sidepanelEmptyThisSiteSubtitle": {
-    "message": "Черновики сохраняются по мере ввода на этом сайте.",
+    "message": "Iidrafti zigcinwa njengoko ubhala kule sayithi.",
     "description": "Empty state guidance text for current site."
   },
   "sidepanelViewAllSitesBtn": {
-    "message": "Показать все сайты",
+    "message": "Jonga Zonke Iisayithi",
     "description": "Button to clear site filter and view all drafts."
   },
   "sidepanelEmptyAllTitle": {
-    "message": "Сохраненных данных форм не найдено",
+    "message": "Akukho datha yefomu igciniweyo ifunyenweyo",
     "description": "Empty state title when no drafts exist."
   },
   "sidepanelEmptyAllSubtitle": {
-    "message": "Заполняйте формы на любых веб-страницах, и Lazarus автоматически сохранит ваши черновики.",
+    "message": "Tyelela naliphi na iphepha lewebhu uze uzalise iifomu ukuze i-Lazarus igcine iidrafti zakho ngokuzenzekelayo.",
     "description": "Empty state guidance text when no drafts exist."
   },
   "sidepanelActionCopy": {
-    "message": "Копировать",
+    "message": "Khuphela",
     "description": "Button to copy field text."
   },
   "sidepanelActionCopied": {
-    "message": "Скопировано!",
+    "message": "Ikhutshelwe!",
     "description": "Button state after copying field text."
   },
   "sidepanelActionCopyAll": {
-    "message": "Копировать все",
+    "message": "Khuphela Zonke",
     "description": "Button to copy all fields in a form."
   },
   "sidepanelActionCopiedAll": {
-    "message": "Все скопировано!",
+    "message": "Zonke Zikhutshelwe!",
     "description": "Button state after copying all fields."
   },
   "sidepanelActionDelete": {
-    "message": "Удалить",
+    "message": "Cima",
     "description": "Button to delete a form draft."
   },
   "sidepanelRevBadge": {
-    "message": "Версия $REV$",
+    "message": "Inguqulo $REV$",
     "description": "Revision number badge text.",
     "placeholders": {
       "rev": {
@@ -234,35 +234,35 @@
     }
   },
   "sidepanelSubmittedBadge": {
-    "message": " • Отправлено",
+    "message": " • Ithunyelwe",
     "description": "Suffix for submitted revision badge."
   },
   "sidepanelUntitledForm": {
-    "message": "Форма без названия",
+    "message": "Ifomu Engenagama",
     "description": "Fallback name for a form without a title."
   },
   "sidepanelDirectInput": {
-    "message": "Прямой ввод",
+    "message": "Ungeniso Ngqo",
     "description": "Fallback domain name when domain is not detected."
   },
   "sidepanelNoVisibleFields": {
-    "message": "Нет видимых полей",
+    "message": "Akukho mimandla ibonakalayo",
     "description": "Placeholder when form draft has no extractable visible fields."
   },
   "sidepanelFooterClearAll": {
-    "message": "🗑️ Очистить все",
+    "message": "🗑️ Cima Konke",
     "description": "Footer link to erase all drafts."
   },
   "sidepanelFooterSettings": {
-    "message": "⚙️ Настройки",
+    "message": "⚙️ Iisetingi",
     "description": "Footer link to open settings page."
   },
   "sidepanelConfirmClearHistory": {
-    "message": "Вы уверены, что хотите удалить всю историю восстановленных форм?",
+    "message": "Uqinisekile ufuna ukucima yonke imbali yeefomu ezibuyiselweyo?",
     "description": "Confirmation prompt before erasing all history."
   },
   "sidepanelConfirmPauseDomain": {
-    "message": "Приостановить восстановление форм Lazarus на $DOMAIN$?",
+    "message": "Nqumamisa ukubuyisela kwe-Lazarus ku-$DOMAIN$?",
     "description": "Confirmation prompt before pausing tracking on current domain.",
     "placeholders": {
       "domain": {
@@ -271,71 +271,71 @@
     }
   },
   "optionsTitle": {
-    "message": "Lazarus: Восстановление форм — Настройки",
+    "message": "Ukubuyisela Ifomu kwe-Lazarus — Iisetingi",
     "description": "HTML page title for the Options page."
   },
   "optionsNavGeneral": {
-    "message": "🛡️ Общие настройки",
+    "message": "🛡️ Ukhetho Jikelele",
     "description": "Sidebar navigation item for general preferences."
   },
   "optionsNavSecurity": {
-    "message": "🔐 Безопасность и хранилище",
+    "message": "🔐 Ukhuseleko ne-Vault",
     "description": "Sidebar navigation item for security settings."
   },
   "optionsNavDomains": {
-    "message": "🌐 Отключенные домены",
+    "message": "🌐 Iidomeyini Ezikhutshiweyo",
     "description": "Sidebar navigation item for disabled domains."
   },
   "optionsNavStorage": {
-    "message": "💾 Память и данные",
+    "message": "💾 Ukugcina neDatha",
     "description": "Sidebar navigation item for storage management."
   },
   "optionsNavAbout": {
-    "message": "ℹ️ О расширении и диагностика",
+    "message": "ℹ️ Malunga noFundo",
     "description": "Sidebar navigation item for about and diagnostics."
   },
   "optionsGeneralTitle": {
-    "message": "Общие настройки",
+    "message": "Ukhetho Jikelele",
     "description": "Header for general preferences tab."
   },
   "optionsGeneralDesc": {
-    "message": "Настройка политик перехвата ввода и срока хранения данных.",
+    "message": "Qwalasela imigaqo-nkqubo yokubamba ungeniso namaxesha okugcina.",
     "description": "Description for general preferences tab."
   },
   "optionsSavePasswordsTitle": {
-    "message": "Сохранять поля паролей",
+    "message": "Gcina Iindawo ze-Password",
     "description": "Setting title for password field recording."
   },
   "optionsSavePasswordsSubtitle": {
-    "message": "Записывать и восстанавливать данные, введенные в поля паролей.",
+    "message": "Rekhoda uze ubuyisele igalelo elibhalwe kwiindawo ze-password.",
     "description": "Setting description for password field recording."
   },
   "optionsSavePasswordsNoticeHeading": {
-    "message": "Уведомление о безопасности:",
+    "message": "Isaziso Sokhuseleko:",
     "description": "Bold heading for password storage security notice."
   },
   "optionsSavePasswordsWarning": {
-    "message": "Сохранение паролей на диске создает угрозу безопасности при доступе к вашему устройству. Рекомендуется включить мастер-пароль.",
+    "message": "Ukugcina i-password kwi-diski kubeka iinkcukacha ezibuthathaka kuye nabani na osebenzisa esi sixhobo. Gcina i-Master Password Vault isebenza.",
     "description": "Warning banner text when password recording is toggled on."
   },
   "optionsCreditCardsTitle": {
-    "message": "Автоматическое скрытие данных банковских карт",
+    "message": "Ukufihla Ikhadi leBhanki ne-PII Ngokuzenzekelayo",
     "description": "Setting title for credit card redaction."
   },
   "optionsCreditCardsSubtitle": {
-    "message": "Определение 13–19-значных номеров карт по алгоритму Луна и исключение CVV из локального хранилища.",
+    "message": "Bona amakhadi anamanani ali-13–19 nge-algorithm ye-Luhn uze unqande i-CVV ekungeneni kwindawo yokugcina.",
     "description": "Setting description for credit card redaction."
   },
   "optionsRetentionTitle": {
-    "message": "Срок хранения данных",
+    "message": "Ixesha Lokugcina iDatha",
     "description": "Setting title for data retention slider."
   },
   "optionsRetentionSubtitle": {
-    "message": "Автоматически удалять черновики форм старше указанного срока.",
+    "message": "Cima ngokuzenzekelayo iidrafti ezindala kunexesha elichaziweyo.",
     "description": "Setting description for data retention."
   },
   "optionsRetentionDaysChip": {
-    "message": "$DAYS$ дн.",
+    "message": "Iintsuku ezingama-$DAYS$",
     "description": "Chip label showing the selected retention period in days.",
     "placeholders": {
       "days": {
@@ -344,143 +344,143 @@
     }
   },
   "optionsSecurityTitle": {
-    "message": "Безопасность и защищенное хранилище",
+    "message": "Ukhuseleko ne-Vault Efihlakeleyo",
     "description": "Header for security tab."
   },
   "optionsSecurityDesc": {
-    "message": "Управление криптографическим хранилищем и защита мастер-паролем.",
+    "message": "Lawula ukugcina okuntsonkothileyo nokhuseleko lwe-master password.",
     "description": "Description for security tab."
   },
   "optionsEncryptionModeTitle": {
-    "message": "Режим шифрования",
+    "message": "Indlela yoFihlo",
     "description": "Card header for encryption mode selection."
   },
   "optionsModeStandardTitle": {
-    "message": "Стандартный режим (только локально)",
+    "message": "Indlela Eqhelekileyo (Eyasekhaya Kuphela)",
     "description": "Title for unencrypted/standard local storage mode."
   },
   "optionsModeStandardDesc": {
-    "message": "Без предварительной настройки. Формы сохраняются в локальной IndexedDB вашего профиля браузера.",
+    "message": "Akukho zicwangciso zongezelelweyo zifunekayo. Iifomu zigcinwa kwi-IndexedDB yasekhaya kwiprofayili yesikhangeli sakho.",
     "description": "Description for standard mode."
   },
   "optionsModeVaultTitle": {
-    "message": "Защищенное хранилище с мастер-паролем (AES-GCM-256)",
+    "message": "I-Master Password Vault (AES-GCM-256)",
     "description": "Title for encrypted vault mode."
   },
   "optionsModeVaultDesc": {
-    "message": "Шифрование военного уровня AES-256 с формированием ключей PBKDF2. Для чтения черновиков требуется пароль.",
+    "message": "Ukhuseleko lwebanga lomkhosi lwe-AES-256 kusetyenziswa isitshixo se-PBKDF2. I-password iyafuneka ukufunda iidrafti.",
     "description": "Description for encrypted vault mode."
   },
   "optionsVaultStatusTitle": {
-    "message": "Статус хранилища",
+    "message": "Ubume be-Vault",
     "description": "Setting title for master password vault status."
   },
   "optionsVaultStatusUnconfigured": {
-    "message": "Мастер-пароль не настроен.",
+    "message": "I-Master password ayikamiselwa.",
     "description": "Vault status when master password has not been set."
   },
   "optionsVaultStatusUnlocked": {
-    "message": "Хранилище разблокировано в оперативной памяти.",
+    "message": "I-Vault ivuliwe kwimemori ngoku.",
     "description": "Vault status when master password key is cached in memory."
   },
   "optionsVaultStatusLocked": {
-    "message": "Хранилище настроено и заблокировано.",
+    "message": "I-Vault imiselwe kwaye itshixiwe.",
     "description": "Vault status when master password is set and key is locked."
   },
   "optionsBtnSetPassword": {
-    "message": "Установить мастер-пароль",
+    "message": "Misela i-Master Password",
     "description": "Button to set master password for first time."
   },
   "optionsBtnChangePassword": {
-    "message": "Сменить мастер-пароль",
+    "message": "Tshintsha i-Master Password",
     "description": "Button to modify existing master password."
   },
   "optionsAutolockTitle": {
-    "message": "Автоблокировка при неактивности",
+    "message": "Ukutshixa Ngokuzenzekelayo Xa Ingenzi Nto",
     "description": "Setting title for vault inactivity lock timeout."
   },
   "optionsAutolockSubtitle": {
-    "message": "Автоматически сбрасывать ключи дешифрования после периода бездействия.",
+    "message": "Cima izitshixo zofihlo ngokuzenzekelayo emva kwexesha lokungasebenzi.",
     "description": "Setting description for auto-lock timeout."
   },
   "optionsAutolock5Min": {
-    "message": "5 минут",
+    "message": "Imizuzu emi-5",
     "description": "Auto-lock option for 5 minutes."
   },
   "optionsAutolock15Min": {
-    "message": "15 минут",
+    "message": "Imizuzu eli-15",
     "description": "Auto-lock option for 15 minutes."
   },
   "optionsAutolock30Min": {
-    "message": "30 минут",
+    "message": "Imizuzu engama-30",
     "description": "Auto-lock option for 30 minutes."
   },
   "optionsAutolock1Hour": {
-    "message": "1 час",
+    "message": "Iyure e-1",
     "description": "Auto-lock option for 1 hour."
   },
   "optionsAutolockNever": {
-    "message": "Никогда в течение сеанса",
+    "message": "Ungaze ngeli xesha",
     "description": "Auto-lock option to stay unlocked for current session."
   },
   "optionsDomainsTitle": {
-    "message": "Отключенные домены",
+    "message": "Iidomeyini Ezikhutshiweyo",
     "description": "Header for disabled domains tab."
   },
   "optionsDomainsDesc": {
-    "message": "Исключить определенные сайты или маски доменов из записи форм.",
+    "message": "Khupha iisayithi ezithile ekurekhodeni iifomu.",
     "description": "Description for disabled domains tab."
   },
   "optionsAddDomainTitle": {
-    "message": "Добавить исключенный домен",
+    "message": "Yongeza i-Domeyini Ekhutshiweyo",
     "description": "Card title for adding a domain to the blocklist."
   },
   "optionsInputDomainPlaceholder": {
-    "message": "например, *.bank.com или localhost:*",
+    "message": "umz: *.bank.com okanye localhost:*",
     "description": "Placeholder for domain input field."
   },
   "optionsBtnAddDomain": {
-    "message": "Заблокировать домен",
+    "message": "Thintela i-Domeyini",
     "description": "Button to add domain to blocklist."
   },
   "optionsDomainsListTitle": {
-    "message": "Список исключенных доменов",
+    "message": "Uluhlu Lweedomeyini Ezikhutshiweyo",
     "description": "Card title for disabled domains table."
   },
   "optionsThDomainPattern": {
-    "message": "Шаблон домена",
+    "message": "Ipateni ye-Domeyini",
     "description": "Table header for domain pattern."
   },
   "optionsThAction": {
-    "message": "Действие",
+    "message": "Isenzo",
     "description": "Table header for action column."
   },
   "optionsNoDisabledDomains": {
-    "message": "Исключенных доменов пока нет.",
+    "message": "Akukho zidomeyini zikhutshiweyo okwangoku.",
     "description": "Notice when domain blocklist is empty."
   },
   "optionsBtnUnblock": {
-    "message": "Разблокировать",
+    "message": "Susa Uthintelo",
     "description": "Button to remove domain from blocklist."
   },
   "optionsStorageTitle": {
-    "message": "Хранилище и обслуживание",
+    "message": "Ukugcina noLondolozo",
     "description": "Header for storage and maintenance tab."
   },
   "optionsStorageDesc": {
-    "message": "Проверка использования памяти, экспорт зашифрованных резервных копий или полное удаление записей.",
+    "message": "Jonga ukusetyenziswa kwendawo yokugcina, thumela ii-backups ezifihliweyo, okanye ucime zonke iirekhodi.",
     "description": "Description for storage tab."
   },
   "optionsCapacityTitle": {
-    "message": "Объем хранилища IndexedDB",
+    "message": "Umthamo Wokugcina we-IndexedDB",
     "description": "Card title for storage usage progress."
   },
   "optionsStorageCalculating": {
-    "message": "Вычисление объема памяти...",
+    "message": "Kubalwa umthamo wokugcina...",
     "description": "Label while calculating storage utilisation."
   },
   "optionsStorageEstimate": {
-    "message": "Использовано ~$USAGE$ МБ из доступной квоты $QUOTA$ МБ.",
+    "message": "Kusetyenziswa ~$USAGE$ MB kwi-$QUOTA$ MB ekhoyo.",
     "description": "Storage quota usage summary text.",
     "placeholders": {
       "usage": {
@@ -492,55 +492,55 @@
     }
   },
   "optionsStorageUnavailable": {
-    "message": "Оценка объема хранилища недоступна.",
+    "message": "Uqikelelo lokugcina alufumaneki.",
     "description": "Fallback label when browser storage API is unavailable."
   },
   "optionsExportTitle": {
-    "message": "Экспорт истории форм",
+    "message": "Thumela Ngaphandle Imbali yeFomu",
     "description": "Card title for exporting recovery history."
   },
   "optionsExportSubtitle": {
-    "message": "Скачать полную историю форм в формате резервной копии JSON.",
+    "message": "Khuphela yonke imbali yefomu kwifayile ye-JSON.",
     "description": "Card subtitle for export action."
   },
   "optionsBtnExport": {
-    "message": "Экспорт JSON",
+    "message": "Thumela i-JSON",
     "description": "Button to download JSON backup."
   },
   "optionsDangerZoneTitle": {
-    "message": "Опасная зона: Полное удаление",
+    "message": "Indawo Eyingozi: Ukucima Konke",
     "description": "Card title for erasing all extension data."
   },
   "optionsDangerZoneSubtitle": {
-    "message": "Безвозвратно удалить все сохраненные домены, формы и черновики полей.",
+    "message": "Cima unomphelo zonke iidomeyini, iifomu, needrafti ezirekhodiweyo.",
     "description": "Card subtitle for wipe action."
   },
   "optionsBtnWipeHistory": {
-    "message": "Стереть всю историю",
+    "message": "Cima Yonke Imbali",
     "description": "Button to open nuclear wipe confirmation modal."
   },
   "optionsAboutTitle": {
-    "message": "О расширении и диагностика",
+    "message": "Malunga noFundo",
     "description": "Header for about and diagnostics tab."
   },
   "optionsAboutDesc": {
-    "message": "Сведения о версии расширения и фоновом сервис-воркере.",
+    "message": "Inguqulelo yolwandiso kunye nokuxilongwa komsebenzi wasemva.",
     "description": "Description for about tab."
   },
   "optionsDiagnosticsVersion": {
-    "message": "Версия расширения",
+    "message": "Inguqulelo yoLwandiso",
     "description": "Label for extension version table row."
   },
   "optionsDiagnosticsEngine": {
-    "message": "Целевая платформа",
+    "message": "Injini Ekuqondwe Kuyo",
     "description": "Label for browser engine support table row."
   },
   "optionsDiagnosticsEngineValue": {
-    "message": "Chromium и Firefox Gecko",
+    "message": "Chromium ne-Firefox Gecko",
     "description": "Value for target engine table row."
   },
   "optionsDiagnosticsCrypto": {
-    "message": "Криптографический движок",
+    "message": "Injini yoFihlo",
     "description": "Label for cryptography engine table row."
   },
   "optionsDiagnosticsCryptoValue": {
@@ -548,7 +548,7 @@
     "description": "Value for cryptography engine table row."
   },
   "optionsDiagnosticsDatabase": {
-    "message": "База данных",
+    "message": "Injini yeDathabheyisi",
     "description": "Label for database engine table row."
   },
   "optionsDiagnosticsDatabaseValue": {
@@ -556,75 +556,75 @@
     "description": "Value for database engine table row."
   },
   "optionsDiagnosticsStatus": {
-    "message": "Фоновый статус",
+    "message": "Ubume baseMva",
     "description": "Label for service worker status table row."
   },
   "optionsDiagnosticsStatusActive": {
-    "message": "● Активно",
+    "message": "● Iyasebenza",
     "description": "Value for active service worker."
   },
   "optionsModalSetPasswordTitle": {
-    "message": "Установить мастер-пароль",
+    "message": "Misela i-Master Password",
     "description": "Modal title when setting master password."
   },
   "optionsModalChangePasswordTitle": {
-    "message": "Сменить мастер-пароль",
+    "message": "Tshintsha i-Master Password",
     "description": "Modal title when changing master password."
   },
   "optionsLabelNewPassword": {
-    "message": "Новый мастер-пароль",
+    "message": "I-Master Password Entsha",
     "description": "Label for new master password input."
   },
   "optionsPlaceholderNewPassword": {
-    "message": "Введит надежный пароль...",
+    "message": "Faka ipassword ekhuselekileyo...",
     "description": "Placeholder for master password input."
   },
   "optionsLabelConfirmPassword": {
-    "message": "Подтвердите пароль",
+    "message": "Qinisekisa i-Password",
     "description": "Label for confirm password input."
   },
   "optionsPlaceholderConfirmPassword": {
-    "message": "Повторите пароль...",
+    "message": "Phinda ubhale ipassword...",
     "description": "Placeholder for confirm password input."
   },
   "optionsPasswordStrengthEmpty": {
-    "message": "Надежность пароля: Пусто",
+    "message": "Amandla epassword: Ayikho",
     "description": "Strength indicator when password input is empty."
   },
   "optionsPasswordStrengthWeak": {
-    "message": "Надежность пароля: Слабый",
+    "message": "Amandla epassword: Buthathaka",
     "description": "Strength indicator when password is weak."
   },
   "optionsPasswordStrengthModerate": {
-    "message": "Надежность пароля: Средний",
+    "message": "Amandla epassword: Phakathi",
     "description": "Strength indicator when password is moderate."
   },
   "optionsPasswordStrengthStrong": {
-    "message": "Надежность пароля: Надежный (PBKDF2-SHA256, 100k итераций)",
+    "message": "Amandla epassword: Yomelele (PBKDF2-SHA256, 100k)",
     "description": "Strength indicator when password is strong."
   },
   "optionsBtnCancel": {
-    "message": "Отмена",
+    "message": "Rhoxisa",
     "description": "Cancel button for modals."
   },
   "optionsBtnSaveMasterPass": {
-    "message": "Сохранить мастер-пароль",
+    "message": "Gcina i-Master Password",
     "description": "Submit button for master password modal."
   },
   "optionsModalWipeTitle": {
-    "message": "Подтвердите полное удаление истории",
+    "message": "Qinisekisa Ukucinywa Kwayo Yonke Imbali",
     "description": "Title for data wipe confirmation modal."
   },
   "optionsModalWipeSubtitle": {
-    "message": "Это действие необратимо. Вся история форм, черновики и журналы будут безвозвратно удалены.",
+    "message": "Eli nyathelo alinakubuyiselwa umva. Yonke imbali yefomu, iidrafti neenguqulelo ziya kucinywa unomphelo.",
     "description": "Subtitle warning for data wipe modal."
   },
   "optionsWipeConfirmKeyword": {
-    "message": "УДАЛИТЬ",
+    "message": "CIMA",
     "description": "Confirmation keyword token required to confirm permanent history erasure."
   },
   "optionsLabelTypeDelete": {
-    "message": "Введите $KEYWORD$ для подтверждения:",
+    "message": "Bhala u-$KEYWORD$ ukuze uqinisekise:",
     "description": "Label instructing user to type confirmation token.",
     "placeholders": {
       "keyword": {
@@ -633,27 +633,27 @@
     }
   },
   "optionsBtnConfirmWipe": {
-    "message": "Стереть навсегда",
+    "message": "Cima Unomphelo",
     "description": "Submit button to confirm data wipe."
   },
   "optionsAlertEnterPassword": {
-    "message": "Пожалуйста, введите пароль.",
+    "message": "Nceda ufake ipassword.",
     "description": "Validation alert when password is omitted."
   },
   "optionsAlertPasswordsNoMatch": {
-    "message": "Пароли не совпадают.",
+    "message": "Iipassword azingqinelani.",
     "description": "Validation alert when confirmation password does not match."
   },
   "optionsAlertPasswordMinLength": {
-    "message": "Пароль должен содержать не менее 6 символов.",
+    "message": "Ipassword kufuneka ibe nobuncinane bamalobhi ama-6.",
     "description": "Validation alert when password is under 6 characters."
   },
   "optionsAlertPasswordSuccess": {
-    "message": "Мастер-пароль успешно настроен.",
+    "message": "I-Master password imiselwe ngempumelelo.",
     "description": "Alert upon successful master password configuration."
   },
   "optionsAlertPasswordFailed": {
-    "message": "Не удалось установить пароль: $ERROR$",
+    "message": "Ukumisela ipassword akuphumelelanga: $ERROR$",
     "description": "Alert upon master password configuration failure.",
     "placeholders": {
       "error": {
@@ -662,39 +662,39 @@
     }
   },
   "optionsAlertIncorrectPassword": {
-    "message": "Неверный мастер-пароль.",
+    "message": "I-Master password ayichanekanga.",
     "description": "Alert when entered master password is incorrect."
   },
   "optionsAlertWipeSuccess": {
-    "message": "Вся история и черновики были удалены.",
+    "message": "Yonke imbali needrafti ezirekhodiweyo zicinyiwe.",
     "description": "Alert upon successful data wipe."
   },
   "optionsConfirmSwitchStandard": {
-    "message": "Переключение в стандартный режим отключит шифрование мастер-паролем. Продолжить?",
+    "message": "Ukutshintshela kwi-Standard Mode kuya kususa ufihlo lwe-master password. Uyafuna ukuqhubeka?",
     "description": "Confirmation prompt before disabling encryption."
   },
   "optionsPromptCurrentPassword": {
-    "message": "Введит текущий мастер-пароль для подтверждения:",
+    "message": "Faka i-master password yakho yangoku ukuze uqinisekise:",
     "description": "Prompt requesting current master password before removal."
   },
   "shadowTriggerAriaLabel": {
-    "message": "Восстановление форм Lazarus",
+    "message": "Ukubuyisela Ifomu kwe-Lazarus",
     "description": "Aria label for floating in-page recovery button."
   },
   "shadowTriggerTitle": {
-    "message": "Восстановить черновики форм (Lazarus)",
+    "message": "Buyisela iidrafti zefomu (Lazarus)",
     "description": "Title tooltip for floating in-page recovery button."
   },
   "shadowMenuTitle": {
-    "message": "Восстановление Lazarus",
+    "message": "Ukubuyisela kwe-Lazarus",
     "description": "Title header in floating recovery menu card."
   },
   "shadowMenuCounter_one": {
-    "message": "1 черновик",
+    "message": "Idrafti e-1",
     "description": "Singular count for menu card header."
   },
   "shadowMenuCounter_other": {
-    "message": "$COUNT$ черновиков",
+    "message": "Iidrafti ezingama-$COUNT$",
     "description": "Plural count for menu card header.",
     "placeholders": {
       "count": {
@@ -703,51 +703,51 @@
     }
   },
   "shadowSearchPlaceholder": {
-    "message": "Поиск в истории поля...",
+    "message": "Khangela imbali yendawo...",
     "description": "Placeholder for search input in recovery menu."
   },
   "shadowRestoreEntireFormTitle": {
-    "message": "Восстановить форму целиком",
+    "message": "Buyisela ifomu yonke",
     "description": "Tooltip for restore entire form footer button."
   },
   "shadowRestoreFormBtn": {
-    "message": "Форма",
+    "message": "Ifomu",
     "description": "Button label to restore entire form."
   },
   "shadowSettingsTitle": {
-    "message": "Настройки Lazarus",
+    "message": "Iisetingi ze-Lazarus",
     "description": "Tooltip for settings footer button in recovery menu."
   },
   "shadowButtonAriaLabel": {
-    "message": "Открыть восстановление Lazarus",
+    "message": "Vula Ukubuyisela kwe-Lazarus",
     "description": "Aria label for the recovery trigger button."
   },
   "shadowButtonTitle": {
-    "message": "Восстановить данные формы",
+    "message": "Buyisela iDatha yeFomu",
     "description": "Tooltip for the recovery trigger button."
   },
   "shadowMenuSearchPlaceholder": {
-    "message": "Поиск...",
+    "message": "Khangela...",
     "description": "Placeholder for the search input in the recovery menu."
   },
   "shadowMenuRestoreFormTitle": {
-    "message": "Восстановить форму",
+    "message": "Buyisela iFomu",
     "description": "Title for restoring a full form."
   },
   "shadowMenuRestoreFormLabel": {
-    "message": "Восстановить форму",
+    "message": "Buyisela ifomu",
     "description": "Label for restoring a full form."
   },
   "shadowMenuSettingsTitle": {
-    "message": "Настройки",
+    "message": "Iisetingi",
     "description": "Tooltip for settings button in recovery menu."
   },
   "shadowMenuDisableTitle": {
-    "message": "Отключить на этом сайте",
+    "message": "Khubaza kule sayithi",
     "description": "Tooltip for disable site button in recovery menu."
   },
   "shadowMenuDisableConfirm": {
-    "message": "Отключить Lazarus на $DOMAIN$?",
+    "message": "Khubaza i-Lazarus ku-$DOMAIN$?",
     "description": "Confirmation prompt before disabling Lazarus on a domain.",
     "placeholders": {
       "domain": {
@@ -756,19 +756,19 @@
     }
   },
   "shadowMenuEmptyTitle": {
-    "message": "Черновиков не найдено",
+    "message": "Akukho drafti ifunyenweyo",
     "description": "Empty state title in recovery menu."
   },
   "shadowMenuEmptySubtitle": {
-    "message": "Начните вводить текст, чтобы сохранить",
+    "message": "Zama ukubhala ukuze ugcine enye",
     "description": "Empty state subtitle in recovery menu."
   },
   "shadowMenuDraftCount_one": {
-    "message": "1 черновик",
+    "message": "Idrafti e-1",
     "description": "Singular menu draft count badge."
   },
   "shadowMenuDraftCount_other": {
-    "message": "$COUNT$ черновиков",
+    "message": "Iidrafti ezingama-$COUNT$",
     "description": "Plural menu draft count badge.",
     "placeholders": {
       "count": {
@@ -777,11 +777,11 @@
     }
   },
   "shadowSnippetWordCount_one": {
-    "message": "1 слово",
+    "message": "Igama eli-1",
     "description": "Singular word count badge."
   },
   "shadowSnippetWordCount_other": {
-    "message": "$COUNT$ слов",
+    "message": "Amagama angama-$COUNT$",
     "description": "Plural word count badge.",
     "placeholders": {
       "count": {
@@ -790,79 +790,7 @@
     }
   },
   "shadowSnippetEmpty": {
-    "message": "(пусто)",
+    "message": "(ayinalutho)",
     "description": "Placeholder text for an empty snippet."
-  },
-  "sidepanelDraftCount_few": {
-    "message": "$COUNT$ черновика",
-    "description": "Plural few",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "sidepanelDraftCount_many": {
-    "message": "$COUNT$ черновиков",
-    "description": "Plural many",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowMenuCounter_few": {
-    "message": "$COUNT$ черновика",
-    "description": "Plural few",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowMenuCounter_many": {
-    "message": "$COUNT$ черновиков",
-    "description": "Plural many",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowMenuDraftCount_few": {
-    "message": "$COUNT$ черновика",
-    "description": "Plural few",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowMenuDraftCount_many": {
-    "message": "$COUNT$ черновиков",
-    "description": "Plural many",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowSnippetWordCount_few": {
-    "message": "$COUNT$ слова",
-    "description": "Plural few",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "shadowSnippetWordCount_many": {
-    "message": "$COUNT$ слов",
-    "description": "Plural many",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
   }
 }

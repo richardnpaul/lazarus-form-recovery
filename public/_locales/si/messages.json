@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: පෝරම ප්‍රතිසාධනය",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "පෝරම දත්ත, අදහස් හෝ කෙටුම්පත් කිසිදා අහිමි කර නොගන්න. ආරක්ෂිත, සංකේතාත්මක සහ දේශීය පෝරම ප්‍රතිසාධනය.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: පෝරම ප්‍රතිසාධනය",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "වත්මන් පිටුවේ අවසාන සංස්කරණය කළ පෝරමය ප්‍රතිසාධනය කරන්න",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "දැන්ම",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "නොදන්නා වේලාව",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus පෝරම ප්‍රතිසාධනය",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ පෝරමයේ ක්ෂණික ඡායාරූපයක් දැන්ම සුරකින්න",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 පෝරම අනුවාදය ප්‍රතිසාධනය කරන්න",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "මෙම පිටුවේ පෙර අනුවාද නොමැත",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 ක්ෂේත්‍ර පෙළ ප්‍රතිසාධනය කරන්න",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "මෙම ක්ෂේත්‍රය සඳහා පෙර කොටස් නොමැත",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 පැති තීරුවේ අනුවාද පිරික්සන්න",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ සැකසීම්...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 මෙම අඩවියේ Lazarus අබල කරන්න",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ විකල්ප",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "අනුවාදය $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "යොමු කරන ලදි",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "කෙටුම්පත",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus පාලන මධ්‍යස්ථානය",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "සක්‍රීයයි",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "වත්මන් පටිත්ත පරීක්ෂා කරමින්...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "හඳුනාගනිමින්...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "සක්‍රීය වෙබ් අඩවියක් නැත",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "වෙබ් පිටුවක් නොවේ",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ලුහුබැඳීම සක්‍රීයයි",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ලුහුබැඳීම විරාම කර ඇත",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "මෙම වසමේ Lazarus ලුහුබැඳීම සක්‍රීය/අබල කරන්න",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "පෝරම ඉතිහාසය සොයන්න...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "සියලුම අඩවි",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "මෙම අඩවිය",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "අද",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "පසුගිය දින 7",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "පසුගිය දින 30",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "සුරකින ලද කෙටුම්පත්",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "පූරණය වෙමින්...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "කෙටුම්පත් 1 ක්",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "කෙටුම්පත් $COUNT$ ක්",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$ සඳහා සුරකින ලද පෝරම දත්ත නොමැත",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "ඔබ මෙම අඩවියේ ටයිප් කරන විට කෙටුම්පත් ස්වයංක්‍රීයව සුරැකේ.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "සියලුම අඩවි බලන්න",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "සුරකින ලද පෝරම දත්ත හමු නොවීය",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Lazarus හට ඔබේ කෙටුම්පත් ස්වයංක්‍රීයව සුරැකීමට ඕනෑම පිටුවකට ගොස් පෝරම පුරවන්න.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "පිටපත් කරන්න",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "පිටපත් කළා!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "සියල්ල පිටපත් කරන්න",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "සියල්ල පිටපත් කළා!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "මකන්න",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "අනුවාදය $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • යොමු කරන ලදි",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "සිරස්තල රහිත පෝරමය",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "සෘජු ආදානය",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "දෘශ්‍යමාන ක්ෂේත්‍ර නොමැත",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ සියල්ල හිස් කරන්න",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ සැකසීම්",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "ඔබට සියලුම පෝරම ඉතිහාසය හිස් කිරීමට අවශ්‍ය බව සහතිකද?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$ හි Lazarus පෝරම ප්‍රතිසාධනය විරාම කරන්නද?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus පෝරම ප්‍රතිසාධනය — සැකසීම්",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ සාමාන්‍ය",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 ආරක්ෂාව & සේප්පුව",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 අබල කළ වසම්",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 ආචයනය & දත්ත",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ පිළිබඳ & විනිශ්චය",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "සාමාන්‍ය මනාපයන්",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "ආදාන ග්‍රහණය කිරීමේ ප්‍රතිපත්ති සහ දත්ත රඳවා ගැනීමේ කාලය සකසන්න.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "මුරපද ක්ෂේත්‍ර සුරකින්න",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "මුරපද ක්ෂේත්‍රවල ටයිප් කළ පෙළ වාර්තා කර ප්‍රතිසාධනය කරන්න.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "ආරක්ෂක දැන්වීම:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "තැටියේ මුරපද ගබඩා කිරීමෙන් සංවේදී තොරතුරු නිරාවරණය විය හැක. ප්‍රධාන මුරපද ප්‍රකාරය සක්‍රීයව තබා ගන්න.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "ක්‍රෙඩිට් කාඩ්පත් දත්ත ස්වයංක්‍රීයව වසන් කිරීම",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn ඇල්ගොරිතමය මඟින් කාඩ්පත් අංක හඳුනාගෙන CVV දේශීය ආචයනයට යාම වළක්වයි.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "දත්ත රඳවා ගැනීමේ කාලය",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "නිශ්චිත කාලයට වඩා පැරණි කෙටුම්පත් ස්වයංක්‍රීයව මකන්න.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "දින $DAYS$ ක්",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "ආරක්ෂාව සහ සංකේතාංකන සේප්පුව",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "ප්‍රධාන මුරපද ආරක්ෂාව සහිත සංකේතාත්මක ආචයනය කළමනාකරණය කරන්න.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "සංකේතාංකන ප්‍රකාරය",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "සම්මත ප්‍රකාරය (දේශීයව පමණි)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "අමතර සැකසුම් අවශ්‍ය නොවේ. දත්ත බ්‍රවුසරයේ IndexedDB හි ගබඩා වේ.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "ප්‍රධාන මුරපද සේප්පුව (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 සමඟ AES-256 සංකේතනය. කෙටුම්පත් කියවීමට මුරපදයක් අවශ්‍ය වේ.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "සේප්පුවේ තත්ත්වය",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "ප්‍රධාන මුරපදය සකසා නැත.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "සේප්පුව දැනට මතකයේ අගුළු හැර ඇත.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "සේප්පුව අගුළු දමා ඇත.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "ප්‍රධාන මුරපදය සකසන්න",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "ප්‍රධාන මුරපදය වෙනස් කරන්න",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "අක්‍රියතාවේදී ස්වයංක්‍රීය අගුළු දැමීම",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "අක්‍රිය කාලයකට පසු මතකයෙන් විකේතන යතුරු ස්වයංක්‍රීයව මකන්න.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "විනාඩි 5",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "විනාඩි 15",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "විනාඩි 30",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "පැය 1",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "සැසිය අතරතුර කිසිවිටෙක නැත",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "අබල කළ වසම්",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "පෝරම පටිගත කිරීමෙන් නිශ්චිත අඩවි බැහැර කරන්න.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "බැහැර කළ වසමක් එක් කරන්න",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "උදා: *.bank.com හෝ localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "වසම අවහිර කරන්න",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "බැහැර කළ වසම් ලැයිස්තුව",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "වසම් රටාව",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "ක්‍රියාව",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "තවමත් අබල කළ වසම් නොමැත.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "අවහිරය ඉවත් කරන්න",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "ආචයනය & නඩත්තුව",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "ආචයන භාවිතය පරීක්ෂා කරන්න, සංකේතාත්මක උපස්ථ නිර්යාත කරන්න හෝ සියලු දත්ත මකන්න.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB ආචයන ධාරිතාව",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "ආචයනය ගණනය කරමින්...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "ලබා ගත හැකි $QUOTA$ MB න් ~$USAGE$ MB භාවිතා කරයි.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "ආචයන ඇස්තමේන්තුව නොමැත.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "පෝරම ඉතිහාසය නිර්යාත කරන්න",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "සම්පූර්ණ ඉතිහාසය JSON උපස්ථ ගොනුවක් ලෙස බාගන්න.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON නිර්යාත කරන්න",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "අනතුරුදායක කලාපය: සම්පූර්ණයෙන්ම මැකීම",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "වාර්තාගත සියලුම වසම්, පෝරම සහ කෙටුම්පත් ස්ථිරවම මකන්න.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "සියලු ඉතිහාසය මකන්න",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "පිළිබඳ & විනිශ්චය",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "දිගු අනුවාදය සහ පසුබිම් සේවා පිළිබඳ තොරතුරු.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "දිගු අනුවාදය",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "ඉලක්කගත එන්ජිම",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "ගුප්ත ලේඛන එන්ජිම",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "දත්ත සමුදා එන්ජිම",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "පසුබිම් තත්ත්වය",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● සක්‍රීයයි",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "ප්‍රධාන මුරපදය සකසන්න",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "ප්‍රධාන මුරපදය වෙනස් කරන්න",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "නව ප්‍රධාන මුරපදය",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "ආරක්ෂිත මුරපදයක් ඇතුළත් කරන්න...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "මුරපදය තහවුරු කරන්න",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "මුරපදය නැවත ටයිප් කරන්න...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "මුරපදයේ ශක්තිය: හිස්",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "මුරපදයේ ශක්තිය: දුර්වලයි",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "මුරපදයේ ශක්තිය: මධ්‍යස්ථයි",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "මුරපදයේ ශක්තිය: ශක්තිමත් (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "අවලංගු කරන්න",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "ප්‍රධාන මුරපදය සුරකින්න",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "සම්පූර්ණ ඉතිහාසය මැකීම තහවුරු කරන්න",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "මෙම ක්‍රියාව ආපසු හැරවිය නොහැක. සියලුම කෙටුම්පත් සහ දත්ත ස්ථිරවම මැකී යනු ඇත.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "මකන්න",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "තහවුරු කිරීමට $KEYWORD$ ටයිප් කරන්න:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "ස්ථිරවම මකන්න",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "කරුණාකර මුරපදයක් ඇතුළත් කරන්න.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "මුරපද නොගැලපේ.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "මුරපදය අවම වශයෙන් අක්ෂර 6 ක් දිග විය යුතුය.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "ප්‍රධාන මුරපදය සාර්ථකව සකසා ඇත.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "මුරපදය සැකසීමට නොහැකි විය: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "වැරදි ප්‍රධාන මුරපදයකි.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "වාර්තාගත සියලුම ඉතිහාසය සහ කෙටුම්පත් මකා දමන ලදී.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "සම්මත ප්‍රකාරයට මාරුවීමෙන් ප්‍රධාන මුරපද සංකේතනය ඉවත් වේ. ඉදිරියට යන්නද?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "තහවුරු කිරීමට වත්මන් ප්‍රධාන මුරපදය ඇතුළත් කරන්න:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus පෝරම ප්‍රතිසාධනය",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "පෝරම කෙටුම්පත් ප්‍රතිසාධනය කරන්න (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus ප්‍රතිසාධනය",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "කෙටුම්පත් 1 ක්",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "කෙටුම්පත් $COUNT$ ක්",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "ක්ෂේත්‍ර ඉතිහාසය සොයන්න...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "සම්පූර්ණ පෝරමය ප්‍රතිසාධනය කරන්න",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "පෝරමය",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus සැකසීම්",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus ප්‍රතිසාධනය විවෘත කරන්න",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "පෝරම දත්ත ප්‍රතිසාධනය කරන්න",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "සොයන්න...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "පෝරමය ප්‍රතිසාධනය කරන්න",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "පෝරමය ප්‍රතිසාධනය කරන්න",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "සැකසීම්",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "මෙම අඩවියේ අබල කරන්න",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$ හි Lazarus අබල කරන්නද?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "කෙටුම්පත් හමු නොවීය",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "කෙටුම්පතක් සුරැකීමට ටයිප් කිරීම ආරම්භ කරන්න",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "සුරකින ලද කෙටුම්පත් 1 ක්",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "සුරකින ලද කෙටුම්පත් $COUNT$ ක්",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "වචන 1 ක්",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "වචන $COUNT$ ක්",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(හිස්)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

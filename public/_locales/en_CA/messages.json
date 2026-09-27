@@ -1,18 +1,14 @@
 {
-  "sidepanelHeaderTitle": {
-    "message": "Lazarus Control Center",
-    "description": "US English override for Center"
-  },
   "optionsExportSubtitle": {
     "message": "Download complete form history serialized into a JSON backup.",
-    "description": "US English override for serialized"
+    "description": "Canadian English override for serialized"
   },
   "optionsStorageDesc": {
     "message": "Inspect storage utilization, export encrypted backups, or wipe all records.",
-    "description": "US English override for utilization"
+    "description": "Canadian English override for utilization"
   },
   "optionsWipeConfirmKeyword": {
     "message": "DELETE",
-    "description": "US English confirmation keyword token"
+    "description": "Canadian English confirmation keyword token"
   }
 }

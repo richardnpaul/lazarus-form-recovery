@@ -55,7 +55,6 @@ describe('L10n Catalog Integrity', () => {
       'it',
       'nl',
       'pl',
-      'ru',
       'uk',
       'cs',
       'sk',
@@ -85,6 +84,73 @@ describe('L10n Catalog Integrity', () => {
       'yo',
       'ig',
       'so',
+      'zh_TW',
+      'ko',
+      'vi',
+      'th',
+      'id',
+      'ms',
+      'fil',
+      'hi',
+      'bn',
+      'ta',
+      'te',
+      'mr',
+      'gu',
+      'kn',
+      'ml',
+      'ur',
+      'en_AU',
+      'en_GB',
+      'zh_HK',
+      'nb',
+      'pa',
+      'ne',
+      'si',
+      'my',
+      'km',
+      'lo',
+      'mn',
+      'uz',
+      'kk',
+      'az',
+      'ka',
+      'hy',
+      'is',
+      'ga',
+      'mt',
+      'sq',
+      'mk',
+      'bs',
+      'eu',
+      'gl',
+      'cy',
+      'lb',
+      'qu',
+      'gn',
+      'en_CA',
+      'de_CH',
+      'pt',
+      'ckb',
+      'ps',
+      'om',
+      'ff',
+      'mg',
+      'ln',
+      'zgh',
+      'xh',
+      'sn',
+      'ny',
+      'rw',
+      'bm',
+      'wo',
+      'rn',
+      'ak',
+      'ti',
+      'lg',
+      'st',
+      'tn',
+      'nso',
     ];
     const localesDir = path.resolve(__dirname, '../../public/_locales');
     for (const locale of requiredLocales) {
@@ -102,7 +168,7 @@ describe('L10n Catalog Integrity', () => {
     }
   });
 
-  it('contains all canonical en keys in all complete European, Americas, Middle Eastern and African catalogs', () => {
+  it('contains all canonical en keys in all complete European, Americas, Middle Eastern, African, Asian and Oceanian catalogs', () => {
     const fullLocales = [
       'de',
       'zh_CN',
@@ -116,7 +182,6 @@ describe('L10n Catalog Integrity', () => {
       'it',
       'nl',
       'pl',
-      'ru',
       'uk',
       'cs',
       'sk',
@@ -146,6 +211,69 @@ describe('L10n Catalog Integrity', () => {
       'yo',
       'ig',
       'so',
+      'zh_TW',
+      'ko',
+      'vi',
+      'th',
+      'id',
+      'ms',
+      'fil',
+      'hi',
+      'bn',
+      'ta',
+      'te',
+      'mr',
+      'gu',
+      'kn',
+      'ml',
+      'ur',
+      'pt',
+      'zh_HK',
+      'nb',
+      'pa',
+      'ne',
+      'si',
+      'my',
+      'km',
+      'lo',
+      'mn',
+      'uz',
+      'kk',
+      'az',
+      'ka',
+      'hy',
+      'is',
+      'ga',
+      'mt',
+      'sq',
+      'mk',
+      'bs',
+      'eu',
+      'gl',
+      'cy',
+      'lb',
+      'qu',
+      'gn',
+      'ckb',
+      'ps',
+      'om',
+      'ff',
+      'mg',
+      'ln',
+      'zgh',
+      'xh',
+      'sn',
+      'ny',
+      'rw',
+      'bm',
+      'wo',
+      'rn',
+      'ak',
+      'ti',
+      'lg',
+      'st',
+      'tn',
+      'nso',
     ];
     const enKeys = Object.keys(enCatalog);
     const localesDir = path.resolve(__dirname, '../../public/_locales');
@@ -156,6 +284,49 @@ describe('L10n Catalog Integrity', () => {
       const missingKeys = enKeys.filter((k) => !catalog[k]);
       expect(missingKeys, `Missing keys in ${locale}`).toEqual([]);
     }
+  });
+
+  it('contains valid differential overrides for English regional variants and German Swiss', () => {
+    const localesDir = path.resolve(__dirname, '../../public/_locales');
+
+    // en_US override check
+    const usPath = path.join(localesDir, 'en_US', 'messages.json');
+    expect(fs.existsSync(usPath), 'en_US messages.json should exist').toBe(true);
+    const usCatalog = JSON.parse(fs.readFileSync(usPath, 'utf-8'));
+    expect(usCatalog.sidepanelHeaderTitle?.message).toContain('Center');
+    expect(usCatalog.optionsExportSubtitle?.message).toContain('serialized');
+    expect(usCatalog.optionsStorageDesc?.message).toContain('utilization');
+    expect(usCatalog.optionsWipeConfirmKeyword?.message).toBe('DELETE');
+
+    // en_CA override check
+    const caPath = path.join(localesDir, 'en_CA', 'messages.json');
+    expect(fs.existsSync(caPath), 'en_CA messages.json should exist').toBe(true);
+    const caCatalog = JSON.parse(fs.readFileSync(caPath, 'utf-8'));
+    expect(caCatalog.optionsExportSubtitle?.message).toContain('serialized');
+    expect(caCatalog.optionsStorageDesc?.message).toContain('utilization');
+    expect(caCatalog.optionsWipeConfirmKeyword?.message).toBe('DELETE');
+
+    // de_CH override check (Swiss German ss instead of ß)
+    const chPath = path.join(localesDir, 'de_CH', 'messages.json');
+    expect(fs.existsSync(chPath), 'de_CH messages.json should exist').toBe(true);
+    const chCatalog = JSON.parse(fs.readFileSync(chPath, 'utf-8'));
+    expect(chCatalog.optionsDomainsDesc?.message).toContain('ausschliessen');
+    expect(chCatalog.optionsDomainsDesc?.message).not.toContain('ausschließen');
+    expect(chCatalog.optionsWipeConfirmKeyword?.message).toBe('LÖSCHEN');
+
+    // en_AU differential check (lightweight override)
+    const auPath = path.join(localesDir, 'en_AU', 'messages.json');
+    expect(fs.existsSync(auPath), 'en_AU messages.json should exist').toBe(true);
+    const auCatalog = JSON.parse(fs.readFileSync(auPath, 'utf-8'));
+    expect(auCatalog.optionsWipeConfirmKeyword?.message).toBe('DELETE');
+    expect(Object.keys(auCatalog).length).toBeLessThan(10);
+
+    // en_GB differential check (lightweight override)
+    const gbPath = path.join(localesDir, 'en_GB', 'messages.json');
+    expect(fs.existsSync(gbPath), 'en_GB messages.json should exist').toBe(true);
+    const gbCatalog = JSON.parse(fs.readFileSync(gbPath, 'utf-8'));
+    expect(gbCatalog.optionsWipeConfirmKeyword?.message).toBe('DELETE');
+    expect(Object.keys(gbCatalog).length).toBeLessThan(10);
   });
 
   it('contains the required Hebrew plural forms (including _two) in the he catalog', () => {
@@ -198,6 +369,11 @@ describe('L10n Catalog Integrity', () => {
         []
       );
     }
+  });
+
+  it('does not contain the ru locale directory or catalog', () => {
+    const ruPath = path.resolve(__dirname, '../../public/_locales/ru');
+    expect(fs.existsSync(ruPath)).toBe(false);
   });
 
   it('contains all referenced getMessage keys in the en catalog', () => {
