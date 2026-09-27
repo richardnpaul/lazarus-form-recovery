@@ -17,6 +17,13 @@
   );
 }
 
+:host([dir='rtl']) {
+  direction: rtl !important;
+}
+:host([dir='ltr']) {
+  direction: ltr !important;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -70,7 +77,6 @@
   pointer-events: auto;
   position: absolute;
   top: 30px;
-  right: 0;
   width: 320px;
   max-width: calc(100vw - 20px);
   max-height: 390px;
@@ -266,10 +272,7 @@
   .lz-trigger-btn::before {
     content: '';
     position: absolute;
-    top: -6px;
-    left: -6px;
-    right: -6px;
-    bottom: -6px;
+    inset: -6px;
     pointer-events: auto;
   }
 

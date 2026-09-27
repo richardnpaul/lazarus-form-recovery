@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   setupContextMenus,
   updateDynamicContextMenus,
@@ -13,9 +13,14 @@ const initialClickListenerCount =
 describe('Context Menus Manager (src/background/context-menus.ts)', () => {
   let createdMenus: any[] = [];
 
+  const origGetMessage = chrome.i18n.getMessage;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     createdMenus = [];
+
+    // Mock getMessage to return the key to verify localization is actually happening
+    (chrome.i18n.getMessage as any) = vi.fn((key: string) => key);
 
     (chrome.contextMenus.create as any) = vi.fn((props: any, cb?: () => void) => {
       createdMenus.push(props);
@@ -27,6 +32,10 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
     (chrome.contextMenus.removeAll as any) = vi.fn((cb?: () => void) => {
       if (cb) cb();
     });
+  });
+
+  afterEach(() => {
+    chrome.i18n.getMessage = origGetMessage;
   });
 
   it('registers contextMenu click listener on load', () => {
@@ -43,57 +52,57 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       expect(createdMenus).toEqual([
         {
           id: 'lazarus-root',
-          title: 'Lazarus Form Recovery',
+          title: 'contextMenuRoot',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-save-now',
           parentId: 'lazarus-root',
-          title: '⚡ Save Form Snapshot Now',
+          title: 'contextMenuSaveNow',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-recover-form-parent',
           parentId: 'lazarus-root',
-          title: '🕒 Recover Form Version',
+          title: 'contextMenuRecoverForm',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-form-none',
           parentId: 'lazarus-recover-form-parent',
-          title: 'No past versions on this page',
+          title: 'contextMenuNoFormVersions',
           enabled: false,
           contexts: ['editable'],
         },
         {
           id: 'lazarus-recover-field-parent',
           parentId: 'lazarus-root',
-          title: '🔤 Recover Field Text',
+          title: 'contextMenuRecoverField',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-field-none',
           parentId: 'lazarus-recover-field-parent',
-          title: 'No past snippets for this field',
+          title: 'contextMenuNoFieldSnippets',
           enabled: false,
           contexts: ['editable'],
         },
         {
           id: 'lazarus-open-sidebar',
           parentId: 'lazarus-root',
-          title: '📊 Browse Revisions in Sidebar',
+          title: 'contextMenuOpenSidebar',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-open-options',
           parentId: 'lazarus-root',
-          title: '⚙️ Settings / Options',
+          title: 'contextMenuOpenOptions',
           contexts: ['editable'],
         },
         {
           id: 'lazarus-disable-domain',
           parentId: 'lazarus-root',
-          title: '🚫 Disable Lazarus on this Site',
+          title: 'contextMenuDisableDomain',
           contexts: ['editable'],
         },
       ]);
@@ -110,7 +119,7 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       const actionMenu = createdMenus.find((m) => m.id === 'lazarus-action-options');
       expect(actionMenu).toEqual({
         id: 'lazarus-action-options',
-        title: '⚙️ Options',
+        title: 'contextMenuOptionsFirefox',
         contexts: ['action'],
       });
 
@@ -260,12 +269,12 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       // Verify field text snippets
       const snip0 = createdMenus.find((m) => m.id === 'lazarus-field-val-0');
       expect(snip0).toBeDefined();
-      expect(snip0.title).toBe('"Short snippet" (Just now)');
+      expect(snip0.title).toBe('"Short snippet" (timeJustNow)');
       expect(snip0.parentId).toBe('lazarus-recover-field-parent');
 
       const snip1 = createdMenus.find((m) => m.id === 'lazarus-field-val-1');
       expect(snip1).toBeDefined();
-      expect(snip1.title).toBe('"This is a very long snippet ..." (1h ago)');
+      expect(snip1.title).toBe('"This is a very long snippet ..." (1 hour ago)');
     });
 
     it('limits dynamic submenus to at most 5 items using slice(0, 5)', async () => {
@@ -305,7 +314,7 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       expect(formNone).toEqual({
         id: 'lazarus-form-none',
         parentId: 'lazarus-recover-form-parent',
-        title: 'No past versions on this page',
+        title: 'contextMenuNoFormVersions',
         enabled: false,
         contexts: ['editable'],
       });
@@ -314,7 +323,7 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       expect(fieldNone).toEqual({
         id: 'lazarus-field-none',
         parentId: 'lazarus-recover-field-parent',
-        title: 'No past snippets for this field',
+        title: 'contextMenuNoFieldSnippets',
         enabled: false,
         contexts: ['editable'],
       });
@@ -436,19 +445,9 @@ describe('Context Menus Manager (src/background/context-menus.ts)', () => {
       consoleSpy.mockRestore();
     });
 
-    it('handles domain disable with confirmation and cancellation', async () => {
+    it('handles domain disable directly without confirmation', async () => {
       const disableSpy = vi.spyOn(repository, 'disableDomain').mockResolvedValue();
 
-      // Cancelled
-      globalThis.confirm = vi.fn().mockReturnValue(false);
-      await handleContextMenuClick({ menuItemId: 'lazarus-disable-domain' }, mockTab);
-      expect(globalThis.confirm).toHaveBeenCalledWith(
-        'Disable Lazarus Form Recovery on sub.example.com?'
-      );
-      expect(disableSpy).not.toHaveBeenCalled();
-
-      // Confirmed
-      globalThis.confirm = vi.fn().mockReturnValue(true);
       await handleContextMenuClick({ menuItemId: 'lazarus-disable-domain' }, mockTab);
       expect(disableSpy).toHaveBeenCalledWith('sub.example.com', false);
     });

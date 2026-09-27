@@ -1,4 +1,5 @@
 import { computeButtonPosition } from '../../common/utils/dom';
+import { getMessage } from '../../common/utils/i18n';
 
 export class RecoveryButton {
   private button: HTMLButtonElement;
@@ -10,8 +11,8 @@ export class RecoveryButton {
   constructor() {
     this.button = document.createElement('button');
     this.button.className = 'lz-trigger-btn';
-    this.button.setAttribute('aria-label', 'Lazarus Form Recovery');
-    this.button.setAttribute('title', 'Recover form drafts (Lazarus)');
+    this.button.setAttribute('aria-label', getMessage('shadowButtonAriaLabel'));
+    this.button.setAttribute('title', getMessage('shadowButtonTitle'));
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');

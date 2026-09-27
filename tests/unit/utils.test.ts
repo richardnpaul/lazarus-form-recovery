@@ -38,14 +38,38 @@ describe('Text Utilities (src/common/utils/text.ts)', () => {
     vi.useRealTimers();
   });
 
-  it('should compute word count accurately', () => {
+  it('should compute word count accurately using Intl.Segmenter for CJK and fallback to whitespace', () => {
     expect(computeWordCount(null as any)).toBe(0);
     expect(computeWordCount(undefined as any)).toBe(0);
     expect(computeWordCount('')).toBe(0);
     expect(computeWordCount('   ')).toBe(0);
+
+    // Normal whitespace
     expect(computeWordCount('Hello world')).toBe(2);
-    expect(computeWordCount('Hello   world')).toBe(2); // multiple spaces between words
+    expect(computeWordCount('Hello   world')).toBe(2);
     expect(computeWordCount('  One   two   three  ')).toBe(3);
+
+    // CJK without spaces using Segmenter (node 16+ has Intl.Segmenter)
+    expect(computeWordCount('你好世界', 'zh_CN')).toBe(2); // "你好" "世界"
+    expect(computeWordCount('こんにちは世界', 'ja_JP')).toBe(2); // "こんにちは" "世界"
+
+    // Simulate Intl.Segmenter absent
+    const origIntl = globalThis.Intl;
+    const segmenterLessIntl = { ...origIntl };
+    delete (segmenterLessIntl as any).Segmenter;
+    (globalThis as any).Intl = segmenterLessIntl;
+
+    // Fallback simply splits on whitespace
+    expect(computeWordCount(null as any)).toBe(0);
+    expect(computeWordCount(undefined as any)).toBe(0);
+    expect(computeWordCount('')).toBe(0);
+    expect(computeWordCount('   ')).toBe(0);
+    expect(computeWordCount('   Hello   world   ')).toBe(2);
+    expect(computeWordCount('Hello    world')).toBe(2);
+    expect(computeWordCount('你好世界')).toBe(1);
+    expect(computeWordCount('Hello world')).toBe(2);
+
+    (globalThis as any).Intl = origIntl;
   });
 
   it('should sanitize and preview text', () => {

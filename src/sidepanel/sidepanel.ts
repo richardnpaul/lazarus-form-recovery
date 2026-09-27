@@ -1,7 +1,12 @@
 import { RuntimeMessage, RuntimeResponse } from '../common/types/messages';
-import { formatTimeAgo } from '../common/utils/text';
-import { safeSetHtml } from '../common/utils/dom';
+import { safeSetHtml, escapeHtml, escapeAttr } from '../common/utils/dom';
 import { getBrowserApi, isExtensionContextValid } from '../common/utils/runtime';
+import {
+  getMessage,
+  localizeDocument,
+  formatRelativeTime,
+  formatPluralMessage,
+} from '../common/utils/i18n';
 
 let currentFilter: 'all' | 'this_site' | 'today' | '7days' | '30days' = 'all';
 let currentDomain = '';
@@ -85,12 +90,12 @@ export async function resolveActiveTab(): Promise<void> {
   }
 
   if (siteDomainEl) {
-    siteDomainEl.textContent = currentDomain || 'No active website';
+    siteDomainEl.textContent = currentDomain || getMessage('sidepanelNoActiveWebsite');
     siteDomainEl.title = currentUrl;
   }
 
   if (!currentDomain) {
-    if (siteStatusEl) siteStatusEl.textContent = 'Non-web page';
+    if (siteStatusEl) siteStatusEl.textContent = getMessage('sidepanelNonWebPage');
     if (siteBeaconEl) siteBeaconEl.classList.add('is-disabled');
     if (domainToggleEl) {
       domainToggleEl.disabled = true;
@@ -112,10 +117,12 @@ export async function resolveActiveTab(): Promise<void> {
       siteBeaconEl.classList.toggle('is-disabled', !isEnabled);
     }
     if (siteStatusEl) {
-      siteStatusEl.textContent = isEnabled ? 'Tracking active' : 'Tracking paused';
+      siteStatusEl.textContent = isEnabled
+        ? getMessage('sidepanelTrackingActive')
+        : getMessage('sidepanelTrackingPaused');
     }
   } catch {
-    if (siteStatusEl) siteStatusEl.textContent = 'Tracking active';
+    if (siteStatusEl) siteStatusEl.textContent = getMessage('sidepanelTrackingActive');
   }
 }
 
@@ -178,16 +185,16 @@ export function renderEmpty() {
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
 
-  historyCount.textContent = '0 drafts';
+  historyCount.textContent = formatPluralMessage('sidepanelDraftCount', 0);
 
   if (currentFilter === 'this_site' && currentDomain) {
     safeSetHtml(
       historyList,
       `
       <div class="empty-history">
-        <p style="margin-bottom: 6px; font-weight: 600;">No saved form data for ${escapeHtml(currentDomain)}</p>
-        <p style="color: var(--lz-text-muted); margin-bottom: 12px;">Drafts are saved as you type on this site.</p>
-        <button class="action-btn" id="view-all-sites-btn" style="padding: 6px 12px; font-size: 11px;">View All Sites</button>
+        <p style="margin-bottom: 6px; font-weight: 600;">${escapeHtml(getMessage('sidepanelEmptyThisSiteTitle', [currentDomain]))}</p>
+        <p style="color: var(--lz-text-muted); margin-bottom: 12px;">${escapeHtml(getMessage('sidepanelEmptyThisSiteSubtitle'))}</p>
+        <button class="action-btn" id="view-all-sites-btn" style="padding: 6px 12px; font-size: 11px;">${escapeHtml(getMessage('sidepanelViewAllSitesBtn'))}</button>
       </div>
     `
     );
@@ -209,8 +216,8 @@ export function renderEmpty() {
     historyList,
     `
     <div class="empty-history">
-      <p style="margin-bottom: 6px; font-weight: 600;">No saved form data found</p>
-      <p style="color: var(--lz-text-muted);">Visit any webpage and fill in forms to see Lazarus automatically preserve your drafts.</p>
+      <p style="margin-bottom: 6px; font-weight: 600;">${escapeHtml(getMessage('sidepanelEmptyAllTitle'))}</p>
+      <p style="color: var(--lz-text-muted);">${escapeHtml(getMessage('sidepanelEmptyAllSubtitle'))}</p>
     </div>
   `
   );
@@ -221,7 +228,7 @@ export function renderHistory(items: any[]) {
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
 
-  historyCount.textContent = `${items.length} ${items.length === 1 ? 'draft' : 'drafts'}`;
+  historyCount.textContent = formatPluralMessage('sidepanelDraftCount', items.length);
 
   if (items.length === 0) {
     renderEmpty();
@@ -243,19 +250,21 @@ export function renderHistory(items: any[]) {
         (f: any) => `
         <div class="field-row">
           <span class="field-label" title="${escapeHtml(f.name)}">${escapeHtml(f.name || 'field')}:</span>
-          <span class="field-value">${escapeHtml(f.value)}</span>
-          <button class="action-btn copy-field-btn" data-value="${escapeAttr(f.value)}">Copy</button>
+          <span class="field-value" dir="auto">${escapeHtml(f.value)}</span>
+          <button class="action-btn copy-field-btn" data-value="${escapeAttr(f.value)}">${escapeHtml(getMessage('sidepanelActionCopy'))}</button>
         </div>
       `
       )
       .join('');
 
-    const timeAgo = form.lastModified ? formatTimeAgo(form.lastModified) : 'Unknown time';
-    const domainText = form.domain || 'Direct Input';
-    const titleText = form.title || 'Untitled Form';
+    const timeAgo = form.lastModified
+      ? formatRelativeTime(form.lastModified)
+      : getMessage('timeUnknown');
+    const domainText = form.domain || getMessage('sidepanelDirectInput');
+    const titleText = form.title || getMessage('sidepanelUntitledForm');
 
     const revBadge = form.revisionNumber
-      ? `<span class="rev-badge" style="padding: 1px 6px; font-size: 10px; background: var(--lz-accent-subtle); color: var(--lz-accent-primary); border-radius: 4px; font-weight: 600;">Rev ${form.revisionNumber}${form.isFinalSubmit ? ' • Submitted' : ''}</span>`
+      ? `<span class="rev-badge" style="padding: 1px 6px; font-size: 10px; background: var(--lz-accent-subtle); color: var(--lz-accent-primary); border-radius: 4px; font-weight: 600;">${escapeHtml(getMessage('sidepanelRevBadge', [String(form.revisionNumber)]))}${form.isFinalSubmit ? escapeHtml(getMessage('sidepanelSubmittedBadge')) : ''}</span>`
       : '';
 
     const urlDisplay = form.url
@@ -277,11 +286,11 @@ export function renderHistory(items: any[]) {
         <div class="item-time">${timeAgo}</div>
       </div>
       <div class="item-field-list">
-        ${fieldsHtml || '<div style="color: var(--lz-text-muted); font-size: 11px;">No visible fields</div>'}
+        ${fieldsHtml || `<div style="color: var(--lz-text-muted); font-size: 11px;">${escapeHtml(getMessage('sidepanelNoVisibleFields'))}</div>`}
       </div>
       <div class="item-actions">
-        ${fields.length > 0 ? `<button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">Copy All</button>` : ''}
-        <button class="action-btn delete delete-form-btn" data-formid="${escapeAttr(form.id)}">Delete</button>
+        ${fields.length > 0 ? `<button class="action-btn copy-all-btn" data-formid="${escapeAttr(form.id)}">${escapeHtml(getMessage('sidepanelActionCopyAll'))}</button>` : ''}
+        <button class="action-btn delete delete-form-btn" data-formid="${escapeAttr(form.id)}">${escapeHtml(getMessage('sidepanelActionDelete'))}</button>
       </div>
     `
     );
@@ -291,10 +300,10 @@ export function renderHistory(items: any[]) {
       btn.addEventListener('click', async (e) => {
         const btnEl = e.currentTarget as HTMLElement;
         const val = btnEl?.getAttribute('data-value') || '';
-        const originalText = btnEl?.textContent || 'Copy';
+        const originalText = btnEl?.textContent || getMessage('sidepanelActionCopy');
         await navigator.clipboard.writeText(val);
         if (btnEl) {
-          btnEl.textContent = 'Copied!';
+          btnEl.textContent = getMessage('sidepanelActionCopied');
           setTimeout(() => {
             btnEl.textContent = originalText;
           }, 1200);
@@ -306,14 +315,14 @@ export function renderHistory(items: any[]) {
     const copyAllBtn = itemEl.querySelector('.copy-all-btn');
     copyAllBtn?.addEventListener('click', async (e) => {
       const btnEl = e.currentTarget as HTMLElement;
-      const originalText = btnEl?.textContent || 'Copy All';
+      const originalText = btnEl?.textContent || getMessage('sidepanelActionCopyAll');
       const allText = fields
         .filter((f: any) => Boolean(f.value && f.value.trim().length > 0))
         .map((f: any) => `${f.name || 'field'}: ${f.value}`)
         .join('\n\n');
       await navigator.clipboard.writeText(allText);
       if (btnEl) {
-        btnEl.textContent = 'Copied All!';
+        btnEl.textContent = getMessage('sidepanelActionCopiedAll');
         setTimeout(() => {
           btnEl.textContent = originalText;
         }, 1200);
@@ -338,17 +347,7 @@ export function renderHistory(items: any[]) {
   });
 }
 
-export function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-export function escapeAttr(str: string): string {
-  return str.replace(/"/g, '&quot;');
-}
+export { escapeHtml, escapeAttr };
 
 export function getSearchQuery(): string {
   const el = document.getElementById('search-input') as HTMLInputElement | null;
@@ -362,6 +361,7 @@ export function refreshIfThisSite() {
 }
 
 export function initSidepanel() {
+  localizeDocument();
   const historyList = document.getElementById('history-list');
   if (!historyList) return;
 
@@ -393,7 +393,7 @@ export function initSidepanel() {
   if (clearHistoryBtn) {
     clearHistoryBtn.onclick = async (e) => {
       e.preventDefault();
-      if (confirm('Are you sure you want to clear all recovered form history?')) {
+      if (confirm(getMessage('sidepanelConfirmClearHistory'))) {
         const api = getBrowserApi();
         await api.runtime.sendMessage({ type: 'CLEAR_ALL_HISTORY' });
         loadHistory();
@@ -415,7 +415,7 @@ export function initSidepanel() {
       const willEnable = domainToggle.checked;
       const api = getBrowserApi();
       if (!willEnable) {
-        const confirmed = confirm(`Pause Lazarus form recovery on ${currentDomain}?`);
+        const confirmed = confirm(getMessage('sidepanelConfirmPauseDomain', [currentDomain]));
         if (!confirmed) {
           domainToggle.checked = true;
           return;

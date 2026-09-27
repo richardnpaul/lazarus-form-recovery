@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "build:firefox": "tsc && vite build",
-    "build:chrome": "BROWSER=chrome tsc && BROWSER=chrome vite build --outDir dist-chrome",
+    "build:chrome": "BROWSER=chrome tsc && BROWSER=chrome vite build --outDir dist-chrome && node scripts/postbuild-chrome.mjs",
     "package": "npm run package:firefox && npm run package:chrome",
     "package:firefox": "npm run build:firefox && mkdir -p packages && (cd dist && zip -r -FS ../packages/lazarus-form-recovery-firefox.zip . -x '*.map') && cp packages/lazarus-form-recovery-firefox.zip packages/lazarus-form-recovery-firefox.xpi",
     "package:chrome": "npm run build:chrome && mkdir -p packages && (cd dist-chrome && zip -r -FS ../packages/lazarus-form-recovery-chrome.zip . -x '*.map')",

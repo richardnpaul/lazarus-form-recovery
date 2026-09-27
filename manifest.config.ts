@@ -5,10 +5,10 @@ const isFirefox = process.env.BROWSER !== 'chrome';
 
 export default defineManifest({
   manifest_version: 3,
-  name: 'Lazarus: Form Recovery',
+  default_locale: 'en',
+  name: '__MSG_extensionName__',
   version: pkg.version,
-  description:
-    'Never lose form data, comments, or rich text drafts again. Secure, encrypted, and local form recovery.',
+  description: '__MSG_extensionDescription__',
   icons: {
     '16': 'icons/icon-16.png',
     '32': 'icons/icon-32.png',
@@ -29,7 +29,7 @@ export default defineManifest({
       '16': 'icons/icon-16.png',
       '32': 'icons/icon-32.png',
     },
-    default_title: 'Lazarus: Form Recovery',
+    default_title: '__MSG_actionTitle__',
   },
   options_ui: {
     page: 'src/options/options.html',
@@ -43,7 +43,7 @@ export default defineManifest({
             '32': 'icons/icon-32.png',
           },
           default_panel: 'src/sidepanel/sidepanel.html',
-          default_title: 'Lazarus: Form Recovery',
+          default_title: '__MSG_actionTitle__',
           open_at_install: false,
         },
       }
@@ -83,7 +83,7 @@ export default defineManifest({
         default: 'Alt+Shift+L',
         mac: 'Alt+Shift+L',
       },
-      description: 'Recover the last edited form on the current page',
+      description: '__MSG_commandRecoverLastFormDescription__',
     },
     _execute_action: {
       suggested_key: {

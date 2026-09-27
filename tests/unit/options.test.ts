@@ -12,6 +12,7 @@ const OPTIONS_HTML = `
   <div id="diagnostic-version"></div>
   <div id="diagnostic-platform"></div>
   <div id="panel-general" class="tab-panel is-active">
+    <h2 id="general-title" data-i18n="optionsGeneralTitle">Unlocalized Title</h2>
     <input type="checkbox" id="pref-save-passwords">
     <div id="passwords-warning" style="display: none;"></div>
     <input type="checkbox" id="pref-filter-cards" checked>
@@ -49,6 +50,7 @@ const OPTIONS_HTML = `
     <button id="btn-wipe-history">Wipe</button>
   </div>
   <div id="wipe-modal">
+    <label id="wipe-confirm-label"></label>
     <input type="text" id="input-wipe-confirm">
     <button id="btn-cancel-wipe-modal">Cancel</button>
     <button id="btn-confirm-wipe" disabled>Confirm</button>
@@ -741,7 +743,7 @@ describe('Options Page Controller (src/options/options.ts)', () => {
 
       // 2MB / 100MB = 2%
       expect(progressBar.style.width).toBe('2%');
-      expect(estimateLabel.textContent).toBe('Using ~2.00 MB of 100 MB available storage quota.');
+      expect(estimateLabel.textContent).toBe('Using ~2 MB of 100 MB available storage quota.');
     });
 
     it('handles storage estimate error gracefully', async () => {
@@ -846,6 +848,74 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       btnCancel.click();
       expect(wipeModal.classList.contains('is-visible')).toBe(false);
     });
+
+    it('handles localized wipe confirmation keywords (e.g. Arabic) and English fallback', async () => {
+      const origGetMessage = chrome.i18n.getMessage;
+      const origGetUILanguage = chrome.i18n.getUILanguage;
+
+      chrome.i18n.getMessage = vi.fn((key: string, subs?: any, fallback?: string) => {
+        if (key === 'optionsWipeConfirmKeyword') return 'حذف';
+        if (key === 'optionsLabelTypeDelete') return 'Type {حذف} to delete';
+        return fallback || key;
+      }) as any;
+      chrome.i18n.getUILanguage = vi.fn(() => 'ar') as any;
+
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const btnWipe = document.getElementById('btn-wipe-history') as HTMLButtonElement;
+      const inputConfirm = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      const btnConfirm = document.getElementById('btn-confirm-wipe') as HTMLButtonElement;
+
+      btnWipe.click();
+
+      // 1. Wrong input
+      inputConfirm.value = 'wrong';
+      inputConfirm.dispatchEvent(new Event('input'));
+      expect(btnConfirm.disabled).toBe(true);
+
+      // 2. English fallback (DELETE)
+      inputConfirm.value = 'DELETE';
+      inputConfirm.dispatchEvent(new Event('input'));
+      expect(btnConfirm.disabled).toBe(false);
+
+      // 3. Arabic keyword
+      inputConfirm.value = 'حذف';
+      inputConfirm.dispatchEvent(new Event('input'));
+      expect(btnConfirm.disabled).toBe(false);
+
+      // 4. Confirm wipe
+      sentMessages.length = 0; // Clear messages
+      btnConfirm.click();
+      await new Promise((r) => setTimeout(r, 40));
+
+      const clearMsg = sentMessages.find((m) => m.type === 'CLEAR_ALL_HISTORY');
+      expect(clearMsg).toBeDefined();
+
+      chrome.i18n.getMessage = origGetMessage;
+      chrome.i18n.getUILanguage = origGetUILanguage;
+    });
+
+    it('validates wipe confirmation keyword using isWipeConfirmationValid across all branches', async () => {
+      const { isWipeConfirmationValid } = await import('../../src/options/options');
+      expect(isWipeConfirmationValid('DELETE', 'DELETE', 'en')).toBe(true);
+      expect(isWipeConfirmationValid('delete', 'DELETE', 'en')).toBe(true);
+      expect(isWipeConfirmationValid('löschen', 'LÖSCHEN', 'de')).toBe(true);
+      expect(isWipeConfirmationValid('LÖSCHEN', 'löschen', 'de')).toBe(true);
+      expect(isWipeConfirmationValid('Löschen', 'LÖSCHEN', 'de')).toBe(true);
+      expect(isWipeConfirmationValid('LÖSCHEN', 'Löschen', 'de')).toBe(true);
+      expect(isWipeConfirmationValid('حذف', 'حذف', 'ar')).toBe(true);
+      expect(isWipeConfirmationValid('DELETE', 'حذف', 'ar')).toBe(true); // English fallback
+      expect(isWipeConfirmationValid('', 'DELETE', 'en')).toBe(false);
+      expect(isWipeConfirmationValid('   ', 'DELETE', 'en')).toBe(false);
+      expect(isWipeConfirmationValid('DELETE', '', 'en')).toBe(false);
+      expect(isWipeConfirmationValid('DELETE', '   ', 'en')).toBe(false);
+      expect(isWipeConfirmationValid('DELETE', undefined as any, 'en')).toBe(false);
+      expect(isWipeConfirmationValid('wrong', 'DELETE', 'en')).toBe(false);
+    });
   });
 
   describe('Options Full Branch Coverage', () => {
@@ -854,6 +924,8 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       document.body.innerHTML = OPTIONS_HTML;
       // Remove diagnostic-version to hit if (versionEl) false branch
       document.getElementById('diagnostic-version')?.remove();
+      // Remove wipe-confirm-label to hit if (wipeLabel) false branch
+      document.getElementById('wipe-confirm-label')?.remove();
 
       // Manifest without version to hit manifest?.version || '0.0.1'
       vi.spyOn(chrome.runtime, 'getManifest').mockReturnValue({} as any);
@@ -924,7 +996,7 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       await new Promise((r) => setTimeout(r, 40));
 
       const label = document.getElementById('storage-estimate-label');
-      expect(label?.textContent).toContain('Using ~0.00 MB of 100 MB available storage quota');
+      expect(label?.textContent).toContain('Using ~0 MB of 100 MB available storage quota');
       expect(document.getElementById('storage-progress-bar')?.style.width).toBe('0%');
 
       // 1a. Storage estimate with usage defined and quota 0/undefined
@@ -1247,6 +1319,126 @@ describe('Options Page Controller (src/options/options.ts)', () => {
       inputMasterPassConfirm.value = '123456';
       btnSave.click();
       await new Promise((r) => setTimeout(r, 20));
+    });
+
+    it('kills localizeDocument, optionsWipeConfirmKeyword, and DELETE mutants in init', async () => {
+      // 1. Mutant 4679 (localizeDocument)
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      const titleBefore = document.getElementById('general-title') as HTMLElement;
+      expect(titleBefore.textContent).toBe('Unlocalized Title');
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const titleAfter = document.getElementById('general-title') as HTMLElement;
+      expect(titleAfter.textContent).toBe('General Preferences');
+
+      // 2. Mutant 4680 (optionsWipeConfirmKeyword)
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      const origGetMessage = chrome.i18n.getMessage;
+      chrome.i18n.getMessage = vi.fn((key: string, subs?: any, fallback?: string) => {
+        if (key === 'optionsWipeConfirmKeyword') return 'CUSTOM_KEYWORD';
+        if (key === 'optionsLabelTypeDelete') return `Type {${subs?.[0]}} to confirm`;
+        return fallback || key;
+      }) as any;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const inputConfirmCustom = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      const wipeLabelCustom = document.getElementById('wipe-confirm-label') as HTMLElement;
+      expect(inputConfirmCustom.placeholder).toBe('CUSTOM_KEYWORD');
+      expect(wipeLabelCustom.textContent).toBe('Type {CUSTOM_KEYWORD} to confirm');
+
+      // 3. Mutant 4681 ('DELETE' fallback)
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      chrome.i18n.getMessage = vi.fn((key: string, _subs?: any, fallback?: string) => {
+        if (key === 'optionsWipeConfirmKeyword') return '';
+        return fallback || key;
+      }) as any;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const inputConfirmFallback = document.getElementById(
+        'input-wipe-confirm'
+      ) as HTMLInputElement;
+      expect(inputConfirmFallback.placeholder).toBe('DELETE');
+
+      // 4. Missing wipe-confirm-label branch
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      document.getElementById('wipe-confirm-label')?.remove();
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      chrome.i18n.getMessage = origGetMessage;
+    });
+
+    it('kills Unknown error fallback and wipe input/click DELETE fallback mutants', async () => {
+      // 1. Mutant 246: SET_MASTER_PASSWORD failure without error property falls back to 'Unknown error'
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      const alertSpy = vi.fn();
+      globalThis.alert = alertSpy;
+
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'SET_MASTER_PASSWORD') {
+          return { success: false }; // error is undefined
+        }
+        return { success: true };
+      });
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const btnSave = document.getElementById('btn-save-master-pass') as HTMLButtonElement;
+      const inputMasterPass = document.getElementById('input-master-pass') as HTMLInputElement;
+      const inputMasterPassConfirm = document.getElementById(
+        'input-master-pass-confirm'
+      ) as HTMLInputElement;
+      inputMasterPass.value = '123456';
+      inputMasterPassConfirm.value = '123456';
+      btnSave.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(alertSpy).toHaveBeenCalledWith('Failed to set password: Unknown error');
+
+      // 2. Mutants 347 and 358: wipe input and confirm click fallback to 'DELETE' when getMessage returns ''
+      vi.resetModules();
+      document.body.innerHTML = OPTIONS_HTML;
+      const sentMsgs: any[] = [];
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        sentMsgs.push(msg);
+        return { success: true };
+      });
+      const origGetMessage = chrome.i18n.getMessage;
+      chrome.i18n.getMessage = vi.fn((key: string, _subs?: any, fallback?: string) => {
+        if (key === 'optionsWipeConfirmKeyword') return '';
+        return fallback || key;
+      }) as any;
+
+      await import('../../src/options/options');
+      await new Promise((r) => setTimeout(r, 40));
+
+      const inputConfirm = document.getElementById('input-wipe-confirm') as HTMLInputElement;
+      const btnConfirm = document.getElementById('btn-confirm-wipe') as HTMLButtonElement;
+
+      // Mutant 347: on input event, keyword must fall back to 'DELETE'
+      inputConfirm.value = 'DELETE';
+      inputConfirm.dispatchEvent(new Event('input'));
+      expect(btnConfirm.disabled).toBe(false);
+
+      // Mutant 358: on click event, keyword must fall back to 'DELETE'
+      btnConfirm.click();
+      await new Promise((r) => setTimeout(r, 20));
+
+      expect(sentMsgs.some((m) => m.type === 'CLEAR_ALL_HISTORY')).toBe(true);
+
+      chrome.i18n.getMessage = origGetMessage;
     });
   });
 });

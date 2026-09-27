@@ -146,10 +146,7 @@ body {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: var(--lz-border-strong);
   transition: 0.2s;
   border-radius: 18px;
@@ -160,10 +157,12 @@ body {
   content: '';
   height: 14px;
   width: 14px;
-  left: 2px;
+  inset-inline-start: 2px;
   bottom: 2px;
   background-color: white;
-  transition: 0.2s;
+  transition:
+    0.2s,
+    inset-inline-start 0.2s;
   border-radius: 50%;
 }
 
@@ -172,7 +171,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(14px);
+  inset-inline-start: 16px;
 }
 
 /* Search Bar & Filter Chips */

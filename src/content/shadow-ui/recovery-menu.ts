@@ -1,4 +1,10 @@
-import { formatTimeAgo, computeWordCount, sanitizePreview } from '../../common/utils/text';
+import { computeWordCount, sanitizePreview } from '../../common/utils/text';
+import {
+  getMessage,
+  formatPluralMessage,
+  formatRelativeTime,
+  getDirection,
+} from '../../common/utils/i18n';
 import { LivePreviewManager } from './live-preview';
 import { safeSetHtml } from '../../common/utils/dom';
 import { RuntimeMessage } from '../../common/types/messages';
@@ -63,9 +69,11 @@ export class RecoveryMenu {
           : document.documentElement.clientWidth;
     const viewportLeft = vv && typeof vv.pageLeft === 'number' ? vv.pageLeft : window.scrollX || 0;
     const menuWidth = Math.min(320, Math.max(200, viewportWidth - 20));
+    const isRtl = getDirection() === 'rtl';
+    const idealLeft = isRtl ? buttonLeft : buttonLeft - menuWidth + 24;
     const menuLeft = Math.max(
       viewportLeft + 10,
-      Math.min(buttonLeft - menuWidth + 24, viewportLeft + viewportWidth - menuWidth - 10)
+      Math.min(idealLeft, viewportLeft + viewportWidth - menuWidth - 10)
     );
 
     this.container.style.width = `${menuWidth}px`;
@@ -100,32 +108,32 @@ export class RecoveryMenu {
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
           </svg>
-          <span>Lazarus Recovery</span>
+          <span>${getMessage('shadowMenuTitle')}</span>
         </div>
-        <span class="lz-item-counter">${this.filteredItems.length} drafts</span>
+        <span class="lz-item-counter"></span>
       </div>
       <div class="lz-search-box">
-        <input type="search" class="lz-search-input" placeholder="Search field history..." />
+        <input type="search" class="lz-search-input" placeholder="${getMessage('shadowMenuSearchPlaceholder')}" />
       </div>
       <ul class="lz-snippet-list" role="listbox">
         <!-- Rendered by renderList -->
       </ul>
       <div class="lz-menu-footer">
-        <button class="lz-footer-btn lz-restore-all-btn" title="Restore entire form">
+        <button class="lz-footer-btn lz-restore-all-btn" title="${getMessage('shadowMenuRestoreFormTitle')}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
             <polyline points="16 6 12 2 8 6"></polyline>
             <line x1="12" y1="2" x2="12" y2="15"></line>
           </svg>
-          Form
+          ${getMessage('shadowMenuRestoreFormLabel')}
         </button>
-        <button class="lz-footer-btn lz-settings-btn" title="Lazarus settings">
+        <button class="lz-footer-btn lz-settings-btn" title="${getMessage('shadowMenuSettingsTitle')}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
         </button>
-        <button class="lz-footer-btn lz-disable-btn" title="Disable on this site">
+        <button class="lz-footer-btn lz-disable-btn" title="${getMessage('shadowMenuDisableTitle')}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
@@ -167,7 +175,7 @@ export class RecoveryMenu {
 
     this.container.querySelector('.lz-disable-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (confirm(`Disable Lazarus on ${window.location.hostname}?`)) {
+      if (confirm(getMessage('shadowMenuDisableConfirm', [window.location.hostname]))) {
         const msg: RuntimeMessage = {
           type: 'DISABLE_DOMAIN',
           payload: { domain: window.location.hostname, wipeExisting: false },
@@ -184,6 +192,14 @@ export class RecoveryMenu {
     const list = this.container.querySelector('.lz-snippet-list') as HTMLUListElement;
     if (!list) return;
 
+    const counterEl = this.container.querySelector('.lz-item-counter');
+    if (counterEl) {
+      counterEl.textContent = formatPluralMessage(
+        'shadowMenuDraftCount',
+        this.filteredItems.length
+      );
+    }
+
     list.replaceChildren();
 
     if (this.filteredItems.length === 0) {
@@ -192,11 +208,11 @@ export class RecoveryMenu {
       const line1 = document.createElement('div');
       line1.style.fontWeight = '500';
       line1.style.marginBottom = '4px';
-      line1.textContent = 'No drafts found';
+      line1.textContent = getMessage('shadowMenuEmptyTitle');
       const line2 = document.createElement('div');
       line2.style.fontSize = '11px';
       line2.style.opacity = '0.8';
-      line2.textContent = 'Try typing to save one';
+      line2.textContent = getMessage('shadowMenuEmptySubtitle');
       empty.appendChild(line1);
       empty.appendChild(line2);
       list.appendChild(empty);
@@ -215,16 +231,18 @@ export class RecoveryMenu {
       const meta = document.createElement('div');
       meta.className = 'lz-snippet-meta';
       const timeSpan = document.createElement('span');
-      timeSpan.textContent = formatTimeAgo(item.lastModified);
+      timeSpan.textContent = formatRelativeTime(item.lastModified);
       const badge = document.createElement('span');
       badge.className = 'lz-badge';
-      badge.textContent = `${wordCount} words`;
+      badge.textContent = formatPluralMessage('shadowSnippetWordCount', wordCount);
       meta.appendChild(timeSpan);
       meta.appendChild(badge);
 
       const preview = document.createElement('p');
       preview.className = 'lz-snippet-preview';
-      preview.textContent = previewText || '(empty)';
+      preview.setAttribute('dir', 'auto');
+      preview.style.unicodeBidi = 'plaintext';
+      preview.textContent = previewText || getMessage('shadowSnippetEmpty');
 
       li.appendChild(meta);
       li.appendChild(preview);

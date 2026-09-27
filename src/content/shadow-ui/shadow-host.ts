@@ -7,6 +7,7 @@ import { RuntimeMessage } from '../../common/types/messages';
 import { findRichTextAdapter } from '../rich-text';
 import { escapeCss } from '../../common/utils/dom';
 import { isExtensionContextValid, safeSendMessage } from '../../common/utils/runtime';
+import { getUILanguage, getDirection } from '../../common/utils/i18n';
 
 export class LazarusRecoveryHost extends HTMLElement {
   private shadow: ShadowRoot;
@@ -23,6 +24,11 @@ export class LazarusRecoveryHost extends HTMLElement {
     this.menu = new RecoveryMenu(this.previewManager);
 
     this.initShadowDom();
+  }
+
+  public connectedCallback() {
+    this.setAttribute('dir', getDirection());
+    this.setAttribute('lang', getUILanguage());
   }
 
   private initShadowDom() {

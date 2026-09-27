@@ -1,0 +1,14 @@
+{
+  "optionsTabGeneralSubtitle": {
+    "message": "Manage automatic draft saving, retention windows, and core extension behavior.",
+    "description": "US English override for behavior"
+  },
+  "optionsExportSubtitle": {
+    "message": "Download complete form history serialized into a JSON backup.",
+    "description": "US English override for serialized"
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "DELETE",
+    "description": "US English confirmation keyword"
+  }
+}
