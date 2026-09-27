@@ -40,7 +40,42 @@ describe('L10n Catalog Integrity', () => {
   });
 
   it('contains all required reference locales and optionsWipeConfirmKeyword is defined and non-empty in each', () => {
-    const requiredLocales = ['en', 'en_US', 'ar', 'de', 'zh_CN', 'ja'];
+    const requiredLocales = [
+      'en',
+      'en_US',
+      'ar',
+      'de',
+      'zh_CN',
+      'ja',
+      'es',
+      'es_419',
+      'fr',
+      'pt_PT',
+      'pt_BR',
+      'it',
+      'nl',
+      'pl',
+      'ru',
+      'uk',
+      'cs',
+      'sk',
+      'ro',
+      'bg',
+      'hu',
+      'el',
+      'sv',
+      'da',
+      'fi',
+      'no',
+      'hr',
+      'sr',
+      'sl',
+      'lt',
+      'lv',
+      'et',
+      'ca',
+      'tr',
+    ];
     const localesDir = path.resolve(__dirname, '../../public/_locales');
     for (const locale of requiredLocales) {
       const catalogPath = path.join(localesDir, locale, 'messages.json');
@@ -54,6 +89,52 @@ describe('L10n Catalog Integrity', () => {
         catalog.optionsWipeConfirmKeyword.message.trim().length,
         `optionsWipeConfirmKeyword must not be empty in ${locale}`
       ).toBeGreaterThan(0);
+    }
+  });
+
+  it('contains all canonical en keys in all complete European and Americas catalogs', () => {
+    const fullLocales = [
+      'de',
+      'zh_CN',
+      'ja',
+      'ar',
+      'es',
+      'es_419',
+      'fr',
+      'pt_PT',
+      'pt_BR',
+      'it',
+      'nl',
+      'pl',
+      'ru',
+      'uk',
+      'cs',
+      'sk',
+      'ro',
+      'bg',
+      'hu',
+      'el',
+      'sv',
+      'da',
+      'fi',
+      'no',
+      'hr',
+      'sr',
+      'sl',
+      'lt',
+      'lv',
+      'et',
+      'ca',
+      'tr',
+    ];
+    const enKeys = Object.keys(enCatalog);
+    const localesDir = path.resolve(__dirname, '../../public/_locales');
+    for (const locale of fullLocales) {
+      const catalogPath = path.join(localesDir, locale, 'messages.json');
+      expect(fs.existsSync(catalogPath), `messages.json should exist for ${locale}`).toBe(true);
+      const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
+      const missingKeys = enKeys.filter((k) => !catalog[k]);
+      expect(missingKeys, `Missing keys in ${locale}`).toEqual([]);
     }
   });
 
@@ -166,30 +247,41 @@ describe('L10n Catalog Integrity', () => {
     expect(Array.from(missingKeys)).toEqual([]);
   });
 
-  it('validates all $PLACEHOLDER$ tokens in message strings have a matching case-insensitive key in entry.placeholders', () => {
+  it('validates all $PLACEHOLDER$ tokens in message strings have a matching case-insensitive key in entry.placeholders across all catalogs', () => {
     const missingPlaceholders = new Set<string>();
     const placeholderRegex = /\$([A-Z0-9_]+)\$/g;
+    const localesDir = path.resolve(__dirname, '../../public/_locales');
+    const locales = fs
+      .readdirSync(localesDir)
+      .filter((f) => fs.statSync(path.join(localesDir, f)).isDirectory());
 
-    for (const [key, entry] of Object.entries(enCatalog)) {
-      const message = (entry as any).message;
-      if (typeof message !== 'string') continue;
+    for (const locale of locales) {
+      const catalogPath = path.join(localesDir, locale, 'messages.json');
+      const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
 
-      let match;
-      while ((match = placeholderRegex.exec(message)) !== null) {
-        const placeholderName = match[1];
+      for (const [key, entry] of Object.entries(catalog)) {
+        const message = (entry as any).message;
+        if (typeof message !== 'string') continue;
 
-        // Skip natively replaced $COUNT$ for plural strings
-        if (placeholderName === 'COUNT') continue;
+        let match;
+        placeholderRegex.lastIndex = 0;
+        while ((match = placeholderRegex.exec(message)) !== null) {
+          const placeholderName = match[1];
 
-        const placeholdersDict = (entry as any).placeholders || {};
+          // Skip natively replaced $COUNT$ for plural strings
+          if (placeholderName === 'COUNT') continue;
 
-        // placeholders are case-insensitive per WebExtension spec, but typically defined lowercase
-        const definedPlaceholders = Object.keys(placeholdersDict).map((k) => k.toUpperCase());
+          // For differential locales like en_US, placeholders can inherit from en
+          const placeholdersDict =
+            (entry as any).placeholders || (enCatalog[key] as any)?.placeholders || {};
 
-        if (!definedPlaceholders.includes(placeholderName.toUpperCase())) {
-          missingPlaceholders.add(
-            `Placeholder $${placeholderName}$ missing in placeholders dict for key: ${key}`
-          );
+          const definedPlaceholders = Object.keys(placeholdersDict).map((k) => k.toUpperCase());
+
+          if (!definedPlaceholders.includes(placeholderName.toUpperCase())) {
+            missingPlaceholders.add(
+              `[${locale}] Placeholder $${placeholderName}$ missing in placeholders dict for key: ${key}`
+            );
+          }
         }
       }
     }
