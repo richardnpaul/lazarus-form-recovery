@@ -2,6 +2,12 @@ import { RuntimeResponse } from '../common/types/messages';
 import { ExtensionSettings, VaultStatus } from '../common/types/config';
 import { getExtensionVersion } from '../common/utils/version';
 import { getBrowserApi } from '../common/utils/runtime';
+import {
+  getMessage,
+  localizeDocument,
+  formatStorageFootprint,
+  getUILanguage,
+} from '../common/utils/i18n';
 
 async function sendOptionsMessage<T = any>(message: any): Promise<T> {
   const api = getBrowserApi();
@@ -60,6 +66,14 @@ let currentSettings: ExtensionSettings | null = null;
 let currentVaultStatus: VaultStatus | null = null;
 
 export async function init() {
+  localizeDocument();
+  const keyword = getMessage('optionsWipeConfirmKeyword', undefined, 'DELETE');
+  const wipeLabel = document.getElementById('wipe-confirm-label');
+  if (wipeLabel) {
+    wipeLabel.textContent = getMessage('optionsLabelTypeDelete', [keyword]);
+  }
+  inputWipeConfirm.placeholder = keyword;
+
   setupTabs();
   renderDiagnostics();
   await loadSettings();
@@ -127,12 +141,12 @@ async function checkVault() {
     currentVaultStatus = res.data;
     if (currentVaultStatus.hasMasterPassword) {
       vaultStatusDesc.textContent = currentVaultStatus.isUnlocked
-        ? 'Vault is currently unlocked in memory.'
-        : 'Vault is configured and locked.';
-      btnConfigurePassword.textContent = 'Change Master Password';
+        ? getMessage('optionsVaultStatusUnlocked')
+        : getMessage('optionsVaultStatusLocked');
+      btnConfigurePassword.textContent = getMessage('optionsBtnChangePassword');
     } else {
-      vaultStatusDesc.textContent = 'Master Password is not configured.';
-      btnConfigurePassword.textContent = 'Set Master Password';
+      vaultStatusDesc.textContent = getMessage('optionsVaultStatusUnconfigured');
+      btnConfigurePassword.textContent = getMessage('optionsBtnSetPassword');
     }
   }
 }
@@ -162,8 +176,8 @@ prefRetentionSlider.addEventListener('input', async () => {
 // Security Tab Event Handlers
 modeStandard.addEventListener('click', async () => {
   if (currentVaultStatus?.hasMasterPassword) {
-    if (confirm('Switching to Standard Mode will remove Master Password encryption. Continue?')) {
-      const pwd = prompt('Enter your current Master Password to confirm:');
+    if (confirm(getMessage('optionsConfirmSwitchStandard'))) {
+      const pwd = prompt(getMessage('optionsPromptCurrentPassword'));
       if (pwd) {
         const removeRes: RuntimeResponse = await sendOptionsMessage({
           type: 'REMOVE_MASTER_PASSWORD',
@@ -173,7 +187,7 @@ modeStandard.addEventListener('click', async () => {
           updateModeCards('none');
           await checkVault();
         } else {
-          alert('Incorrect Master Password.');
+          alert(getMessage('optionsAlertIncorrectPassword'));
         }
       }
     }
@@ -205,10 +219,10 @@ prefAutolockSelect.addEventListener('change', async () => {
 function openPasswordModal() {
   inputMasterPass.value = '';
   inputMasterPassConfirm.value = '';
-  passwordStrengthLabel.textContent = 'Password strength: Empty';
+  passwordStrengthLabel.textContent = getMessage('optionsPasswordStrengthEmpty');
   passwordModalTitle.textContent = currentVaultStatus?.hasMasterPassword
-    ? 'Change Master Password'
-    : 'Set Master Password';
+    ? getMessage('optionsModalChangePasswordTitle')
+    : getMessage('optionsModalSetPasswordTitle');
   passwordModal.classList.add('is-visible');
   inputMasterPass.focus();
 }
@@ -219,13 +233,13 @@ btnCancelPasswordModal.addEventListener('click', () => {
 
 inputMasterPass.addEventListener('input', () => {
   const pwd = inputMasterPass.value;
-  let strength = 'Weak';
+  let strength = getMessage('optionsPasswordStrengthWeak');
   if (pwd.length >= 12 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[^a-zA-Z0-9]/.test(pwd)) {
-    strength = 'Strong (PBKDF2-SHA256, 100k iterations)';
+    strength = getMessage('optionsPasswordStrengthStrong');
   } else if (pwd.length >= 8) {
-    strength = 'Moderate';
+    strength = getMessage('optionsPasswordStrengthModerate');
   }
-  passwordStrengthLabel.textContent = `Password strength: ${strength}`;
+  passwordStrengthLabel.textContent = strength;
 });
 
 btnSaveMasterPass.addEventListener('click', async () => {
@@ -233,15 +247,15 @@ btnSaveMasterPass.addEventListener('click', async () => {
   const p2 = inputMasterPassConfirm.value;
 
   if (!p1) {
-    alert('Please enter a password.');
+    alert(getMessage('optionsAlertEnterPassword'));
     return;
   }
   if (p1 !== p2) {
-    alert('Passwords do not match.');
+    alert(getMessage('optionsAlertPasswordsNoMatch'));
     return;
   }
   if (p1.length < 6) {
-    alert('Password must be at least 6 characters long.');
+    alert(getMessage('optionsAlertPasswordMinLength'));
     return;
   }
 
@@ -254,9 +268,9 @@ btnSaveMasterPass.addEventListener('click', async () => {
     passwordModal.classList.remove('is-visible');
     updateModeCards('hybrid-aes-gcm');
     await checkVault();
-    alert('Master Password has been configured successfully.');
+    alert(getMessage('optionsAlertPasswordSuccess'));
   } else {
-    alert(`Failed to set password: ${res?.error}`);
+    alert(getMessage('optionsAlertPasswordFailed', [res?.error || 'Unknown error']));
   }
 });
 
@@ -269,7 +283,7 @@ function renderDomainsTable(domains: string[]) {
     td.colSpan = 2;
     td.style.color = 'var(--lz-text-muted)';
     td.style.textAlign = 'center';
-    td.textContent = 'No disabled domains yet.';
+    td.textContent = getMessage('optionsNoDisabledDomains');
     tr.appendChild(td);
     domainTableBody.appendChild(tr);
     return;
@@ -291,7 +305,7 @@ function renderDomainsTable(domains: string[]) {
     btn.dataset.domain = domain;
     btn.style.padding = '3px 8px';
     btn.style.fontSize = '11px';
-    btn.textContent = 'Unblock';
+    btn.textContent = getMessage('optionsBtnUnblock');
 
     btn.addEventListener('click', async () => {
       await sendOptionsMessage({
@@ -326,16 +340,21 @@ async function calculateStorage() {
   if (navigator.storage && navigator.storage.estimate) {
     try {
       const estimate = await navigator.storage.estimate();
-      const usageMb = ((estimate.usage || 0) / (1024 * 1024)).toFixed(2);
-      const quotaMb = ((estimate.quota || 0) / (1024 * 1024)).toFixed(0);
+      const { formattedUsage, formattedQuota } = formatStorageFootprint(
+        estimate.usage || 0,
+        estimate.quota || 0
+      );
       const pct = estimate.quota
         ? Math.min(100, Math.round(((estimate.usage || 0) / estimate.quota) * 100))
         : 0;
 
       storageProgressBar.style.width = `${pct}%`;
-      storageEstimateLabel.textContent = `Using ~${usageMb} MB of ${quotaMb} MB available storage quota.`;
+      storageEstimateLabel.textContent = getMessage('optionsStorageEstimate', [
+        formattedUsage,
+        formattedQuota,
+      ]);
     } catch {
-      storageEstimateLabel.textContent = 'Storage estimate unavailable.';
+      storageEstimateLabel.textContent = getMessage('optionsStorageUnavailable');
     }
   }
 }
@@ -362,7 +381,12 @@ btnWipeHistory.addEventListener('click', () => {
 });
 
 inputWipeConfirm.addEventListener('input', () => {
-  btnConfirmWipe.disabled = inputWipeConfirm.value.trim() !== 'DELETE';
+  const keyword = getMessage('optionsWipeConfirmKeyword', undefined, 'DELETE');
+  btnConfirmWipe.disabled = !isWipeConfirmationValid(
+    inputWipeConfirm.value,
+    keyword,
+    getUILanguage()
+  );
 });
 
 btnCancelWipeModal.addEventListener('click', () => {
@@ -370,12 +394,29 @@ btnCancelWipeModal.addEventListener('click', () => {
 });
 
 btnConfirmWipe.addEventListener('click', async () => {
-  if (inputWipeConfirm.value.trim() === 'DELETE') {
+  const keyword = getMessage('optionsWipeConfirmKeyword', undefined, 'DELETE');
+  if (isWipeConfirmationValid(inputWipeConfirm.value, keyword, getUILanguage())) {
     await sendOptionsMessage({ type: 'CLEAR_ALL_HISTORY' });
     wipeModal.classList.remove('is-visible');
     await calculateStorage();
-    alert('All recorded history and drafts have been wiped.');
+    alert(getMessage('optionsAlertWipeSuccess'));
   }
 });
+
+export function isWipeConfirmationValid(
+  input: string,
+  keyword: string,
+  activeLocale: string
+): boolean {
+  const trimmed = input.trim().normalize('NFKC');
+  const normKeyword = (keyword || '').trim().normalize('NFKC');
+  if (!trimmed || !normKeyword) return false;
+
+  const matchesLocalised =
+    trimmed.toLocaleLowerCase(activeLocale) === normKeyword.toLocaleLowerCase(activeLocale);
+  // Safety fallback for catalog load failure; invisible input comparison, not a displayed string
+  const matchesEnglish = trimmed.toUpperCase() === 'DELETE';
+  return matchesLocalised || matchesEnglish;
+}
 
 init();

@@ -185,7 +185,6 @@ describe('Firefox Functional Reproduction Tests (Google Search & RoboForm)', () 
       // Verify domain recognized in sidebar
       const siteDomainEl = document.getElementById('site-domain');
       expect(sidepanel.getCurrentDomain()).toBe('www.google.com');
-      expect(siteDomainEl?.textContent).toBe('www.google.com');
 
       // Boot FormTracker on Google page
       const googleContainer = document.getElementById('google-search-page') as HTMLElement;

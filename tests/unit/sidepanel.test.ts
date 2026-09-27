@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { getMessage } from '../../src/common/utils/i18n';
 
 const SIDEPANEL_HTML = `
+  <header class="sidepanel-header">
+    <div id="sidepanel-title" data-i18n="sidepanelHeaderTitle"></div>
+  </header>
   <section id="site-banner" class="site-banner">
     <span id="site-beacon" class="site-dot"></span>
     <span id="site-domain">Checking...</span>
@@ -119,6 +123,12 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     await Promise.resolve();
     await Promise.resolve();
 
+    // Verify document localization
+    expect(document.getElementById('sidepanel-title')?.textContent).toBe(
+      getMessage('sidepanelHeaderTitle')
+    );
+    expect(getMessage('sidepanelHeaderTitle')).not.toBe('');
+
     const historyList = document.getElementById('history-list');
     // Default filter is 'all', so both forms (example.com and other-domain.org) match
     expect(historyList?.querySelectorAll('.history-item').length).toBe(2);
@@ -173,16 +183,20 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
 
     // 2. Copy All button
     const copyAllBtn = historyList?.querySelector('.copy-all-btn') as HTMLButtonElement;
+    expect(copyAllBtn.textContent).toBe(getMessage('sidepanelActionCopyAll'));
+    expect(getMessage('sidepanelActionCopyAll')).not.toBe('');
     await copyAllBtn?.click();
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       'subject: Draft Subject\n\nnotes: Some notes to compare and diff'
     );
     expect(copyAllBtn.textContent).toBe('Copied All!');
     vi.advanceTimersByTime(1200);
-    expect(copyAllBtn.textContent).toBe('Copy All');
+    expect(copyAllBtn.textContent).toBe(getMessage('sidepanelActionCopyAll'));
 
     // 4. Delete form button
     const deleteBtn = historyList?.querySelector('.delete-form-btn') as HTMLButtonElement;
+    expect(deleteBtn.textContent).toBe(getMessage('sidepanelActionDelete'));
+    expect(getMessage('sidepanelActionDelete')).not.toBe('');
     deleteBtn?.click();
     expect(chrome.runtime.sendMessage).toHaveBeenCalledWith({
       type: 'DELETE_FORM',
@@ -262,6 +276,8 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     // Click "View All Sites" inside empty state
     const viewAllBtn = document.getElementById('view-all-sites-btn') as HTMLButtonElement;
     expect(viewAllBtn).not.toBeNull();
+    expect(viewAllBtn.textContent).toBe(getMessage('sidepanelViewAllSitesBtn'));
+    expect(getMessage('sidepanelViewAllSitesBtn')).not.toBe('');
     viewAllBtn?.click();
     await Promise.resolve();
     expect(document.getElementById('chip-all-sites')?.classList.contains('is-active')).toBe(true);
@@ -415,7 +431,7 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
     expect(historyList?.innerHTML).toContain('No visible fields');
     expect(historyList?.innerHTML).toContain('shop.com');
     expect(historyList?.innerHTML).toContain('Untitled Form');
-    expect(historyList?.innerHTML).toContain('30m ago'); // Since timeAgo isn't mock exactly, it might format correctly, wait no, formatTimeAgo will return '30 minutes ago' etc.
+    expect(historyList?.innerHTML).toContain('30 minutes ago'); // Since timeAgo isn't mock exactly, it might format correctly, wait no, formatTimeAgo will return '30 minutes ago' etc.
     expect(historyList?.innerHTML).not.toContain('https://');
   });
 
@@ -1212,6 +1228,26 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
       deleteBtn.removeAttribute('data-formid');
       deleteBtn.click();
       expect((chrome.runtime.sendMessage as any).mock.calls.length).toBe(deleteCalls);
+    });
+
+    it('renders localized draft counts for Arabic plurals', async () => {
+      const { withLocale } = await import('./test-utils');
+      const sp = await import('../../src/sidepanel/sidepanel');
+      const historyCount = document.getElementById('history-count') as HTMLElement;
+
+      await withLocale('ar', async () => {
+        sp.renderEmpty();
+        expect(historyCount.textContent).toBe('0 مسودة');
+
+        sp.renderHistory([{ form: { id: '1' } }]);
+        expect(historyCount.textContent).toBe('مسودة واحدة');
+
+        sp.renderHistory([{ form: { id: '1' } }, { form: { id: '2' } }]);
+        expect(historyCount.textContent).toBe('مسودتان');
+
+        sp.renderHistory([{ form: { id: '1' } }, { form: { id: '2' } }, { form: { id: '3' } }]);
+        expect(historyCount.textContent).toMatch(/(3|٣) مسودات/);
+      });
     });
 
     it('kills resolveActiveTab fallback queries, protocols, and status updates', async () => {

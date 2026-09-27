@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: फारम पुन:प्राप्ति",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "फारम डेटा, टिप्पणीहरू वा मस्यौदा कहिल्यै नगुमाउनुहोस्। सुरक्षित, इन्क्रिप्टेड र स्थानीय फारम पुन:प्राप्ति।",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: फारम पुन:प्राप्ति",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "हालको पृष्ठमा अन्तिम सम्पादित फारम पुन: प्राप्त गर्नुहोस्",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "भर्खरै",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "अज्ञात समय",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus फारम पुन:प्राप्ति",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ अहिले फारम स्न्यापसट सुरक्षित गर्नुहोस्",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 फारम संस्करण पुन: प्राप्त गर्नुहोस्",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "यस पृष्ठमा कुनै अघिल्लो संस्करण छैन",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 फिल्ड पाठ पुन: प्राप्त गर्नुहोस्",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "यस फिल्डको लागि कुनै अघिल्लो स्निपेट छैन",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 साइडबारमा संस्करणहरू हेर्नुहोस्",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ सेटिङहरू...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 यस साइटमा Lazarus असक्षम गर्नुहोस्",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ विकल्पहरू",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "संस्. $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "बुझाइयो",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "मस्यौदा",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus नियन्त्रण केन्द्र",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "सक्रिय",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "हालको ट्याब जाँच गर्दै...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "पत्ता लगाउँदै...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "कुनै सक्रिय वेबसाइट छैन",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "गैर-वेब पृष्ठ",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ट्र्याकिङ सक्रिय",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ट्र्याकिङ रोकियो",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "यस डोमेनमा Lazarus ट्र्याकिङ सक्षम वा असक्षम गर्नुहोस्",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "फारम इतिहास खोज्नुहोस्...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "सबै साइटहरू",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "यो साइट",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "आज",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "पछिल्लो ७ दिन",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "पछिल्लो ३० दिन",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "सुरक्षित मस्यौदाहरू",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "लोड हुँदैछ...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "१ मस्यौदा",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$ मस्यौदाहरू",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$ को लागि कुनै फारम डेटा सुरक्षित छैन",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "तपाईंले यस साइटमा टाइप गर्दा मस्यौदाहरू स्वचालित रूपमा सुरक्षित हुन्छन्।",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "सबै साइटहरू हेर्नुहोस्",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "कुनै सुरक्षित फारम डेटा फेला परेन",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Lazarus ले स्वचालित रूपमा मस्यौदाहरू बचत गर्न कुनै पनि वेब पृष्ठमा फारमहरू भर्नुहोस्।",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "प्रतिलिपि गर्नुहोस्",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "प्रतिलिपि गरियो!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "सबै प्रतिलिपि गर्नुहोस्",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "सबै प्रतिलिपि गरियो!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "मेटाउनुहोस्",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "संस्. $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • बुझाइयो",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "शीर्षकविहीन फारम",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "प्रत्यक्ष इनपुट",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "कुनै देखिने फिल्ड छैन",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ सबै खाली गर्नुहोस्",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ सेटिङहरू",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "के तपाईं पक्का सबै फारम इतिहास खाली गर्न चाहनुहुन्छ?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$ मा Lazarus फारम पुन:प्राप्ति रोक्ने हो?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus फारम पुन:प्राप्ति — सेटिङहरू",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ सामान्य",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 सुरक्षा & भल्ट",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 असक्षम डोमेनहरू",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 भण्डारण & डेटा",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ बारेमा & निदान",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "सामान्य प्राथमिकताहरू",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "इनपुट क्याप्चर नीतिहरू र डेटा अवधारण अवधि कन्फिगर गर्नुहोस्।",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "पासवर्ड फिल्डहरू सुरक्षित गर्नुहोस्",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "पासवर्ड फिल्डहरूमा टाइप गरिएको पाठ रेकर्ड र पुन: प्राप्त गर्नुहोस्।",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "सुरक्षा सूचना:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "डिस्कमा पासवर्डहरू भण्डारण गर्नाले संवेदनशील डेटा जोखिममा पर्न सक्छ। मास्टर पासवर्ड मोड सक्रिय राख्नुहोस्।",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "क्रेडिट कार्ड डेटा स्वचालित रूपमा लुकाउने",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn एल्गोरिदमको साथ कार्ड नम्बरहरू पत्ता लगाउँछ र CVV हरूलाई स्थानीय भण्डारणमा जानबाट रोक्छ।",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "डेटा अवधारण अवधि",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "तोकिएको अवधि भन्दा पुराना मस्यौदाहरू स्वचालित रूपमा मेटाउनुहोस्।",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ दिन",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "सुरक्षा & इन्क्रिप्सन भल्ट",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "मास्टर पासवर्ड सुरक्षाको साथ इन्क्रिप्टेड भण्डारण व्यवस्थापन गर्नुहोस्।",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "इन्क्रिप्सन मोड",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "मानक मोड (स्थानीय मात्र)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "कन्फिगरेसन आवश्यक छैन। डेटा ब्राउजरको IndexedDB मा भण्डारण गरिन्छ।",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "मास्टर पासवर्ड भल्ट (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 सँग AES-256 इन्क्रिप्सन। मस्यौदाहरू पढ्न पासवर्ड आवश्यक छ।",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "भल्ट स्थिति",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "मास्टर पासवर्ड कन्फिगर गरिएको छैन।",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "भल्ट हाल मेमोरीमा अनलक छ।",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "भल्ट लक छ।",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "मास्टर पासवर्ड सेट गर्नुहोस्",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "मास्टर पासवर्ड परिवर्तन गर्नुहोस्",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "निष्क्रियतामा स्वतः लक",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "निष्क्रियताको अवधि पछि मेमोरीबाट डिक्रिप्सन कुञ्जीहरू मेटाउनुहोस्।",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "५ मिनेट",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "१५ मिनेट",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "३० मिनेट",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "१ घण्टा",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "सत्रको समयमा कहिल्यै होइन",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "असक्षम डोमेनहरू",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "फारम रेकर्डिङबाट विशेष साइटहरू बहिष्कार गर्नुहोस्।",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "बहिष्कार गरिएको डोमेन थप्नुहोस्",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "जस्तै *.bank.com वा localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "डोमेन रोक्नुहोस्",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "बहिष्कार गरिएका डोमेनहरूको सूची",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "डोमेन ढाँचा",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "कार्य",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "अहिलेसम्म कुनै असक्षम डोमेन छैन।",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "अवरोध हटाउनुहोस्",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "भण्डारण & मर्मतसम्भार",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "भण्डारण प्रयोग निरीक्षण गर्नुहोस्, इन्क्रिप्टेड ब्याकअप निर्यात गर्नुहोस् वा सबै डेटा खाली गर्नुहोस्।",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB भण्डारण क्षमता",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "भण्डारण गणना गर्दै...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "उपलब्ध $QUOTA$ MB मध्ये ~$USAGE$ MB प्रयोग भइरहेको छ।",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "भण्डारण अनुमान उपलब्ध छैन।",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "फारम इतिहास निर्यात गर्नुहोस्",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "JSON ब्याकअप फाइलमा पूर्ण इतिहास डाउनलोड गर्नुहोस्।",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON निर्यात गर्नुहोस्",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "खतरा क्षेत्र: पूर्ण मेटाउने",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "सबै रेकर्ड गरिएका डोमेनहरू, फारमहरू र मस्यौदाहरू स्थायी रूपमा मेटाउनुहोस्।",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "सबै इतिहास मेटाउनुहोस्",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "बारेमा & निदान",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "विस्तार संस्करण र पृष्ठभूमि सेवाहरूको निदान।",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "विस्तार संस्करण",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "लक्षित इन्जिन",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "क्रिप्टोग्राफी इन्जिन",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "डेटाबेस इन्जिन",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "पृष्ठभूमि स्थिति",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● सक्रिय",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "मास्टर पासवर्ड सेट गर्नुहोस्",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "मास्टर पासवर्ड परिवर्तन गर्नुहोस्",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "नयाँ मास्टर पासवर्ड",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "सुरक्षित पासवर्ड प्रविष्ट गर्नुहोस्...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "पासवर्ड पुष्टि गर्नुहोस्",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "पुन: पासवर्ड टाइप गर्नुहोस्...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "पासवर्ड शक्ति: खाली",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "पासवर्ड शक्ति: कमजोर",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "पासवर्ड शक्ति: मध्यम",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "पासवर्ड शक्ति: बलियो (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "रद्द गर्नुहोस्",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "मास्टर पासवर्ड सुरक्षित गर्नुहोस्",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "पूर्ण इतिहास मेटाउने पुष्टि गर्नुहोस्",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "यो कार्य उल्टाउन सकिँदैन। सबै मस्यौदा र डेटा स्थायी रूपमा मेटिनेछ।",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "मेटाउनुहोस्",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "पुष्टि गर्न $KEYWORD$ टाइप गर्नुहोस्:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "स्थायी रूपमा मेटाउनुहोस्",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "कृपया पासवर्ड प्रविष्ट गर्नुहोस्।",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "पासवर्डहरू मेल खाँदैनन्।",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "पासवर्ड कम्तिमा ६ वर्ण लामो हुनुपर्छ।",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "मास्टर पासवर्ड सफलतापूर्वक कन्फिगर गरियो।",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "पासवर्ड सेट गर्न असफल भयो: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "गलत मास्टर पासवर्ड।",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "सबै रेकर्ड गरिएको इतिहास र मस्यौदा मेटाइयो।",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "मानक मोडमा स्विच गर्दा मास्टर पासवर्ड इन्क्रिप्सन हट्नेछ। जारी राख्ने?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "पुष्टि गर्न हालको मास्टर पासवर्ड प्रविष्ट गर्नुहोस्:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus फारम पुन:प्राप्ति",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "फारम मस्यौदाहरू पुन: प्राप्त गर्नुहोस् (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus पुन:प्राप्ति",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "१ मस्यौदा",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$ मस्यौदाहरू",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "फिल्ड इतिहास खोज्नुहोस्...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "पूरा फारम पुन: प्राप्त गर्नुहोस्",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "फारम",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus सेटिङहरू",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus पुन:प्राप्ति खोल्नुहोस्",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "फारम डेटा पुन: प्राप्त गर्नुहोस्",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "खोज्नुहोस्...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "फारम पुन: प्राप्त गर्नुहोस्",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "फारम पुन: प्राप्त गर्नुहोस्",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "सेटिङहरू",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "यस साइटमा असक्षम गर्नुहोस्",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$ मा Lazarus असक्षम गर्ने हो?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "कुनै मस्यौदा फेला परेन",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "मस्यौदा बचत गर्न केहि लेख्न सुरु गर्नुहोस्",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "१ सुरक्षित मस्यौदा",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "$COUNT$ सुरक्षित मस्यौदाहरू",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "१ शब्द",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ शब्दहरू",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(खाली)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

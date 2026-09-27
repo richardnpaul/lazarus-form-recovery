@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: ဖောင်ဒေတာ ပြန်လည်ရယူခြင်း",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "ဖောင်ဒေတာများ၊ မှတ်ချက်များနှင့် မူကြမ်းများကို ဘယ်တော့မှ မဆုံးရှုံးပါစေနှင့်။ လုံခြုံစိတ်ချရပြီး သိုလှောင်ထားသော ဒေတာများကို ပြန်လည်ရယူပါ။",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: ဖောင်ဒေတာ ပြန်လည်ရယူခြင်း",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "လက်ရှိစာမျက်နှာတွင် နောက်ဆုံးတည်းဖြတ်ခဲ့သော ဖောင်ကို ပြန်လည်ရယူပါ",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "ယခုလေးတင်",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "မသိသော အချိန်",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus ဖောင်ဒေတာ ပြန်လည်ရယူခြင်း",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ ဖောင်အခြေအနေကို ယခု သိမ်းဆည်းပါ",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 ဖောင်ဗားရှင်းကို ပြန်လည်ရယူပါ",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "ဤစာမျက်နှာတွင် ယခင်ဗားရှင်းများ မရှိပါ",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 စာသားကို ပြန်လည်ရယူပါ",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "ဤနေရာအတွက် ယခင်မှတ်တမ်းများ မရှိပါ",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 ဘေးဘားတွင် မှတ်တမ်းများကို ကြည့်ပါ",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ ဆက်တင်များ...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 ဤဆိုဒ်တွင် Lazarus ကို ပိတ်ထားပါ",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ ရွေးချယ်စရာများ",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "ဗားရှင်း $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "ပေးပို့ပြီး",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "မူကြမ်း",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus ထိန်းချုပ်ရေးစင်တာ",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "အသုံးပြုနေသည်",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "လက်ရှိစာမျက်နှာကို စစ်ဆေးနေသည်...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "ရှာဖွေနေသည်...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "အသုံးပြုနေသော ဝဘ်ဆိုဒ် မရှိပါ",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "ဝဘ်စာမျက်နှာ မဟုတ်ပါ",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ခြေရာခံခြင်း ဖွင့်ထားသည်",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ခြေရာခံခြင်း ခေတ္တရပ်ထားသည်",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "ဤဒိုမိန်းတွင် Lazarus ခြေရာခံခြင်းကို ဖွင့်/ပိတ် ပြုလုပ်ပါ",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "ဖောင်မှတ်တမ်းများကို ရှာဖွေပါ...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "ဆိုဒ်အားလုံး",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "ဤဆိုဒ်",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "ယနေ့",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "လွန်ခဲ့သော ၇ ရက်",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "လွန်ခဲ့သော ရက် ၃၀",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "သိမ်းဆည်းထားသော မူကြမ်းများ",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "ဖွင့်နေသည်...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "မူကြမ်း ၁ ခု",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "မူကြမ်း $COUNT$ ခု",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$ အတွက် သိမ်းဆည်းထားသော ဒေတာ မရှိပါ",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "ဤဆိုဒ်တွင် စာရိုက်သည်နှင့် မူကြမ်းများကို အလိုအလျောက် သိမ်းဆည်းပေးပါသည်။",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "ဆိုဒ်အားလုံးကို ကြည့်ပါ",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "သိမ်းဆည်းထားသော ဖောင်ဒေတာ မတွေ့ပါ",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Lazarus မှ သင့်မူကြမ်းများကို အလိုအလျောက် သိမ်းဆည်းနိုင်ရန် မည်သည့်စာမျက်နှာတွင်မဆို ဖောင်များကို ဖြည့်သွင်းပါ။",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "ကူးယူပါ",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "ကူးယူပြီးပါပြီ!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "အားလုံး ကူးယူပါ",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "အားလုံး ကူးယူပြီးပါပြီ!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "ဖျက်ပါ",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "ဗားရှင်း $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • ပေးပို့ပြီး",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "ခေါင်းစဉ်မရှိသော ဖောင်",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "တိုက်ရိုက် ထည့်သွင်းချက်",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "မြင်နိုင်သော နေရာများ မရှိပါ",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ အားလုံး ရှင်းလင်းပါ",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ ဆက်တင်များ",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "ဖောင်မှတ်တမ်းများ အားလုံးကို ရှင်းလင်းရန် သေချာပါသလား?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$ တွင် Lazarus ပြန်လည်ရယူခြင်းကို ရပ်ထားမလား?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus ဖောင်ဒေတာ ပြန်လည်ရယူခြင်း — ဆက်တင်များ",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ အထွေထွေ",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 လုံခြုံရေး & သိုလှောင်ခန်း",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 ပိတ်ထားသော ဒိုမိန်းများ",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 သိုလှောင်မှု & ဒေတာ",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ အကြောင်း & စစ်ဆေးချက်",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "အထွေထွေ ဆက်တင်များ",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "ဒေတာသိမ်းဆည်းမှု မူဝါဒများနှင့် သိုလှောင်ချိန် ကာလများကို သတ်မှတ်ပါ။",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "စကားဝှက်များကို သိမ်းဆည်းပါ",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "စကားဝှက်နေရာများတွင် ရိုက်ထည့်ထားသော စာသားများကို မှတ်တမ်းတင်ပြီး ပြန်လည်ရယူပါ။",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "လုံခြုံရေး သတိပေးချက်:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "စကားဝှက်များကို သိမ်းဆည်းခြင်းသည် အရေးကြီးဒေတာများကို ပေါက်ကြားစေနိုင်သည်။ ပင်မစကားဝှက်ကို ဖွင့်ထားပါ။",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "ခရက်ဒစ်ကတ် ဒေတာများကို အလိုအလျောက် ဖုံးကွယ်ခြင်း",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn အယ်လဂိုရီသမ်ဖြင့် ကတ်နံပါတ်များကို ရှာဖွေပြီး CVV များကို စက်ထဲသို့ မသိမ်းဆည်းစေရန် တားဆီးပေးပါသည်။",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "ဒေတာ သိမ်းဆည်းထားမည့် ကာလ",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "သတ်မှတ်ထားသော ကာလထက် ကျော်လွန်သော မူကြမ်းများကို အလိုအလျောက် ဖျက်ပေးပါသည်။",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ ရက်",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "လုံခြုံရေး & လျှို့ဝှက်ကုဒ် သိုလှောင်ခန်း",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "ပင်မစကားဝှက် အကာအကွယ်ဖြင့် လျှို့ဝှက်ထားသော ဒေတာများကို စီမံခန့်ခွဲပါ။",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "လျှို့ဝှက်ကုဒ် စနစ်",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "ရိုးရိုးစနစ် (စက်ထဲတွင်သာ)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "အထူးသတ်မှတ်ချက် မလိုပါ။ ဘရောက်ဆာ၏ IndexedDB တွင်သာ ဒေတာများကို သိမ်းဆည်းပါသည်။",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "ပင်မစကားဝှက် သိုလှောင်ခန်း (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 ဖြင့် AES-256 လျှို့ဝှက်ကုဒ် စနစ်။ မူကြမ်းများကို ဖတ်ရန် စကားဝှက် လိုအပ်ပါသည်။",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "သိုလှောင်ခန်း အခြေအနေ",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "ပင်မစကားဝှက် မသတ်မှတ်ရသေးပါ။",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "သိုလှောင်ခန်းကို ဖွင့်ထားပါသည်။",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "သိုလှောင်ခန်းကို ပိတ်ထားပါသည်။",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "ပင်မစကားဝှက် သတ်မှတ်ပါ",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "ပင်မစကားဝှက် ပြောင်းပါ",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "အသုံးမပြုပါက အလိုအလျောက် သော့ခတ်ခြင်း",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "သတ်မှတ်ချိန်အတွင်း အသုံးမပြုပါက လျှို့ဝှက်ကုဒ်များကို အလိုအလျောက် ဖျက်ပေးပါသည်။",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "၅ မိနစ်",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "၁၅ မိနစ်",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "မိနစ် ၃၀",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "၁ နာရီ",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "ဘယ်တော့မှ မပိတ်ပါနှင့်",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "ပိတ်ထားသော ဒိုမိန်းများ",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "ဖောင်မှတ်တမ်း မယူလိုသော သီးခြားဆိုဒ်များကို ချန်လှပ်ထားပါ။",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "ချန်လှပ်မည့် ဒိုမိန်း ထည့်ပါ",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "ဥပမာ *.bank.com သို့မဟုတ် localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "ဒိုမိန်းကို ပိတ်ဆို့ပါ",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "ချန်လှပ်ထားသော ဒိုမိန်းများ စာရင်း",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "ဒိုမိန်း ပုံစံ",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "လုပ်ဆောင်ချက်",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "ပိတ်ထားသော ဒိုမိန်း မရှိသေးပါ။",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "ပြန်ဖွင့်ပါ",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "သိုလှောင်မှု & ထိန်းသိမ်းခြင်း",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "သိုလှောင်မှု အသုံးပြုမှုကို စစ်ဆေးပါ၊ အရန်ဒေတာများ ထုတ်ယူပါ သို့မဟုတ် ဒေတာအားလုံးကို ရှင်းလင်းပါ။",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB သိုလှောင်မှု ပမာဏ",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "သိုလှောင်မှုကို တွက်ချက်နေသည်...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "ရရှိနိုင်သော $QUOTA$ MB အနက် ~$USAGE$ MB ကို အသုံးပြုနေပါသည်။",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "သိုလှောင်မှု ပမာဏကို မသိနိုင်ပါ။",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "ဖောင်မှတ်တမ်းများကို ထုတ်ယူပါ",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "မှတ်တမ်းအားလုံးကို JSON အရန်ဖိုင်အဖြစ် ဒေါင်းလုဒ်လုပ်ပါ။",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON ထုတ်ယူပါ",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "သတိပြုရန် နေရာ: အပြီးတိုင် ရှင်းလင်းခြင်း",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "မှတ်တမ်းတင်ထားသော ဒိုမိန်းများ၊ ဖောင်များနှင့် မူကြမ်းအားလုံးကို အပြီးတိုင် ဖျက်ပစ်ပါမည်။",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "မှတ်တမ်းအားလုံးကို ဖျက်ပါ",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "အကြောင်း & စစ်ဆေးချက်",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "ဆော့ဖ်ဝဲ ဗားရှင်းနှင့် နောက်ခံလုပ်ဆောင်ချက်များ အခြေအနေ။",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "ဆော့ဖ်ဝဲ ဗားရှင်း",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "အသုံးပြုသည့် အင်ဂျင်",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "လျှို့ဝှက်ကုဒ် အင်ဂျင်",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "ဒေတာဘေ့စ် အင်ဂျင်",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "နောက်ခံ အခြေအနေ",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● အသုံးပြုနေသည်",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "ပင်မစကားဝှက် သတ်မှတ်ပါ",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "ပင်မစကားဝှက် ပြောင်းပါ",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "ပင်မစကားဝှက် အသစ်",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "လုံခြုံသော စကားဝှက် ရိုက်ထည့်ပါ...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "စကားဝှက်ကို အတည်ပြုပါ",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "စကားဝှက်ကို ထပ်မံရိုက်ထည့်ပါ...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "စကားဝှက် ခိုင်မာမှု: မရှိပါ",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "စကားဝှက် ခိုင်မာမှု: အားနည်းသည်",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "စကားဝှက် ခိုင်မာမှု: အသင့်အတင့်",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "စကားဝှက် ခိုင်မာမှု: အလွန်ကောင်းသည် (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "မလုပ်တော့ပါ",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "ပင်မစကားဝှက်ကို သိမ်းပါ",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "မှတ်တမ်းများ အပြီးတိုင် ဖျက်ခြင်းကို အတည်ပြုပါ",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။ မူကြမ်းများနှင့် ဒေတာအားလုံးကို အပြီးတိုင် ဖျက်ပစ်ပါမည်။",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "ဖျက်ပါ",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "အတည်ပြုရန် $KEYWORD$ ဟု ရိုက်ထည့်ပါ:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "အပြီးတိုင် ဖျက်ပါ",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "ကျေးဇူးပြု၍ စကားဝှက် ရိုက်ထည့်ပါ။",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "စကားဝှက်များ မတူညီပါ။",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "စကားဝှက်သည် အနည်းဆုံး စာလုံး ၆ လုံး ရှိရပါမည်။",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "ပင်မစကားဝှက်ကို အောင်မြင်စွာ သတ်မှတ်ပြီးပါပြီ။",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "စကားဝှက် သတ်မှတ်ခြင်း မအောင်မြင်ပါ: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "ပင်မစကားဝှက် မှားယွင်းနေပါသည်။",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "မှတ်တမ်းများနှင့် မူကြမ်းအားလုံးကို ရှင်းလင်းပြီးပါပြီ။",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "ရိုးရိုးစနစ်သို့ ပြောင်းပါက ပင်မစကားဝှက် အကာအကွယ် ပျက်ပြယ်သွားပါမည်။ ဆက်လုပ်မလား?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "အတည်ပြုရန် လက်ရှိ ပင်မစကားဝှက်ကို ရိုက်ထည့်ပါ:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus ဖောင်ဒေတာ ပြန်လည်ရယူခြင်း",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "ဖောင်မူကြမ်းများကို ပြန်လည်ရယူပါ (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus ပြန်လည်ရယူခြင်း",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "မူကြမ်း ၁ ခု",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "မူကြမ်း $COUNT$ ခု",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "မှတ်တမ်းများကို ရှာဖွေပါ...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "ဖောင်တစ်ခုလုံးကို ပြန်လည်ရယူပါ",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "ဖောင်",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus ဆက်တင်များ",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus ကို ဖွင့်ပါ",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "ဖောင်ဒေတာ ပြန်လည်ရယူပါ",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "ရှာဖွေပါ...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "ဖောင်ကို ပြန်လည်ရယူပါ",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "ဖောင်ကို ပြန်လည်ရယူပါ",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "ဆက်တင်များ",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "ဤဆိုဒ်တွင် ပိတ်ထားပါ",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$ တွင် Lazarus ကို ပိတ်ထားမလား?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "မူကြမ်းများ မတွေ့ပါ",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "မူကြမ်းသိမ်းဆည်းရန် စာရိုက်ပါ",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "သိမ်းဆည်းထားသော မူကြမ်း ၁ ခု",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "သိမ်းဆည်းထားသော မူကြမ်း $COUNT$ ခု",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "စကားလုံး ၁ လုံး",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "စကားလုံး $COUNT$ လုံး",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(ဗလာ)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

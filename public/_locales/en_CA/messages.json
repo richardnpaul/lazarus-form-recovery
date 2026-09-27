@@ -1,0 +1,14 @@
+{
+  "optionsExportSubtitle": {
+    "message": "Download complete form history serialized into a JSON backup.",
+    "description": "Canadian English override for serialized"
+  },
+  "optionsStorageDesc": {
+    "message": "Inspect storage utilization, export encrypted backups, or wipe all records.",
+    "description": "Canadian English override for utilization"
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "DELETE",
+    "description": "Canadian English confirmation keyword token"
+  }
+}

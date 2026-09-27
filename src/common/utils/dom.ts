@@ -8,6 +8,18 @@ export function escapeCss(ident: string): string {
   return ident.replace(/[^a-zA-Z0-9_-]/g, '\\$&');
 }
 
+export function escapeHtml(str: string): string {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+export function escapeAttr(str: string): string {
+  return String(str ?? '').replace(/"/g, '&quot;');
+}
+
 /**
  * Computes a deterministic or readable selector for an element.
  */
@@ -57,7 +69,24 @@ export function computeButtonPosition(
   const isExternal = rect.height < 28 || rect.width < 100;
   const placement: 'internal' | 'external' = isExternal ? 'external' : 'internal';
 
-  const btnX = isExternal ? left + rect.width + 4 : left + rect.width - btnWidth - 6;
+  const win = target.ownerDocument?.defaultView || window;
+  const root = typeof target.getRootNode === 'function' ? target.getRootNode() : null;
+  const host = root && 'host' in root ? (root as ShadowRoot).host : null;
+
+  const isRtl =
+    (win.getComputedStyle && win.getComputedStyle(target).direction === 'rtl') ||
+    target.dir === 'rtl' ||
+    (typeof target.closest === 'function' && !!target.closest('[dir="rtl"]')) ||
+    (host && typeof host.closest === 'function' && !!host.closest('[dir="rtl"]')) ||
+    target.ownerDocument?.documentElement?.getAttribute('dir') === 'rtl' ||
+    target.ownerDocument?.body?.getAttribute('dir') === 'rtl';
+
+  let btnX: number;
+  if (isRtl) {
+    btnX = isExternal ? left - btnWidth - 4 : left + 6;
+  } else {
+    btnX = isExternal ? left + rect.width + 4 : left + rect.width - btnWidth - 6;
+  }
   const btnY = top + (rect.height - btnHeight) / 2;
 
   // Viewport clamping (with visualViewport support for mobile virtual keyboards)

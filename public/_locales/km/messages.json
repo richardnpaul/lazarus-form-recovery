@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: ការសង្គ្រោះទម្រង់បែបបទ",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "កុំបាត់បង់ទិន្នន័យទម្រង់ ការបញ្ចេញមតិ ឬសេចក្តីព្រាងម្តងទៀត។ ការសង្គ្រោះទម្រង់បែបបទដែលមានសុវត្ថិភាព ការអ៊ិនគ្រីប និងក្នុងមូលដ្ឋាន។",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: ការសង្គ្រោះទម្រង់បែបបទ",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "សង្គ្រោះទម្រង់ចុងក្រោយដែលបានកែសម្រួលនៅលើទំព័រនេះ",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "ទើបតែឥឡូវនេះ",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "មិនស្គាល់ពេលវេលា",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus ការសង្គ្រោះទម្រង់",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ រក្សាទុករូបថតទម្រង់ឥឡូវនេះ",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 សង្គ្រោះកំណែទម្រង់",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "គ្មានកំណែមុននៅលើទំព័រនេះទេ",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 សង្គ្រោះអត្ថបទប្រអប់",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "គ្មានអត្ថបទមុនសម្រាប់ប្រអប់នេះទេ",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 រកមើលកំណែនៅក្នុងរបារចំហៀង",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ ការកំណត់...",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 បិទ Lazarus នៅលើគេហទំព័រនេះ",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ ជម្រើស",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "កំណែ $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "បានដាក់ស្នើ",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "សេចក្តីព្រាង",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "មជ្ឈមណ្ឌលគ្រប់គ្រង Lazarus",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "សកម្ម",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "កំពុងពិនិត្យផ្ទាំងបច្ចុប្បន្ន...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "កំពុងស្វែងរក...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "គ្មានគេហទំព័រសកម្មទេ",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "មិនមែនជាទំព័រគេហទំព័រទេ",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ការតាមដានសកម្ម",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ការតាមដានត្រូវបានផ្អាក",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "បើក/បិទការតាមដាន Lazarus នៅលើដែននេះ",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "ស្វែងរកប្រវត្តិនៃទម្រង់...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "គេហទំព័រទាំងអស់",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "គេហទំព័រនេះ",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "ថ្ងៃនេះ",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "៧ ថ្ងៃចុងក្រោយ",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "៣០ ថ្ងៃចុងក្រោយ",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "សេចក្តីព្រាងដែលបានរក្សាទុក",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "កំពុងដំណើរការ...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "សេចក្តីព្រាង ១",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "សេចក្តីព្រាង $COUNT$",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "គ្មានទិន្នន័យទម្រង់សម្រាប់ $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "សេចក្តីព្រាងត្រូវបានរក្សាទុកដោយស្វ័យប្រវត្តិកាលណាអ្នកវាយអត្ថបទនៅលើគេហទំព័រនេះ។",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "មើលគេហទំព័រទាំងអស់",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "រកមិនឃើញទិន្នន័យទម្រង់ដែលបានរក្សាទុកទេ",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "ចូលទៅកាន់គេហទំព័រណាមួយ ហើយបំពេញទម្រង់ដើម្បីឱ្យ Lazarus រក្សាទុកសេចក្តីព្រាងរបស់អ្នក។",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "ចម្លង",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "បានចម្លង!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "ចម្លងទាំងអស់",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "បានចម្លងទាំងអស់!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "លុប",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "កំណែ $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • បានដាក់ស្នើ",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "ទម្រង់គ្មានចំណងជើង",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "ការបញ្ចូលផ្ទាល់",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "គ្មានប្រអប់ដែលអាចមើលឃើញទេ",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ សម្អាតទាំងអស់",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ ការកំណត់",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "តើអ្នកប្រាកដជាចង់សម្អាតប្រវត្តិទម្រង់ទាំងអស់មែនទេ?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "ផ្អាកការសង្គ្រោះ Lazarus នៅលើ $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus ការសង្គ្រោះទម្រង់ — ការកំណត់",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ ទូទៅ",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 សុវត្ថិភាព & សុវត្ថិភាពសម្ងាត់",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 ដែនដែលបានបិទ",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 ទំហំផ្ទុក & ទិន្នន័យ",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ អំពី & ការវិភាគ",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "ចំណូលចិត្តទូទៅ",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "កំណត់រចនាសម្ព័ន្ធគោលការណ៍រក្សាទុកទិន្នន័យ និងរយៈពេលរក្សាទុក។",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "រក្សាទុកប្រអប់ពាក្យសម្ងាត់",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "កត់ត្រា និងសង្គ្រោះអត្ថបទដែលបានវាយបញ្ចូលក្នុងប្រអប់ពាក្យសម្ងាត់។",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "ការជូនដំណឹងអំពីសុវត្ថិភាព:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "ការរក្សាទុកពាក្យសម្ងាត់អាចបង្ហាញទិន្នន័យសម្ងាត់ដល់អ្នកដទៃ។ សូមបើកមុខងារពាក្យសម្ងាត់មេ។",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "ការលាក់ទិន្នន័យកាតឥណទានដោយស្វ័យប្រវត្តិ",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "ស្វែងរកលេខកាតតាមក្បួនដោះស្រាយ Luhn និងការពារ CVV ពីការរក្សាទុកក្នុងមូលដ្ឋាន។",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "រយៈពេលរក្សាទុកទិន្នន័យ",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "លុបសេចក្តីព្រាងដែលចាស់ជាងរយៈពេលដែលបានកំណត់ដោយស្វ័យប្រវត្តិ។",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ ថ្ងៃ",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "សុវត្ថិភាព & បន្ទប់អ៊ិនគ្រីប",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "គ្រប់គ្រងទំហំផ្ទុកដែលបានអ៊ិនគ្រីបជាមួយនឹងពាក្យសម្ងាត់មេ។",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "របៀបអ៊ិនគ្រីប",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "របៀបស្តង់ដារ (ក្នុងមូលដ្ឋានប៉ុណ្ណោះ)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "មិនចាំបាច់កំណត់រចនាសម្ព័ន្ធទេ។ ទិន្នន័យត្រូវបានរក្សាទុកក្នុង IndexedDB នៃកម្មវិធីរុករក។",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "បន្ទប់ពាក្យសម្ងាត់មេ (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "ការអ៊ិនគ្រីប AES-256 ជាមួយ PBKDF2។ ត្រូវការលេខសម្ងាត់ដើម្បីអានសេចក្តីព្រាង។",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "ស្ថានភាពបន្ទប់សម្ងាត់",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "ពាក្យសម្ងាត់មេមិនទាន់បានកំណត់រចនាសម្ព័ន្ធទេ។",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "បន្ទប់សម្ងាត់ត្រូវបានដោះសោក្នុងអង្គចងចាំ។",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "បន្ទប់សម្ងាត់ត្រូវបានចាក់សោ។",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "កំណត់ពាក្យសម្ងាត់មេ",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "ផ្លាស់ប្តូរពាក្យសម្ងាត់មេ",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "ចាក់សោស្វ័យប្រវត្តិកាលណាអសកម្ម",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "លុបកូនសោឌីគ្រីបចេញពីអង្គចងចាំបន្ទាប់ពីរយៈពេលអសកម្ម។",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "៥ នាទី",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "១៥ នាទី",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "៣០ នាទី",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "១ ម៉ោង",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "កុំចាក់សោក្នុងអំឡុងពេលប្រើប្រាស់",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "ដែនដែលបានបិទ",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "ដកគេហទំព័រជាក់លាក់ចេញពីការកត់ត្រាទម្រង់។",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "បន្ថែមដែនដែលបានដកចេញ",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "ឧ. *.bank.com ឬ localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "ទប់ស្កាត់ដែន",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "បញ្ជីដែនដែលបានដកចេញ",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "ទម្រង់ដែន",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "សកម្មភាព",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "មិនទាន់មានដែនដែលបានបិទនៅឡើយទេ។",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "ឈប់ទប់ស្កាត់",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "ទំហំផ្ទុក & ការថែទាំ",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "ពិនិត្យការប្រើប្រាស់ទំហំផ្ទុក នាំចេញការបម្រុងទុក ឬលុបទិន្នន័យទាំងអស់។",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "សមត្ថភាពផ្ទុក IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "កំពុងគណនាទំហំផ្ទុក...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "កំពុងប្រើប្រាស់ ~$USAGE$ MB នៃ $QUOTA$ MB ដែលអាចប្រើបាន។",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "ការប៉ាន់ស្មានទំហំផ្ទុកមិនមានទេ។",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "នាំចេញប្រវត្តិទម្រង់",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "ទាញយកប្រវត្តិពេញលេញជាឯកសារបម្រុងទុក JSON។",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "នាំចេញ JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "តំបន់គ្រោះថ្នាក់: ការលុបទាំងស្រុង",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "លុបដែន ទម្រង់ និងសេចក្តីព្រាងទាំងអស់ជាអចិន្ត្រៃយ៍។",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "លុបប្រវត្តិទាំងអស់",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "អំពី & ការវិភាគ",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "កំណែកម្មវិធីបន្ថែម និងការវិភាគដំណើរការផ្ទៃខាងក្រោយ។",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "កំណែកម្មវិធីបន្ថែម",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "ម៉ាស៊ីនគោលដៅ",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "ម៉ាស៊ីនគ្រីបតូក្រាហ្វិក",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "ម៉ាស៊ីនមូលដ្ឋានទិន្នន័យ",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "ស្ថានភាពផ្ទៃខាងក្រោយ",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● សកម្ម",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "កំណត់ពាក្យសម្ងាត់មេ",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "ផ្លាស់ប្តូរពាក្យសម្ងាត់មេ",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "ពាក្យសម្ងាត់មេថ្មី",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "បញ្ចូលពាក្យសម្ងាត់ដែលមានសុវត្ថិភាព...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "បញ្ជាក់ពាក្យសម្ងាត់",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "បញ្ចូលពាក្យសម្ងាត់ម្តងទៀត...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "កម្លាំងពាក្យសម្ងាត់: ទទេ",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "កម្លាំងពាក្យសម្ងាត់: ខ្សោយ",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "កម្លាំងពាក្យសម្ងាត់: មធ្យម",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "កម្លាំងពាក្យសម្ងាត់: ខ្លាំង (PBKDF2-SHA256)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "បោះបង់",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "រក្សាទុកពាក្យសម្ងាត់មេ",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "បញ្ជាក់ការលុបប្រវត្តិទាំងស្រុង",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។ សេចក្តីព្រាង និងទិន្នន័យទាំងអស់នឹងត្រូវលុបជាអចិន្ត្រៃយ៍។",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "លុប",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "វាយ $KEYWORD$ ដើម្បីបញ្ជាក់:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "លុបជាអចិន្ត្រៃយ៍",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "សូមបញ្ចូលពាក្យសម្ងាត់។",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "ពាក្យសម្ងាត់មិនត្រូវគ្នាទេ។",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "ពាក្យសម្ងាត់ត្រូវតែមានយ៉ាងតិច ៦ តួអក្សរ។",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "ពាក្យសម្ងាត់មេត្រូវបានកំណត់រចនាសម្ព័ន្ធដោយជោគជ័យ។",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "មិនអាចកំណត់ពាក្យសម្ងាត់បានទេ: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "ពាក្យសម្ងាត់មេមិនត្រឹមត្រូវទេ។",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "ប្រវត្តិ និងសេចក្តីព្រាងទាំងអស់ត្រូវបានលុបចោល។",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "ការប្តូរទៅរបៀបស្តង់ដារនឹងលុបការអ៊ិនគ្រីបពាក្យសម្ងាត់មេ។ បន្ត?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "បញ្ចូលពាក្យសម្ងាត់មេបច្ចុប្បន្នដើម្បីបញ្ជាក់:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus ការសង្គ្រោះទម្រង់",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "សង្គ្រោះសេចក្តីព្រាងទម្រង់ (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "ការសង្គ្រោះ Lazarus",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "សេចក្តីព្រាង ១",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "សេចក្តីព្រាង $COUNT$",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "ស្វែងរកប្រវត្តិប្រអប់...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "សង្គ្រោះទម្រង់ទាំងមូល",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "ទម្រង់",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "ការកំណត់ Lazarus",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "បើកការសង្គ្រោះ Lazarus",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "សង្គ្រោះទិន្នន័យទម្រង់",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "ស្វែងរក...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "សង្គ្រោះទម្រង់",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "សង្គ្រោះទម្រង់",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "ការកំណត់",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "បិទនៅលើគេហទំព័រនេះ",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "បិទ Lazarus នៅលើ $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "រកមិនឃើញសេចក្តីព្រាងទេ",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "ចាប់ផ្តើមវាយដើម្បីរក្សាទុកសេចក្តីព្រាង",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "បានរក្សាទុក ១ សេចក្តីព្រាង",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "បានរក្សាទុក $COUNT$ សេចក្តីព្រាង",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "១ ពាក្យ",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ ពាក្យ",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(ទទេ)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

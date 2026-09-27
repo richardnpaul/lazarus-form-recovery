@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lazarus Form Recovery — Side Panel</title>
+    <title data-i18n="sidepanelHeaderTitle">Lazarus Form Recovery — Side Panel</title>
     <link rel="stylesheet" href="./sidepanel.css" />
   </head>
   <body>
@@ -11,11 +11,11 @@
     <header class="sidepanel-header">
       <div class="brand">
         <div class="logo">L</div>
-        <div class="title">Lazarus Control Center</div>
+        <div class="title" data-i18n="sidepanelHeaderTitle">Lazarus Control Center</div>
       </div>
       <div class="status-badge">
         <span class="status-dot"></span>
-        <span>Active</span>
+        <span data-i18n="sidepanelStatusActive">Active</span>
       </div>
     </header>
 
@@ -24,11 +24,19 @@
       <div class="site-info">
         <span class="site-dot" id="site-beacon"></span>
         <div class="site-details">
-          <span class="site-domain" id="site-domain">Checking current tab...</span>
-          <span class="site-status" id="site-status">Detecting...</span>
+          <span class="site-domain" id="site-domain" data-i18n="sidepanelCheckingTab"
+            >Checking current tab...</span
+          >
+          <span class="site-status" id="site-status" data-i18n="sidepanelDetecting"
+            >Detecting...</span
+          >
         </div>
       </div>
-      <label class="switch" title="Toggle Lazarus tracking on this domain">
+      <label
+        class="switch"
+        data-i18n-title="sidepanelToggleDomainTooltip"
+        title="Toggle Lazarus tracking on this domain"
+      >
         <input type="checkbox" id="domain-toggle" checked />
         <span class="slider"></span>
       </label>
@@ -40,23 +48,46 @@
         type="search"
         id="search-input"
         class="search-input"
+        data-i18n-placeholder="sidepanelSearchPlaceholder"
         placeholder="Search captured form history..."
       />
     </div>
 
     <!-- Filter Chips -->
     <div class="filter-chips">
-      <button class="filter-chip is-active" data-filter="all" id="chip-all-sites">All Sites</button>
-      <button class="filter-chip" data-filter="this_site" id="chip-this-site">This Site</button>
-      <button class="filter-chip" data-filter="today">Today</button>
-      <button class="filter-chip" data-filter="7days">Last 7 Days</button>
-      <button class="filter-chip" data-filter="30days">Last 30 Days</button>
+      <button
+        class="filter-chip is-active"
+        data-filter="all"
+        id="chip-all-sites"
+        data-i18n="sidepanelFilterAllSites"
+      >
+        All Sites
+      </button>
+      <button
+        class="filter-chip"
+        data-filter="this_site"
+        id="chip-this-site"
+        data-i18n="sidepanelFilterThisSite"
+      >
+        This Site
+      </button>
+      <button class="filter-chip" data-filter="today" data-i18n="sidepanelFilterToday">
+        Today
+      </button>
+      <button class="filter-chip" data-filter="7days" data-i18n="sidepanelFilter7Days">
+        Last 7 Days
+      </button>
+      <button class="filter-chip" data-filter="30days" data-i18n="sidepanelFilter30Days">
+        Last 30 Days
+      </button>
     </div>
 
     <!-- History Feed Header -->
     <div class="history-header">
-      <span style="font-weight: 600; font-size: 12px">Saved Drafts</span>
-      <span id="history-count" class="history-count">Loading...</span>
+      <span style="font-weight: 600; font-size: 12px" data-i18n="sidepanelSavedDrafts"
+        >Saved Drafts</span
+      >
+      <span id="history-count" class="history-count" data-i18n="sidepanelLoading">Loading...</span>
     </div>
 
     <!-- History List -->
@@ -64,8 +95,8 @@
 
     <!-- Footer -->
     <footer class="sidepanel-footer">
-      <a id="clear-history-btn">🗑️ Clear All</a>
-      <a id="open-options-btn">⚙️ Settings</a>
+      <a id="clear-history-btn" data-i18n="sidepanelFooterClearAll">🗑️ Clear All</a>
+      <a id="open-options-btn" data-i18n="sidepanelFooterSettings">⚙️ Settings</a>
     </footer>
 
     <script type="module" src="./sidepanel.ts"></script>

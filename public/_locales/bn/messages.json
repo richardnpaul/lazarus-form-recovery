@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: ফর্ম পুনরুদ্ধার",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "আর কখনো ফর্ম ডেটা, মন্তব্য বা ড্রাফট হারাবেন না। নিরাপদ, এনক্রিপ্ট করা এবং স্থানীয় ফর্ম পুনরুদ্ধার।",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: ফর্ম পুনরুদ্ধার",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "বর্তমান পৃষ্ঠায় শেষ সম্পাদিত ফর্ম পুনরুদ্ধার করুন",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "এইমাত্র",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "অজানা সময়",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Lazarus ফর্ম পুনরুদ্ধার",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ এখনই ফর্মের স্ন্যাপশট সংরক্ষণ করুন",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 ফর্ম সংস্করণ পুনরুদ্ধার করুন",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "এই পৃষ্ঠায় কোনো পূর্ববর্তী সংস্করণ নেই",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 ফিল্ড টেক্সট পুনরুদ্ধার করুন",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "এই ফিল্ডের জন্য কোনো সংরক্ষিত অংশ নেই",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 সাইডবারে সংশোধনগুলি ব্রাউজ করুন",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ সেটিংস / অপশন",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 এই সাইটে Lazarus নিষ্ক্রিয় করুন",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ অপশন",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "সংস্করণ $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "জমা দেওয়া হয়েছে",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "ড্রাফট",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Lazarus কন্ট্রোল সেন্টার",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "সক্রিয়",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "বর্তমান ট্যাব পরীক্ষা করা হচ্ছে...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "শনাক্ত করা হচ্ছে...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "কোনো সক্রিয় ওয়েবসাইট নেই",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "অ-ওয়েব পৃষ্ঠা",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "ট্র্যাকিং সক্রিয়",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "ট্র্যাকিং স্থগিত",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "এই ডোমেনে Lazarus ট্র্যাকিং চালু/বন্ধ করুন",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "সংরক্ষিত ফর্মের ইতিহাস অনুসন্ধান করুন...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "সমস্ত সাইট",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "এই সাইট",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "আজ",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "গত ৭ দিন",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "গত ৩০ দিন",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "সংরক্ষিত ড্রাফট",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "লোড হচ্ছে...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "১টি ড্রাফট",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$টি ড্রাফট",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "$DOMAIN$-এর জন্য কোনো সংরক্ষিত ফর্ম ডেটা নেই",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "এই সাইটে টাইপ করার সময় ড্রাফট স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়।",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "সমস্ত সাইট দেখুন",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "কোনো সংরক্ষিত ফর্ম ডেটা পাওয়া যায়নি",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "যেকোনো ওয়েবপৃষ্ঠায় যান এবং ফর্ম পূরণ করুন, Lazarus স্বয়ংক্রিয়ভাবে আপনার ড্রাফট সংরক্ষণ করবে।",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "কপি করুন",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "কপি করা হয়েছে!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "সব কপি করুন",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "সব কপি করা হয়েছে!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "মুছুন",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "সংস্করণ $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • জমা দেওয়া হয়েছে",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "শিরোনামহীন ফর্ম",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "সরাসরি ইনপুট",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "কোনো দৃশ্যমান ফিল্ড নেই",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ সব মুছে ফেলুন",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ সেটিংস",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "আপনি কি নিশ্চিত যে আপনি সমস্ত পুনরুদ্ধার করা ফর্মের ইতিহাস মুছে ফেলতে চান?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "$DOMAIN$-এ Lazarus ফর্ম পুনরুদ্ধার স্থগিত করবেন?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Lazarus ফর্ম পুনরুদ্ধার — সেটিংস",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ সাধারণ পছন্দসমূহ",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 নিরাপত্তা ও ভল্ট",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 নিষ্ক্রিয় ডোমেন",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 স্টোরেজ ও ডেটা",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ পরিচিতি ও ডায়াগনস্টিকস",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "সাধারণ পছন্দসমূহ",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "ইনপুট ক্যাপচার নীতি এবং সংরক্ষণের সময়কাল কনফিগার করুন।",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "পাসওয়ার্ড ফিল্ড সংরক্ষণ করুন",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "পাসওয়ার্ড ফিল্ডে টাইপ করা টেক্সট রেকর্ড এবং পুনরুদ্ধার করুন।",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "নিরাপত্তা বিজ্ঞপ্তি:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "ডিস্কে পাসওয়ার্ড সংরক্ষণ করলে আপনার ডিভাইস অ্যাক্সেসকারী যে কারো কাছে সংবেদনশীল তথ্য উন্মুক্ত হতে পারে। মাস্টার পাসওয়ার্ড মোড সক্রিয় রাখুন।",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "স্বয়ংক্রিয় ক্রেডিট কার্ড ও PII সুরক্ষা",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Luhn অ্যালগরিদম দিয়ে ১৩-১৯ সংখ্যার ক্রেডিট কার্ড সনাক্ত করুন এবং CVV স্থানীয় স্টোরেজে সংরক্ষণ রোধ করুন।",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "ডেটা সংরক্ষণের সময়কাল",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "নির্দিষ্ট সময়কালের চেয়ে পুরানো ফর্ম ড্রাফট স্বয়ংক্রিয়ভাবে মুছে ফেলুন।",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ দিন",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "নিরাপত্তা ও এনক্রিপশন ভল্ট",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "ক্রিপ্টোগ্রাফিক স্টোরেজ এবং মাস্টার পাসওয়ার্ড সুরক্ষা পরিচালনা করুন।",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "এনক্রিপশন মোড",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "স্ট্যান্ডার্ড মোড (শুধুমাত্র স্থানীয়)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "জিরো-কনফিগারেশন। ফর্মগুলি আপনার ব্রাউজার প্রোফাইলে বিচ্ছিন্ন স্থানীয় IndexedDB-তে সংরক্ষিত হয়।",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "মাস্টার পাসওয়ার্ড ভল্ট (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "PBKDF2 কী ডেরিভেশন ব্যবহার করে মিলিটারি-গ্রেড AES-256 এনক্রিপশন। ড্রাফট পড়তে পাসওয়ার্ড প্রয়োজন।",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "ভল্টের স্থিতি",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "মাস্টার পাসওয়ার্ড কনফিগার করা নেই।",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "ভল্ট বর্তমানে মেমরিতে আনলক করা আছে।",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "ভল্ট কনফিগার করা এবং লক করা আছে।",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "মাস্টার পাসওয়ার্ড সেট করুন",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "মাস্টার পাসওয়ার্ড পরিবর্তন করুন",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "নিষ্ক্রিয়তায় স্বয়ংক্রিয় লক টাইমআউট",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "নির্দিষ্ট সময় নিষ্ক্রিয় থাকার পর মেমরি থেকে ডিক্রিপশন কী স্বয়ংক্রিয়ভাবে মুছে ফেলুন।",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "৫ মিনিট",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "১৫ মিনিট",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "৩০ মিনিট",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "১ ঘণ্টা",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "সেশন চলাকালীন কখনো নয়",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "নিষ্ক্রিয় ডোমেন",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "ফর্ম রেকর্ডিং থেকে নির্দিষ্ট সাইট বা ওয়াইল্ডকার্ড প্যাটার্ন বাদ দিন।",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "বাদ দেওয়া ডোমেন যোগ করুন",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "যেমন: *.bank.com বা localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "ডোমেন ব্লক করুন",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "বাদ দেওয়া ডোমেনের তালিকা",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "ডোমেন প্যাটার্ন",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "অ্যাকশন",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "এখনও কোনো নিষ্ক্রিয় ডোমেন নেই।",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "আনব্লক করুন",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "স্টোরেজ ও রক্ষণাবেক্ষণ",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "স্টোরেজ ব্যবহার পরীক্ষা করুন, এনক্রিপ্ট করা ব্যাকআপ রপ্তানি করুন, বা সমস্ত রেকর্ড মুছে দিন।",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "IndexedDB স্টোরেজ ক্ষমতা",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "স্টোরেজ আকার গণনা করা হচ্ছে...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "উপলব্ধ $QUOTA$ MB এর মধ্যে প্রায় ~$USAGE$ MB ব্যবহার করা হচ্ছে।",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "স্টোরেজের আনুমানিক তথ্য উপলব্ধ নেই।",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "ফর্মের ইতিহাস রপ্তানি করুন",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "JSON ব্যাকআপ ফাইল হিসেবে সম্পূর্ণ ফর্মের ইতিহাস ডাউনলোড করুন।",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "JSON রপ্তানি করুন",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "বিপদ অঞ্চল: সম্পূর্ণ মোছা",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "সমস্ত রেকর্ড করা ডোমেন, ফর্ম এবং ফিল্ড ড্রাফট স্থায়ীভাবে মুছুন।",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "সমস্ত ইতিহাস মুছুন",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "পরিচিতি ও ডায়াগনস্টিকস",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "এক্সটেনশন সংস্করণ এবং ব্যাকগ্রাউন্ড সার্ভিস ওয়ার্কার ডায়াগনস্টিকস।",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "এক্সটেনশন সংস্করণ",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "টার্গেট ইঞ্জিন",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium ও Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "ক্রিপ্টোগ্রাফি ইঞ্জিন",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "ডাটাবেস ইঞ্জিন",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "ব্যাকগ্রাউন্ড স্থিতি",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● সক্রিয়",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "মাস্টার পাসওয়ার্ড সেট করুন",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "মাস্টার পাসওয়ার্ড পরিবর্তন করুন",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "নতুন মাস্টার পাসওয়ার্ড",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "একটি নিরাপদ পাসওয়ার্ড লিখুন...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "পাসওয়ার্ড নিশ্চিত করুন",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "পাসওয়ার্ড পুনরায় লিখুন...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "পাসওয়ার্ডের শক্তি: খালি",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "পাসওয়ার্ডের শক্তি: দুর্বল",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "পাসওয়ার্ডের শক্তি: মাঝারি",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "পাসওয়ার্ডের শক্তি: শক্তিশালী (PBKDF2-SHA256, 100k পুনরাবৃত্তি)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "বাতিল",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "মাস্টার পাসওয়ার্ড সংরক্ষণ করুন",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "সম্পূর্ণ ইতিহাস মোছার বিষয়টি নিশ্চিত করুন",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "এই ক্রিয়াটি পূর্বাবস্থায় ফেরানো যাবে না। সমস্ত সংরক্ষিত ফর্মের ইতিহাস, ড্রাফট এবং লগ স্থায়ীভাবে মুছে ফেলা হবে।",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "মুছুন",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "নিশ্চিত করতে $KEYWORD$ টাইপ করুন:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "স্থায়ীভাবে মুছুন",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "অনুগ্রহ করে একটি পাসওয়ার্ড লিখুন।",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "পাসওয়ার্ড মিলছে না।",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "মাস্টার পাসওয়ার্ড সফলভাবে কনফিগার করা হয়েছে।",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "পাসওয়ার্ড সেট করতে ব্যর্থ হয়েছে: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "ভুল মাস্টার পাসওয়ার্ড।",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "সমস্ত সংরক্ষিত ইতিহাস ও ড্রাফট মুছে ফেলা হয়েছে।",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "স্ট্যান্ডার্ড মোডে স্যুইচ করলে মাস্টার পাসওয়ার্ড এনক্রিপশন সরানো হবে। চালিয়ে যাবেন?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "নিশ্চিত করতে আপনার বর্তমান মাস্টার পাসওয়ার্ড লিখুন:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Lazarus ফর্ম পুনরুদ্ধার",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "ফর্ম ড্রাফট পুনরুদ্ধার করুন (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Lazarus পুনরুদ্ধার",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "১টি ড্রাফট",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$টি ড্রাফট",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "ফিল্ড ইতিহাস অনুসন্ধান করুন...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "সম্পূর্ণ ফর্ম পুনরুদ্ধার করুন",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "ফর্ম",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Lazarus সেটিংস",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Lazarus পুনরুদ্ধার খুলুন",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "ফর্মের ডেটা পুনরুদ্ধার করুন",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "অনুসন্ধান...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "ফর্ম পুনরুদ্ধার করুন",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "ফর্ম পুনরুদ্ধার",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "সেটিংস",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "এই সাইটে নিষ্ক্রিয় করুন",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "$DOMAIN$-এ Lazarus নিষ্ক্রিয় করবেন?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "কোনো ড্রাফট পাওয়া যায়নি",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "সংরক্ষণ করতে টাইপ করা শুরু করুন",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "১টি ড্রাফট",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "$COUNT$টি ড্রাফট",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "১টি শব্দ",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$টি শব্দ",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(খালি)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

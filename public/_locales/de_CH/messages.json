@@ -1,0 +1,10 @@
+{
+  "optionsDomainsDesc": {
+    "message": "Bestimmte Websites oder Platzhaltermuster von der Formularerfassung ausschliessen.",
+    "description": "Swiss German override for ausschliessen without Eszett"
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "LÖSCHEN",
+    "description": "Swiss German confirmation keyword token"
+  }
+}

@@ -1,3 +1,5 @@
+import { normalizeLocale } from './i18n';
+
 export interface DiffPart {
   type: 'added' | 'removed' | 'unchanged';
   value: string;
@@ -16,12 +18,26 @@ export function formatTimeAgo(timestamp: number): string {
 }
 
 /**
- * Counts words in a string.
+ * Counts words in a string. Uses Intl.Segmenter for accurate CJK counting if available.
  */
-export function computeWordCount(text: string): number {
+export function computeWordCount(text: string, locale?: string): number {
   if (!text) return 0;
   const trimmed = text.trim();
   if (!trimmed) return 0;
+
+  try {
+    const loc = normalizeLocale(locale);
+    const segmenter = new (Intl as any).Segmenter(loc, { granularity: 'word' });
+    const segments = segmenter.segment(trimmed);
+    let count = 0;
+    for (const segment of segments) {
+      if (segment.isWordLike) {
+        count++;
+      }
+    }
+    return count;
+  } catch {}
+
   return trimmed.split(/\s+/).length;
 }
 

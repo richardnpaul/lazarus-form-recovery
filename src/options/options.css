@@ -76,7 +76,7 @@ body {
   color: var(--lz-text-secondary);
   font-size: var(--lz-font-size-sm);
   font-weight: 600;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition: all 120ms ease;
 }
@@ -309,10 +309,7 @@ body {
 .switch-slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: var(--lz-border-strong);
   transition: 0.2s;
   border-radius: 20px;
@@ -323,10 +320,12 @@ body {
   content: '';
   height: 16px;
   width: 16px;
-  left: 2px;
+  inset-inline-start: 2px;
   bottom: 2px;
   background-color: white;
-  transition: 0.2s;
+  transition:
+    0.2s,
+    inset-inline-start 0.2s;
   border-radius: 50%;
 }
 
@@ -335,7 +334,7 @@ input:checked + .switch-slider {
 }
 
 input:checked + .switch-slider:before {
-  transform: translateX(16px);
+  inset-inline-start: 18px;
 }
 
 /* Table */
@@ -346,7 +345,7 @@ input:checked + .switch-slider:before {
 }
 
 .data-table th {
-  text-align: left;
+  text-align: start;
   padding: 8px 12px;
   border-bottom: 1px solid var(--lz-border-strong);
   color: var(--lz-text-muted);

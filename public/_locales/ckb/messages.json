@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "لازاروس: گەڕاندنەوەی فۆرم",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "هەرگیز جارێکی تر داتای فۆرم، لێدوانەکان، یان ڕەشنووسەکان لەدەست مەدە. گەڕاندنەوەی فۆرمی پارێزراو، کۆدکراو و ناوخۆیی.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "لازاروس: گەڕاندنەوەی فۆرم",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "دوایین فۆرمی دەستکاریکراو لەم پەڕەیەدا بگەڕێنەوە",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "هەر ئێستا",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "کاتی نەزانراو",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "گەڕاندنەوەی فۆرمی لازاروس",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ پاشەکەوتکردنی وێنەی فۆرم ئێستا",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 گەڕاندنەوەی وەشانی فۆرم",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "هیچ وەشانێکی پێشوو لەم پەڕەیەدا نییە",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 گەڕاندنەوەی دەقی خانە",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "هیچ دەقێکی پاشەکەوتکراو بۆ ئەم خانەیە نییە",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 گەڕان بەناو پێداچوونەوەکان لە پانێڵی تەنیشت",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ ڕێکخستنەکان / هەڵبژاردنەکان",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 لەکارخستنی لازاروس لەم ماڵپەڕەدا",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ هەڵبژاردنەکان",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "پێداچوونەوەی $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "«$SNIPPET$» ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "نێردراو",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "ڕەشنووس",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "ناوەندی کۆنترۆڵی لازاروس",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "چالاکە",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "پشکنینی تابە لەکاردایە...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "دۆزینەوە...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "هیچ ماڵپەڕێکی چالاک نییە",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "پەڕەی نا-وێب",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "شوێنپێهەڵگرتن چالاکە",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "شوێنپێهەڵگرتن ڕاگیراوە",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "گۆڕینی شوێنپێهەڵگرتنی لازاروس لەم دۆمەینە",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "گەڕان لە مێژووی فۆرمە تۆمارکراوەکان...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "هەموو ماڵپەڕەکان",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "ئەم ماڵپەڕە",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "ئەمڕۆ",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "٧ ڕۆژی ڕابردوو",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "٣٠ ڕۆژی ڕابردوو",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "ڕەشنووسە پاشەکەوتکراوەکان",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "بارکردن...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "١ ڕەشنووس",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "$COUNT$ ڕەشنووس",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "هیچ داتایەکی فۆرم بۆ $DOMAIN$ پاشەکەوت نەکراوە",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "ڕەشنووسەکان لە کاتی نووسین لەم ماڵپەڕە پاشەکەوت دەکرێن.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "پیشاندانی هەموو ماڵپەڕەکان",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "هیچ داتایەکی فۆرمی پاشەکەوتکراو نەدۆزرایەوە",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "سەردانی هەر پەڕەیەک بکە و فۆرم پڕبکەرەوە بۆ بینینی پاراستنی خۆکاری ڕەشنووسەکانت لەلایەن لازاروس.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "کۆپیکردن",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "کۆپی کرا!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "کۆپیکردنی هەمووی",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "هەمووی کۆپی کرا!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "سڕینەوە",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "پێداچوونەوەی $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • نێردراو",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "فۆرمی بێ ناونیشان",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "تێکردنی ڕاستەوخۆ",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "هیچ خانەیەکی دیار نییە",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ سڕینەوەی هەمووی",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ ڕێکخستنەکان",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "ئایا دڵنیایت دەتەوێت هەموو مێژووی فۆرمە گەڕێنراوەکان بسڕیتەوە؟",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "ئایا گەڕاندنەوەی فۆرمی لازاروس لە $DOMAIN$ ڕابگیرێت؟",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "گەڕاندنەوەی فۆرمی لازاروس — ڕێکخستنەکان",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ هەڵبژاردنە گشتییەکان",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 ئاسایش و سەندووق",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 دۆمەینە ناچالاککراوەکان",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 کۆگا و داتا",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ دەربارە و دەستنیشانکردن",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "هەڵبژاردنە گشتییەکان",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "ڕێکخستنی سیاسەتی تۆمارکردن و ماوەی هێشتنەوەی تۆمارەکان.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "پاشەکەوتکردنی خانەکانی وشەی نهێنی",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "تۆمارکردن و گەڕاندنەوەی دەقی نووسراو لەناو خانەکانی وشەی نهێنی.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "ئاگاداری ئاسایش:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "پاشەکەوتکردنی وشەی نهێنی لەسەر دیسک زانیارییە هەستیارەکان دەخاتە بەردەست هەر کەسێک کە دەستی بە ئامێرەکەت بگات. شێوازی سەندووقی وشەی نهێنی سەرەکی بە چالاکی بهێڵەرەوە.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "سڕینەوەی خۆکاری زانیاری کەسی / کارتی بانکی",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "دۆزینەوەی کارتە ١٣-١٩ ژمارەییەکان بە ئەلگۆریتمی Luhn و پاراستنیان لە پاشەکەوتکردنی ناوخۆیی.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "ماوەی هێشتنەوەی داتا",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "سڕینەوەی خۆکاری ڕەشنووسەکان کە کۆنترن لە ماوەی دیاریکراو.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "$DAYS$ ڕۆژ",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "سەندووقی ئاسایش و کۆدکردن",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "بەڕێوەبردنی کۆگای کۆدکراو و پاراستن بە وشەی نهێنی سەرەکی.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "شێوازی کۆدکردن",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "شێوازی ستاندارد (تەنها ناوخۆیی)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "بێ پێویستی بە سازدان. فۆرمەکان لە IndexedDBی ناوخۆیی و جیاکراوە لە پڕۆفایلی وێبگەڕەکەت پاشەکەوت دەکرێن.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "سەندووقی وشەی نهێنی سەرەکی (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "کۆدکردنی پێشکەوتووی سەربازی بە AES-256 و دەرهێنانی کلیلی PBKDF2. پێویستە وشەی نهێنی بنووسرێت بۆ خوێندنەوەی ڕەشنووسەکان.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "دۆخی سەندووق",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "وشەی نهێنی سەرەکی ساز نەکراوە.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "سەندووق لە بیرگەدا کراوەیە.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "سەندووق سازکراوە و قفڵە.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "دانانی وشەی نهێنی سەرەکی",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "گۆڕینی وشەی نهێنی سەرەکی",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "کاتی قفڵبوونی خۆکار لە کاتی ناچالاکیدا",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "سڕینەوەی خۆکاری کلیلەکانی کۆدکردن دوای ماوەیەک لە بێدەنگی.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "٥ خولەک",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "١٥ خولەک",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "٣٠ خولەک",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "١ کاتژمێر",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "هەرگیز لەم دانیشتنەدا نا",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "دۆمەینە ناچالاککراوەکان",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "بەدەرکردنی ماڵپەڕە دیاریکراوەکان لە تۆمارکردنی فۆرم.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "زیادکردنی دۆمەینی بەدەرکراو",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "نموونە: *.bank.com یان localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "بلۆککردنی دۆمەین",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "لیستی دۆمەینە بەدەرکراوەکان",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "شێوازی دۆمەین",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "کردار",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "هیچ دۆمەینێکی ناچالاککراو نییە.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "لادانی بلۆک",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "کۆگا و چاککردنەوە",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "پشکنینی بەکارهێنانی کۆگا، هەناردەکردنی پاشەکەوتی کۆدکراو، یان سڕینەوەی هەموو تۆمارەکان.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "توانای کۆگای IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "هەژمارکردنی ڕووبەری کۆگا...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "بەکارهێنانی ~$USAGE$ مێگابایت لە $QUOTA$ مێگابایتی بەردەست.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "خەمڵاندنی کۆگا بەردەست نییە.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "هەناردەکردنی مێژووی فۆرم",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "داگرتنی تەواوی مێژووی فۆرم بە شێوەی پاشەکەوتی JSON.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "هەناردەکردنی JSON",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "ناوچەی مەترسیدار: سڕینەوەی تەواو",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "سڕینەوەی هەمیشەیی هەموو دۆمەین، فۆرم و ڕەشنووسە تۆمارکراوەکان.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "سڕینەوەی هەموو مێژوو",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "دەربارە و دەستنیشانکردن",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "وەشانی زیادکراوە و دەستنیشانکردنی کارگێڕی باکگراوند.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "وەشانی زیادکراوە",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "ماتۆڕی ئامانج",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium و Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "ماتۆڕی کریپتۆگرافی",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "ماتۆڕی داتابەیس",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "دۆخی باکگراوند",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● چالاکە",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "دانانی وشەی نهێنی سەرەکی",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "گۆڕینی وشەی نهێنی سەرەکی",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "وشەی نهێنی سەرەکی نوێ",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "وشەی نهێنی پارێزراو بنووسە...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "دووپاتکردنەوەی وشەی نهێنی",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "دووبارە وشەی نهێنی بنووسەرەوە...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "هێزی وشەی نهێنی: بەتاڵ",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "هێزی وشەی نهێنی: بێهێز",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "هێزی وشەی نهێنی: مامناوەند",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "هێزی وشەی نهێنی: بەهێز (PBKDF2-SHA256، ١٠٠ هەزار دووبارەبوونەوە)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "پەشیمانبوونەوە",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "پاشەکەوتکردنی وشەی نهێنی سەرەکی",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "دووپاتکردنەوەی سڕینەوەی تەواوی مێژوو",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "ئەم کردارە ناگەڕێتەوە. هەموو مێژوو، ڕەشنووس و تۆمارەکان بە یەکجاری دەسڕێنەوە.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "سڕینەوە",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "بۆ دووپاتکردنەوە بنووسە $KEYWORD$:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "سڕینەوەی هەمیشەیی",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "تکایە وشەی نهێنی بنووسە.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "وشە نهێنییەکان هاوشێوە نین.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "دەبێت وشەی نهێنی لانیکەم ٦ پیت بێت.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "وشەی نهێنی سەرەکی بە سەرکەوتوویی دانرا.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "دانانی وشەی نهێنی سەرکەوتوو نەبوو: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "وشەی نهێنی سەرەکی هەڵەیە.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "هەموو مێژوو و ڕەشنووسە تۆمارکراوەکان سڕانەوە.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "گۆڕین بۆ شێوازی ستاندارد کۆدکردنی وشەی نهێنی سەرەکی لادەبات. بەردەوام دەبیت؟",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "وشەی نهێنی سەرەکی ئێستات بنووسە بۆ دووپاتکردنەوە:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "گەڕاندنەوەی فۆرمی لازاروس",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "گەڕاندنەوەی ڕەشنووسەکانی فۆرم (لازاروس)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "گەڕاندنەوەی لازاروس",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "١ ڕەشنووس",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "$COUNT$ ڕەشنووس",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "گەڕان لە مێژووی خانە...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "گەڕاندنەوەی تەواوی فۆرم",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "فۆرم",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "ڕێکخستنەکانی لازاروس",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "کردنەوەی گەڕاندنەوەی لازاروس",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "گەڕاندنەوەی داتای فۆرم",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "گەڕان...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "گەڕاندنەوەی فۆرم",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "گەڕاندنەوەی فۆرم",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "ڕێکخستنەکان",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "لەکارخستن لەم ماڵپەڕە",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "ئایا لازاروس لەسەر $DOMAIN$ لەکاربخرێت؟",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "هیچ ڕەشنووسێک نەدۆزرایەوە",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "بۆ پاشەکەوتکردن هەوڵبدە بنووسیت",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "١ ڕەشنووس",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "$COUNT$ ڕەشنووس",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "١ وشە",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "$COUNT$ وشە",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(بەتاڵ)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

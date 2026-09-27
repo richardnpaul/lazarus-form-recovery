@@ -1,5 +1,6 @@
 import { repository } from '../common/db/repository';
-import { formatTimeAgo, sanitizePreview } from '../common/utils/text';
+import { sanitizePreview } from '../common/utils/text';
+import { getMessage, formatRelativeTime } from '../common/utils/i18n';
 
 // Cache of dynamic context menu items mapped to data
 interface ContextMenuCache {
@@ -50,7 +51,7 @@ function buildBaseContextMenus() {
   if (isFirefox()) {
     chrome.contextMenus.create({
       id: 'lazarus-action-options',
-      title: '⚙️ Options',
+      title: getMessage('contextMenuOptionsFirefox'),
       contexts: ['action'],
     });
   }
@@ -58,7 +59,7 @@ function buildBaseContextMenus() {
   // Root Menu
   chrome.contextMenus.create({
     id: 'lazarus-root',
-    title: 'Lazarus Form Recovery',
+    title: getMessage('contextMenuRoot'),
     contexts: ['editable'],
   });
 
@@ -66,7 +67,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-save-now',
     parentId: 'lazarus-root',
-    title: '⚡ Save Form Snapshot Now',
+    title: getMessage('contextMenuSaveNow'),
     contexts: ['editable'],
   });
 
@@ -74,7 +75,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-recover-form-parent',
     parentId: 'lazarus-root',
-    title: '🕒 Recover Form Version',
+    title: getMessage('contextMenuRecoverForm'),
     contexts: ['editable'],
   });
 
@@ -82,7 +83,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-form-none',
     parentId: 'lazarus-recover-form-parent',
-    title: 'No past versions on this page',
+    title: getMessage('contextMenuNoFormVersions'),
     enabled: false,
     contexts: ['editable'],
   });
@@ -91,7 +92,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-recover-field-parent',
     parentId: 'lazarus-root',
-    title: '🔤 Recover Field Text',
+    title: getMessage('contextMenuRecoverField'),
     contexts: ['editable'],
   });
 
@@ -99,7 +100,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-field-none',
     parentId: 'lazarus-recover-field-parent',
-    title: 'No past snippets for this field',
+    title: getMessage('contextMenuNoFieldSnippets'),
     enabled: false,
     contexts: ['editable'],
   });
@@ -108,7 +109,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-open-sidebar',
     parentId: 'lazarus-root',
-    title: '📊 Browse Revisions in Sidebar',
+    title: getMessage('contextMenuOpenSidebar'),
     contexts: ['editable'],
   });
 
@@ -116,7 +117,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-open-options',
     parentId: 'lazarus-root',
-    title: '⚙️ Settings / Options',
+    title: getMessage('contextMenuOpenOptions'),
     contexts: ['editable'],
   });
 
@@ -124,7 +125,7 @@ function buildBaseContextMenus() {
   chrome.contextMenus.create({
     id: 'lazarus-disable-domain',
     parentId: 'lazarus-root',
-    title: '🚫 Disable Lazarus on this Site',
+    title: getMessage('contextMenuDisableDomain'),
     contexts: ['editable'],
   });
 }
@@ -187,14 +188,14 @@ function rebuildSubmenus() {
     chrome.contextMenus.create({
       id: 'lazarus-form-none',
       parentId: 'lazarus-recover-form-parent',
-      title: 'No past versions on this page',
+      title: getMessage('contextMenuNoFormVersions'),
       enabled: false,
       contexts: ['editable'],
     });
   } else {
     currentCache.formRevisions.slice(0, 5).forEach((rev, idx) => {
       const typeLabel = rev.isFinalSubmit ? 'Submitted' : 'Draft';
-      const timeLabel = formatTimeAgo(rev.lastModified);
+      const timeLabel = formatRelativeTime(rev.lastModified);
       const title = `Rev ${rev.revisionNumber} (${typeLabel} • ${timeLabel})`;
 
       chrome.contextMenus.create({
@@ -216,14 +217,14 @@ function rebuildSubmenus() {
     chrome.contextMenus.create({
       id: 'lazarus-field-none',
       parentId: 'lazarus-recover-field-parent',
-      title: 'No past snippets for this field',
+      title: getMessage('contextMenuNoFieldSnippets'),
       enabled: false,
       contexts: ['editable'],
     });
   } else {
     currentCache.fieldTexts.slice(0, 5).forEach((snippet, idx) => {
       const preview = sanitizePreview(snippet.value, 28);
-      const timeLabel = formatTimeAgo(snippet.lastModified);
+      const timeLabel = formatRelativeTime(snippet.lastModified);
       const title = `"${preview}" (${timeLabel})`;
 
       chrome.contextMenus.create({
@@ -277,9 +278,7 @@ export async function handleContextMenuClick(info: any, tab?: any) {
     }
 
     if (itemId === 'lazarus-disable-domain') {
-      if (confirm(`Disable Lazarus Form Recovery on ${domain}?`)) {
-        await repository.disableDomain(domain, false);
-      }
+      await repository.disableDomain(domain, false);
       return;
     }
 

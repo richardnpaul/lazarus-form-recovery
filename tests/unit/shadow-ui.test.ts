@@ -8,6 +8,12 @@ import {
   defineRecoveryHostElement,
 } from '../../src/content/shadow-ui/shadow-host';
 import * as runtimeUtils from '../../src/common/utils/runtime';
+import {
+  getMessage,
+  formatPluralMessage,
+  getDirection,
+  getUILanguage,
+} from '../../src/common/utils/i18n';
 
 describe('Shadow UI Components (src/content/shadow-ui/)', () => {
   beforeEach(() => {
@@ -172,8 +178,8 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       const btn = new RecoveryButton();
       const el = btn.getElement();
       expect(el).toBeInstanceOf(HTMLButtonElement);
-      expect(el.getAttribute('aria-label')).toBe('Lazarus Form Recovery');
-      expect(el.getAttribute('title')).toBe('Recover form drafts (Lazarus)');
+      expect(el.getAttribute('aria-label')).toBe('Open Lazarus Recovery');
+      expect(el.getAttribute('title')).toBe('Recover Form Data');
       expect(el.classList.contains('lz-trigger-btn')).toBe(true);
 
       let clicked = false;
@@ -303,9 +309,42 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       menu.show(target, items, 100, 100);
       expect(menu.isOpen()).toBe(true);
 
-      // Check item rendering
+      // Verify header, search input, and footer localized content
+      const titleSpan = container.querySelector('.lz-menu-title span');
+      expect(titleSpan?.textContent).toBe(getMessage('shadowMenuTitle'));
+      expect(getMessage('shadowMenuTitle')).not.toBe('');
+
+      const counterEl = container.querySelector('.lz-item-counter');
+      expect(counterEl?.textContent).toBe(formatPluralMessage('shadowMenuDraftCount', 2));
+      expect(formatPluralMessage('shadowMenuDraftCount', 2)).not.toBe('');
+
+      const searchInput = container.querySelector('.lz-search-input') as HTMLInputElement;
+      expect(searchInput.getAttribute('placeholder')).toBe(
+        getMessage('shadowMenuSearchPlaceholder')
+      );
+      expect(getMessage('shadowMenuSearchPlaceholder')).not.toBe('');
+
+      const restoreBtn = container.querySelector('.lz-restore-all-btn') as HTMLButtonElement;
+      expect(restoreBtn.getAttribute('title')).toBe(getMessage('shadowMenuRestoreFormTitle'));
+      expect(restoreBtn.textContent).toContain(getMessage('shadowMenuRestoreFormLabel'));
+      expect(getMessage('shadowMenuRestoreFormTitle')).not.toBe('');
+      expect(getMessage('shadowMenuRestoreFormLabel')).not.toBe('');
+
+      const settingsBtn = container.querySelector('.lz-settings-btn') as HTMLButtonElement;
+      expect(settingsBtn.getAttribute('title')).toBe(getMessage('shadowMenuSettingsTitle'));
+      expect(getMessage('shadowMenuSettingsTitle')).not.toBe('');
+
+      const disableBtn = container.querySelector('.lz-disable-btn') as HTMLButtonElement;
+      expect(disableBtn.getAttribute('title')).toBe(getMessage('shadowMenuDisableTitle'));
+      expect(getMessage('shadowMenuDisableTitle')).not.toBe('');
+
+      // Check item rendering and dir/unicodeBidi attributes
       const renderedItems = container.querySelectorAll('.lz-snippet-item');
       expect(renderedItems.length).toBe(2);
+      const firstPreview = container.querySelector('.lz-snippet-preview') as HTMLElement;
+      expect(firstPreview.getAttribute('dir')).toBe('auto');
+      expect(firstPreview.style.unicodeBidi).toBe('plaintext');
+      expect(firstPreview.textContent).toBe('First draft note');
 
       // Hover preview and mouseleave revert
       Element.prototype.scrollIntoView = vi.fn();
@@ -334,23 +373,38 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
       // Test Search filtering
       menu.show(target, items, 100, 100);
-      const searchInput = container.querySelector('.lz-search-input') as HTMLInputElement;
-      searchInput.value = 'Second';
-      searchInput.dispatchEvent(new Event('input'));
+      const activeSearchInput = container.querySelector('.lz-search-input') as HTMLInputElement;
+      const activeCounterEl = container.querySelector('.lz-item-counter');
+      activeSearchInput.value = 'Second';
+      activeSearchInput.dispatchEvent(new Event('input'));
       const filtered = container.querySelectorAll('.lz-snippet-item');
       expect(filtered.length).toBe(1);
+      expect(activeCounterEl?.textContent).toBe(formatPluralMessage('shadowMenuDraftCount', 1));
 
       // Search with no results
-      searchInput.value = 'Nonexistent string';
-      searchInput.dispatchEvent(new Event('input'));
+      activeSearchInput.value = 'Nonexistent string';
+      activeSearchInput.dispatchEvent(new Event('input'));
       expect(container.querySelector('.lz-empty-state')).not.toBeNull();
+      expect(activeCounterEl?.textContent).toBe(formatPluralMessage('shadowMenuDraftCount', 0));
 
       // Keydown on empty filtered items
       container.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
 
       // Reset search
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input'));
+      activeSearchInput.value = '';
+      activeSearchInput.dispatchEvent(new Event('input'));
+      expect(activeCounterEl?.textContent).toBe(formatPluralMessage('shadowMenuDraftCount', 2));
+
+      // Empty snippet item fallback
+      menu.show(target, [{ value: '', lastModified: Date.now() }], 100, 100);
+      const emptyPreview = container.querySelector('.lz-snippet-preview') as HTMLElement;
+      expect(emptyPreview.getAttribute('dir')).toBe('auto');
+      expect(emptyPreview.style.unicodeBidi).toBe('plaintext');
+      expect(emptyPreview.textContent).toBe(getMessage('shadowSnippetEmpty'));
+      expect(getMessage('shadowSnippetEmpty')).not.toBe('');
+
+      // Restore items for remaining interactions
+      menu.show(target, items, 100, 100);
 
       // Click item directly to commit
       const itemEl = container.querySelector('.lz-snippet-item') as HTMLElement;
@@ -438,6 +492,34 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
       expect(menu.isOpen()).toBe(false);
     });
 
+    it('positions menu correctly in RTL mode and handles missing counter element', () => {
+      const previewManager = new LivePreviewManager();
+      const menu = new RecoveryMenu(previewManager);
+      const container = menu.getElement();
+
+      const target = document.createElement('input');
+      document.body.appendChild(target);
+
+      const origGetUILanguage = chrome.i18n.getUILanguage;
+      (chrome.i18n.getUILanguage as any) = vi.fn(() => 'ar');
+
+      const items = [{ value: 'RTL draft item', lastModified: Date.now() }];
+
+      menu.show(target, items, 300, 100);
+      expect(menu.isOpen()).toBe(true);
+      expect(container.style.left).toBe('300px');
+
+      // Test missing counter element branch in renderList (line 191)
+      const counterEl = container.querySelector('.lz-item-counter');
+      counterEl?.remove();
+      const searchInput = container.querySelector('.lz-search-input') as HTMLInputElement;
+      searchInput.value = 'RTL';
+      searchInput.dispatchEvent(new Event('input'));
+      expect(container.querySelectorAll('.lz-snippet-item').length).toBe(1);
+
+      chrome.i18n.getUILanguage = origGetUILanguage;
+    });
+
     it('handles renderList when snippet list element is missing', () => {
       const menu = new RecoveryMenu(new LivePreviewManager());
       const list = menu.getElement().querySelector('.lz-snippet-list');
@@ -461,6 +543,10 @@ describe('Shadow UI Components (src/content/shadow-ui/)', () => {
 
       const host = attachRecoveryUI(input)!;
       expect(host).toBeInstanceOf(LazarusRecoveryHost);
+      expect(host.getAttribute('dir')).toBe(getDirection());
+      expect(host.getAttribute('lang')).toBe(getUILanguage());
+      expect(getDirection()).not.toBe('');
+      expect(getUILanguage()).not.toBe('');
 
       const ceDiv = document.createElement('div');
       ceDiv.setAttribute('contenteditable', 'true');

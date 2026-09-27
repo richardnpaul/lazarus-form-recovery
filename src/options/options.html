@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lazarus Form Recovery — Settings</title>
+    <title data-i18n="optionsTitle">Lazarus Form Recovery — Settings</title>
     <link rel="stylesheet" href="./options.css" />
   </head>
   <body>
@@ -15,11 +15,21 @@
           <div class="sidebar-title">Lazarus</div>
         </div>
         <nav class="sidebar-nav">
-          <button class="nav-item is-active" data-tab="general">🛡️ General Preferences</button>
-          <button class="nav-item" data-tab="security">🔐 Security & Vault</button>
-          <button class="nav-item" data-tab="domains">🌐 Disabled Domains</button>
-          <button class="nav-item" data-tab="storage">💾 Storage & Data</button>
-          <button class="nav-item" data-tab="about">ℹ️ About & Diagnostics</button>
+          <button class="nav-item is-active" data-tab="general" data-i18n="optionsNavGeneral">
+            🛡️ General Preferences
+          </button>
+          <button class="nav-item" data-tab="security" data-i18n="optionsNavSecurity">
+            🔐 Security & Vault
+          </button>
+          <button class="nav-item" data-tab="domains" data-i18n="optionsNavDomains">
+            🌐 Disabled Domains
+          </button>
+          <button class="nav-item" data-tab="storage" data-i18n="optionsNavStorage">
+            💾 Storage & Data
+          </button>
+          <button class="nav-item" data-tab="about" data-i18n="optionsNavAbout">
+            ℹ️ About & Diagnostics
+          </button>
         </nav>
       </aside>
 
@@ -28,16 +38,20 @@
         <!-- Tab 1: General Preferences -->
         <section class="tab-panel is-active" id="panel-general">
           <header class="panel-header">
-            <h1 class="panel-title">General Preferences</h1>
-            <p class="panel-desc">Configure input interception policies and retention durations.</p>
+            <h1 class="panel-title" data-i18n="optionsGeneralTitle">General Preferences</h1>
+            <p class="panel-desc" data-i18n="optionsGeneralDesc">
+              Configure input interception policies and retention durations.
+            </p>
           </header>
 
           <!-- Save Passwords Toggle -->
           <div class="setting-card">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title">Save Password Fields</div>
-                <div class="setting-subtitle">
+                <div class="setting-title" data-i18n="optionsSavePasswordsTitle">
+                  Save Password Fields
+                </div>
+                <div class="setting-subtitle" data-i18n="optionsSavePasswordsSubtitle">
                   Record and recover input typed into password fields.
                 </div>
               </div>
@@ -47,9 +61,11 @@
               </label>
             </div>
             <div class="alert-banner alert-warning" id="passwords-warning" style="display: none">
-              ⚠️ <strong>Security Notice:</strong> Storing password field entries on disk exposes
-              sensitive credentials to anyone with access to your device. Keep Master Password mode
-              active.
+              ⚠️ <strong data-i18n="optionsSavePasswordsNoticeHeading">Security Notice:</strong>
+              <span data-i18n="optionsSavePasswordsWarning"
+                >Storing password field entries on disk exposes sensitive credentials to anyone with
+                access to your device. Keep Master Password mode active.</span
+              >
             </div>
           </div>
 
@@ -57,8 +73,10 @@
           <div class="setting-card">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title">Automatic PII / Credit Card Redaction</div>
-                <div class="setting-subtitle">
+                <div class="setting-title" data-i18n="optionsCreditCardsTitle">
+                  Automatic PII / Credit Card Redaction
+                </div>
+                <div class="setting-subtitle" data-i18n="optionsCreditCardsSubtitle">
                   Detect 13–19 digit credit cards with the Luhn algorithm and redact CVVs from
                   touching local storage.
                 </div>
@@ -72,8 +90,8 @@
 
           <!-- Retention Slider -->
           <div class="setting-card">
-            <div class="setting-title">Data Retention Period</div>
-            <div class="setting-subtitle">
+            <div class="setting-title" data-i18n="optionsRetentionTitle">Data Retention Period</div>
+            <div class="setting-subtitle" data-i18n="optionsRetentionSubtitle">
               Automatically purge form drafts older than the specified duration.
             </div>
             <div class="slider-container">
@@ -93,23 +111,31 @@
         <!-- Tab 2: Security & Vault -->
         <section class="tab-panel" id="panel-security">
           <header class="panel-header">
-            <h1 class="panel-title">Security & Encryption Vault</h1>
-            <p class="panel-desc">Manage cryptographic storage and master password protection.</p>
+            <h1 class="panel-title" data-i18n="optionsSecurityTitle">
+              Security & Encryption Vault
+            </h1>
+            <p class="panel-desc" data-i18n="optionsSecurityDesc">
+              Manage cryptographic storage and master password protection.
+            </p>
           </header>
 
           <div class="setting-card">
-            <div class="setting-title">Encryption Mode</div>
+            <div class="setting-title" data-i18n="optionsEncryptionModeTitle">Encryption Mode</div>
             <div class="radio-card-grid">
               <div class="radio-card is-selected" id="mode-standard">
-                <div class="radio-card-title">Standard Mode (Local Only)</div>
-                <div class="radio-card-desc">
+                <div class="radio-card-title" data-i18n="optionsModeStandardTitle">
+                  Standard Mode (Local Only)
+                </div>
+                <div class="radio-card-desc" data-i18n="optionsModeStandardDesc">
                   Zero-configuration. Forms stored in local IndexedDB isolated to your browser
                   profile.
                 </div>
               </div>
               <div class="radio-card" id="mode-vault">
-                <div class="radio-card-title">Master Password Vault (AES-GCM-256)</div>
-                <div class="radio-card-desc">
+                <div class="radio-card-title" data-i18n="optionsModeVaultTitle">
+                  Master Password Vault (AES-GCM-256)
+                </div>
+                <div class="radio-card-desc" data-i18n="optionsModeVaultDesc">
                   Military-grade AES-256 encryption using PBKDF2 key derivation. Password required
                   to read drafts.
                 </div>
@@ -120,12 +146,20 @@
           <div class="setting-card">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title">Vault Status</div>
-                <div class="setting-subtitle" id="vault-status-desc">
+                <div class="setting-title" data-i18n="optionsVaultStatusTitle">Vault Status</div>
+                <div
+                  class="setting-subtitle"
+                  id="vault-status-desc"
+                  data-i18n="optionsVaultStatusUnconfigured"
+                >
                   Master Password is not configured.
                 </div>
               </div>
-              <button class="btn btn-primary" id="btn-configure-password">
+              <button
+                class="btn btn-primary"
+                id="btn-configure-password"
+                data-i18n="optionsBtnSetPassword"
+              >
                 Set Master Password
               </button>
             </div>
@@ -134,8 +168,10 @@
           <div class="setting-card">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title">Auto-Lock Inactivity Timeout</div>
-                <div class="setting-subtitle">
+                <div class="setting-title" data-i18n="optionsAutolockTitle">
+                  Auto-Lock Inactivity Timeout
+                </div>
+                <div class="setting-subtitle" data-i18n="optionsAutolockSubtitle">
                   Automatically purge derived decryption keys after a period of inactivity.
                 </div>
               </div>
@@ -149,11 +185,11 @@
                   color: var(--lz-text-primary);
                 "
               >
-                <option value="5">5 minutes</option>
-                <option value="15" selected>15 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">1 hour</option>
-                <option value="0">Never during session</option>
+                <option value="5" data-i18n="optionsAutolock5Min">5 minutes</option>
+                <option value="15" selected data-i18n="optionsAutolock15Min">15 minutes</option>
+                <option value="30" data-i18n="optionsAutolock30Min">30 minutes</option>
+                <option value="60" data-i18n="optionsAutolock1Hour">1 hour</option>
+                <option value="0" data-i18n="optionsAutolockNever">Never during session</option>
               </select>
             </div>
           </div>
@@ -162,18 +198,19 @@
         <!-- Tab 3: Disabled Domains -->
         <section class="tab-panel" id="panel-domains">
           <header class="panel-header">
-            <h1 class="panel-title">Disabled Domains</h1>
-            <p class="panel-desc">
+            <h1 class="panel-title" data-i18n="optionsDomainsTitle">Disabled Domains</h1>
+            <p class="panel-desc" data-i18n="optionsDomainsDesc">
               Exclude specific sites or wildcard patterns from form recording.
             </p>
           </header>
 
           <div class="setting-card">
-            <div class="setting-title">Add Excluded Domain</div>
+            <div class="setting-title" data-i18n="optionsAddDomainTitle">Add Excluded Domain</div>
             <div style="display: flex; gap: 8px">
               <input
                 type="text"
                 id="input-new-domain"
+                data-i18n-placeholder="optionsInputDomainPlaceholder"
                 placeholder="e.g. *.bank.com or localhost:*"
                 style="
                   flex: 1;
@@ -184,22 +221,30 @@
                   color: var(--lz-text-primary);
                 "
               />
-              <button class="btn btn-primary" id="btn-add-domain">Block Domain</button>
+              <button class="btn btn-primary" id="btn-add-domain" data-i18n="optionsBtnAddDomain">
+                Block Domain
+              </button>
             </div>
           </div>
 
           <div class="setting-card">
-            <div class="setting-title">Excluded Domain List</div>
+            <div class="setting-title" data-i18n="optionsDomainsListTitle">
+              Excluded Domain List
+            </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Domain Pattern</th>
-                  <th style="text-align: right">Action</th>
+                  <th data-i18n="optionsThDomainPattern">Domain Pattern</th>
+                  <th style="text-align: right" data-i18n="optionsThAction">Action</th>
                 </tr>
               </thead>
               <tbody id="domain-table-body">
                 <tr>
-                  <td colspan="2" style="color: var(--lz-text-muted); text-align: center">
+                  <td
+                    colspan="2"
+                    style="color: var(--lz-text-muted); text-align: center"
+                    data-i18n="optionsNoDisabledDomains"
+                  >
                     No disabled domains yet.
                   </td>
                 </tr>
@@ -211,18 +256,24 @@
         <!-- Tab 4: Storage & Data -->
         <section class="tab-panel" id="panel-storage">
           <header class="panel-header">
-            <h1 class="panel-title">Storage & Maintenance</h1>
-            <p class="panel-desc">
+            <h1 class="panel-title" data-i18n="optionsStorageTitle">Storage & Maintenance</h1>
+            <p class="panel-desc" data-i18n="optionsStorageDesc">
               Inspect storage utilization, export encrypted backups, or wipe all records.
             </p>
           </header>
 
           <div class="setting-card">
-            <div class="setting-title">IndexedDB Storage Capacity</div>
+            <div class="setting-title" data-i18n="optionsCapacityTitle">
+              IndexedDB Storage Capacity
+            </div>
             <div class="progress-container">
               <div class="progress-bar" id="storage-progress-bar"></div>
             </div>
-            <div class="setting-subtitle" id="storage-estimate-label">
+            <div
+              class="setting-subtitle"
+              id="storage-estimate-label"
+              data-i18n="optionsStorageCalculating"
+            >
               Calculating storage footprint...
             </div>
           </div>
@@ -230,26 +281,38 @@
           <div class="setting-card">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title">Export Form History</div>
-                <div class="setting-subtitle">
+                <div class="setting-title" data-i18n="optionsExportTitle">Export Form History</div>
+                <div class="setting-subtitle" data-i18n="optionsExportSubtitle">
                   Download complete form history serialized into a JSON backup.
                 </div>
               </div>
-              <button class="btn btn-primary" id="btn-export-data">Export JSON</button>
+              <button class="btn btn-primary" id="btn-export-data" data-i18n="optionsBtnExport">
+                Export JSON
+              </button>
             </div>
           </div>
 
           <div class="setting-card" style="border-color: hsla(0, 84%, 60%, 0.3)">
             <div class="setting-row">
               <div class="setting-meta">
-                <div class="setting-title" style="color: var(--lz-status-danger)">
+                <div
+                  class="setting-title"
+                  style="color: var(--lz-status-danger)"
+                  data-i18n="optionsDangerZoneTitle"
+                >
                   Danger Zone: Nuclear Wipe
                 </div>
-                <div class="setting-subtitle">
+                <div class="setting-subtitle" data-i18n="optionsDangerZoneSubtitle">
                   Permanently delete all recorded domains, forms, and field drafts.
                 </div>
               </div>
-              <button class="btn btn-danger" id="btn-wipe-history">Erase All History</button>
+              <button
+                class="btn btn-danger"
+                id="btn-wipe-history"
+                data-i18n="optionsBtnWipeHistory"
+              >
+                Erase All History
+              </button>
             </div>
           </div>
         </section>
@@ -257,31 +320,43 @@
         <!-- Tab 5: About & Diagnostics -->
         <section class="tab-panel" id="panel-about">
           <header class="panel-header">
-            <h1 class="panel-title">About & Diagnostics</h1>
-            <p class="panel-desc">Extension version and background service worker diagnostics.</p>
+            <h1 class="panel-title" data-i18n="optionsAboutTitle">About & Diagnostics</h1>
+            <p class="panel-desc" data-i18n="optionsAboutDesc">
+              Extension version and background service worker diagnostics.
+            </p>
           </header>
 
           <div class="setting-card">
             <table class="data-table">
               <tr>
-                <td>Extension Version</td>
+                <td data-i18n="optionsDiagnosticsVersion">Extension Version</td>
                 <td id="diagnostic-version" style="font-weight: 600">--</td>
               </tr>
               <tr>
-                <td>Target Engine</td>
-                <td style="font-weight: 600">Chromium & Firefox Gecko</td>
+                <td data-i18n="optionsDiagnosticsEngine">Target Engine</td>
+                <td style="font-weight: 600" data-i18n="optionsDiagnosticsEngineValue">
+                  Chromium & Firefox Gecko
+                </td>
               </tr>
               <tr>
-                <td>Cryptography Engine</td>
-                <td style="font-weight: 600">W3C Web Crypto API (AES-GCM-256 + PBKDF2)</td>
+                <td data-i18n="optionsDiagnosticsCrypto">Cryptography Engine</td>
+                <td style="font-weight: 600" data-i18n="optionsDiagnosticsCryptoValue">
+                  W3C Web Crypto API (AES-GCM-256 + PBKDF2)
+                </td>
               </tr>
               <tr>
-                <td>Database Engine</td>
-                <td style="font-weight: 600">Dexie.js IndexedDB</td>
+                <td data-i18n="optionsDiagnosticsDatabase">Database Engine</td>
+                <td style="font-weight: 600" data-i18n="optionsDiagnosticsDatabaseValue">
+                  Dexie.js IndexedDB
+                </td>
               </tr>
               <tr>
-                <td>Background Status</td>
-                <td id="worker-heartbeat" style="color: var(--lz-status-success); font-weight: 600">
+                <td data-i18n="optionsDiagnosticsStatus">Background Status</td>
+                <td
+                  id="worker-heartbeat"
+                  style="color: var(--lz-status-success); font-weight: 600"
+                  data-i18n="optionsDiagnosticsStatusActive"
+                >
                   ● Active
                 </td>
               </tr>
@@ -294,19 +369,53 @@
     <!-- Modal: Set / Change Master Password -->
     <div class="modal-overlay" id="password-modal">
       <div class="modal-card">
-        <h2 class="modal-title" id="password-modal-title">Set Master Password</h2>
+        <h2 class="modal-title" id="password-modal-title" data-i18n="optionsModalSetPasswordTitle">
+          Set Master Password
+        </h2>
         <div class="form-field">
-          <label for="input-master-pass">New Master Password</label>
-          <input type="password" id="input-master-pass" placeholder="Enter a secure password..." />
+          <label for="input-master-pass" data-i18n="optionsLabelNewPassword"
+            >New Master Password</label
+          >
+          <input
+            type="password"
+            id="input-master-pass"
+            data-i18n-placeholder="optionsPlaceholderNewPassword"
+            placeholder="Enter a secure password..."
+          />
         </div>
         <div class="form-field">
-          <label for="input-master-pass-confirm">Confirm Password</label>
-          <input type="password" id="input-master-pass-confirm" placeholder="Re-type password..." />
+          <label for="input-master-pass-confirm" data-i18n="optionsLabelConfirmPassword"
+            >Confirm Password</label
+          >
+          <input
+            type="password"
+            id="input-master-pass-confirm"
+            data-i18n-placeholder="optionsPlaceholderConfirmPassword"
+            placeholder="Re-type password..."
+          />
         </div>
-        <div class="setting-subtitle" id="password-strength-label">Password strength: Empty</div>
+        <div
+          class="setting-subtitle"
+          id="password-strength-label"
+          data-i18n="optionsPasswordStrengthEmpty"
+        >
+          Password strength: Empty
+        </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" id="btn-cancel-password-modal">Cancel</button>
-          <button class="btn btn-primary" id="btn-save-master-pass">Save Master Password</button>
+          <button
+            class="btn btn-secondary"
+            id="btn-cancel-password-modal"
+            data-i18n="optionsBtnCancel"
+          >
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            id="btn-save-master-pass"
+            data-i18n="optionsBtnSaveMasterPass"
+          >
+            Save Master Password
+          </button>
         </div>
       </div>
     </div>
@@ -314,20 +423,35 @@
     <!-- Modal: Wipe All Confirmation -->
     <div class="modal-overlay" id="wipe-modal">
       <div class="modal-card">
-        <h2 class="modal-title" style="color: var(--lz-status-danger)">
+        <h2
+          class="modal-title"
+          style="color: var(--lz-status-danger)"
+          data-i18n="optionsModalWipeTitle"
+        >
           Confirm Complete History Erase
         </h2>
-        <p class="setting-subtitle">
+        <p class="setting-subtitle" data-i18n="optionsModalWipeSubtitle">
           This action is irreversible. All captured form history, drafts, and editing logs will be
           permanently erased.
         </p>
         <div class="form-field">
-          <label for="input-wipe-confirm">Type <strong>DELETE</strong> to confirm:</label>
+          <label for="input-wipe-confirm" id="wipe-confirm-label"
+            >Type <strong>DELETE</strong> to confirm:</label
+          >
           <input type="text" id="input-wipe-confirm" placeholder="DELETE" />
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" id="btn-cancel-wipe-modal">Cancel</button>
-          <button class="btn btn-danger" id="btn-confirm-wipe" disabled>Permanently Erase</button>
+          <button class="btn btn-secondary" id="btn-cancel-wipe-modal" data-i18n="optionsBtnCancel">
+            Cancel
+          </button>
+          <button
+            class="btn btn-danger"
+            id="btn-confirm-wipe"
+            disabled
+            data-i18n="optionsBtnConfirmWipe"
+          >
+            Permanently Erase
+          </button>
         </div>
       </div>
     </div>

@@ -1,0 +1,6 @@
+{
+  "optionsWipeConfirmKeyword": {
+    "message": "DELETE",
+    "description": "British English confirmation keyword token"
+  }
+}

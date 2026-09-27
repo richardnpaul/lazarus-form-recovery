@@ -1,6 +1,11 @@
 import 'fake-indexeddb/auto';
 import { vi } from 'vitest';
 import pkg from '../package.json';
+import fs from 'fs';
+import path from 'path';
+
+const enMessagesPath = path.resolve(__dirname, '../public/_locales/en/messages.json');
+const enMessages = JSON.parse(fs.readFileSync(enMessagesPath, 'utf8'));
 
 globalThis.ResizeObserver = class ResizeObserver {
   observe = vi.fn();
@@ -110,6 +115,40 @@ globalThis.chrome = {
     onAlarm: {
       addListener: vi.fn(),
     },
+  },
+  i18n: {
+    getUILanguage: vi.fn(() => 'en-GB'),
+    getMessage: vi.fn((key: string, substitutions?: string | string[]) => {
+      if (key === '@@bidi_dir') {
+        const lang = (chrome.i18n.getUILanguage?.() || 'en').toLowerCase().split(/[-_]/)[0];
+        return ['ar', 'he', 'fa', 'ur', 'yi', 'ps', 'sd', 'ug', 'syr', 'ku'].includes(lang)
+          ? 'rtl'
+          : 'ltr';
+      }
+      if (!enMessages[key]) return '';
+      let msg = enMessages[key].message;
+      if (substitutions) {
+        const subs = Array.isArray(substitutions) ? substitutions : [substitutions];
+        const placeholders = enMessages[key].placeholders;
+        if (placeholders) {
+          for (const p in placeholders) {
+            const content = placeholders[p].content;
+            const indexMatch = content.match(/\$(\d+)/);
+            if (indexMatch) {
+              const idx = parseInt(indexMatch[1], 10) - 1;
+              if (subs[idx] !== undefined) {
+                msg = msg.replace(new RegExp(`\\$${p}\\$`, 'gi'), subs[idx]);
+              }
+            }
+          }
+        }
+        subs.forEach((sub, i) => {
+          msg = msg.replace(new RegExp(`\\$${i + 1}`, 'g'), sub);
+        });
+        msg = msg.replace(/\$KEYWORD\$/gi, subs[0] || '');
+      }
+      return msg;
+    }),
   },
   contextMenus: {
     create: vi.fn((props: any, cb?: () => void) => {

@@ -40,4 +40,19 @@ describe('Manifest Configuration', () => {
       '128': 'icons/icon-128.png',
     });
   });
+
+  it('defines l10n properties for manifest', () => {
+    expect((manifest as any).default_locale).toBe('en');
+    expect((manifest as any).name).toBe('__MSG_extensionName__');
+    expect((manifest as any).description).toBe('__MSG_extensionDescription__');
+    expect((manifest as any).action.default_title).toBe('__MSG_actionTitle__');
+
+    if ((manifest as any).sidebar_action) {
+      expect((manifest as any).sidebar_action.default_title).toBe('__MSG_actionTitle__');
+    }
+
+    expect((manifest as any).commands.recover_last_form.description).toBe(
+      '__MSG_commandRecoverLastFormDescription__'
+    );
+  });
 });
