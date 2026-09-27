@@ -1,0 +1,796 @@
+{
+  "extensionName": {
+    "message": "Lazarus: Ìgbàpadà Fọ́ọ̀mù",
+    "description": "The title and name of the browser extension."
+  },
+  "extensionDescription": {
+    "message": "Má ṣe pàdánù àwọn dátà fọ́ọ̀mù, àwọn àròyé, tàbí àkọsílẹ̀ àkọ́kọ́ mọ́. Ìgbàpadà fọ́ọ̀mù agbègbè tó ní ààbò àti ìpìlẹ̀.",
+    "description": "The description of the browser extension."
+  },
+  "actionTitle": {
+    "message": "Lazarus: Ìgbàpadà Fọ́ọ̀mù",
+    "description": "Tooltip for toolbar extension action button."
+  },
+  "commandRecoverLastFormDescription": {
+    "message": "Gba fọ́ọ̀mù tí a túnṣe kẹ́yìn padà lórí ojú-ewé yìí",
+    "description": "Shortcut command description to recover last edited form."
+  },
+  "timeJustNow": {
+    "message": "níbàyí",
+    "description": "Relative time for events occurring in the last 30 seconds."
+  },
+  "timeUnknown": {
+    "message": "Àkókò tí a kò mọ̀",
+    "description": "Fallback label when a timestamp is missing or invalid."
+  },
+  "contextMenuRoot": {
+    "message": "Ìgbàpadà Fọ́ọ̀mù Lazarus",
+    "description": "Context menu top-level root item title."
+  },
+  "contextMenuSaveNow": {
+    "message": "⚡ Fi Àwòrán Fọ́ọ̀mù Pamọ́ Nísinsìnyí",
+    "description": "Context menu action to trigger an immediate snapshot."
+  },
+  "contextMenuRecoverForm": {
+    "message": "🕒 Gba Àtúnṣe Fọ́ọ̀mù Padà",
+    "description": "Context menu parent item for form revisions."
+  },
+  "contextMenuNoFormVersions": {
+    "message": "Kò sí àwọn àtúnṣe tẹ́lẹ̀ lórí ojú-ewé yìí",
+    "description": "Disabled placeholder when no form revisions exist."
+  },
+  "contextMenuRecoverField": {
+    "message": "🔤 Gba Ọ̀rọ̀ Orí pápá Padà",
+    "description": "Context menu parent item for field text snippets."
+  },
+  "contextMenuNoFieldSnippets": {
+    "message": "Kò sí àwọn ọ̀rọ̀ tí a fi pamọ́ fún pápá yìí",
+    "description": "Disabled placeholder when no field snippets exist."
+  },
+  "contextMenuOpenSidebar": {
+    "message": "📊 Wo Àwọn Àtúnṣe ní Ẹgbẹ́",
+    "description": "Context menu item to open extension side panel."
+  },
+  "contextMenuOpenOptions": {
+    "message": "⚙️ Àwọn Ètò / Àwọn Àṣàyàn",
+    "description": "Context menu item to open settings page."
+  },
+  "contextMenuDisableDomain": {
+    "message": "🚫 Pa Lazarus Rẹ́ lórí Ojúlé Wẹ́ẹ̀bù Yìí",
+    "description": "Context menu item to exclude the current domain."
+  },
+  "contextMenuOptionsFirefox": {
+    "message": "⚙️ Àwọn Àṣàyàn",
+    "description": "Action toolbar context menu item for Firefox."
+  },
+  "contextMenuRevLabel": {
+    "message": "Àtúnṣe $REV$ ($TYPE$ • $TIME$)",
+    "description": "Label for form revision item in context menu.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      },
+      "type": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      }
+    }
+  },
+  "contextMenuSnippetLabel": {
+    "message": "\"$SNIPPET$\" ($TIME$)",
+    "description": "Label for field text snippet in context menu.",
+    "placeholders": {
+      "snippet": {
+        "content": "$1"
+      },
+      "time": {
+        "content": "$2"
+      }
+    }
+  },
+  "contextMenuTypeSubmitted": {
+    "message": "Tí a fi ránṣẹ́",
+    "description": "Revision status for final submitted form."
+  },
+  "contextMenuTypeDraft": {
+    "message": "Àkọsílẹ̀ Àkọ́kọ́",
+    "description": "Revision status for in-progress draft form."
+  },
+  "sidepanelHeaderTitle": {
+    "message": "Gbọ̀ngàn Ìdarí Lazarus",
+    "description": "Sidepanel header title."
+  },
+  "sidepanelStatusActive": {
+    "message": "Ń ṣiṣẹ́",
+    "description": "Sidepanel active status badge."
+  },
+  "sidepanelCheckingTab": {
+    "message": "Ń ṣàyẹ̀wò táàbù lọ́wọ́lọ́wọ́...",
+    "description": "Initial status while detecting active tab."
+  },
+  "sidepanelDetecting": {
+    "message": "Ń wá kiri...",
+    "description": "Initial domain status text."
+  },
+  "sidepanelNoActiveWebsite": {
+    "message": "Kò sí ojúlé wẹ́ẹ̀bù tí ń ṣiṣẹ́",
+    "description": "Domain status when active tab is not a website."
+  },
+  "sidepanelNonWebPage": {
+    "message": "Kì í ṣe ojú-ewé wẹ́ẹ̀bù",
+    "description": "Domain status for browser internal or privileged pages."
+  },
+  "sidepanelTrackingActive": {
+    "message": "Ìtẹ̀lé ń ṣiṣẹ́",
+    "description": "Domain status when tracking is active on current site."
+  },
+  "sidepanelTrackingPaused": {
+    "message": "Ìtẹ̀lé ti dánu dúró",
+    "description": "Domain status when tracking is disabled on current site."
+  },
+  "sidepanelToggleDomainTooltip": {
+    "message": "Yí ìtẹ̀lé Lazarus lórí dòménì yìí",
+    "description": "Tooltip for active site domain toggle switch."
+  },
+  "sidepanelSearchPlaceholder": {
+    "message": "Ṣàwárí ìtàn fọ́ọ̀mù tí a gbà...",
+    "description": "Placeholder for search input in sidepanel."
+  },
+  "sidepanelFilterAllSites": {
+    "message": "Gbogbo Ojúlé",
+    "description": "Filter button for all recorded websites."
+  },
+  "sidepanelFilterThisSite": {
+    "message": "Ojúlé Yìí",
+    "description": "Filter button for current website only."
+  },
+  "sidepanelFilterToday": {
+    "message": "Lónìí",
+    "description": "Filter button for forms recorded today."
+  },
+  "sidepanelFilter7Days": {
+    "message": "Ọjọ́ 7 Sẹ́yìn",
+    "description": "Filter button for forms recorded in the last 7 days."
+  },
+  "sidepanelFilter30Days": {
+    "message": "Ọjọ́ 30 Sẹ́yìn",
+    "description": "Filter button for forms recorded in the last 30 days."
+  },
+  "sidepanelSavedDrafts": {
+    "message": "Àwọn Àkọsílẹ̀ Tí A Fi Pamọ́",
+    "description": "Section header for drafts list."
+  },
+  "sidepanelLoading": {
+    "message": "Ń gbé wọlé...",
+    "description": "Loading state label for drafts count."
+  },
+  "sidepanelDraftCount_one": {
+    "message": "àkọsílẹ̀ 1",
+    "description": "Singular count for saved drafts."
+  },
+  "sidepanelDraftCount_other": {
+    "message": "àkọsílẹ̀ $COUNT$",
+    "description": "Plural count for saved drafts.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteTitle": {
+    "message": "Kò sí dátà fọ́ọ̀mù tí a fi pamọ́ fún $DOMAIN$",
+    "description": "Empty state title when filtering by current site.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelEmptyThisSiteSubtitle": {
+    "message": "Àwọn àkọsílẹ̀ ń fi pamọ́ bí o ṣe ń tẹ̀wé lórí ojúlé yìí.",
+    "description": "Empty state guidance text for current site."
+  },
+  "sidepanelViewAllSitesBtn": {
+    "message": "Wo Gbogbo Ojúlé",
+    "description": "Button to clear site filter and view all drafts."
+  },
+  "sidepanelEmptyAllTitle": {
+    "message": "Kò sí dátà fọ́ọ̀mù tí a fi pamọ́ tí a rí",
+    "description": "Empty state title when no drafts exist."
+  },
+  "sidepanelEmptyAllSubtitle": {
+    "message": "Bẹ gbogbo ojú-ewé wẹ́ẹ̀bù wò kí o sì kún àwọn fọ́ọ̀mù láti rí bí Lazarus ṣe ń fi àwọn àkọsílẹ̀ rẹ pamọ́ fúnra rẹ̀.",
+    "description": "Empty state guidance text when no drafts exist."
+  },
+  "sidepanelActionCopy": {
+    "message": "Dákọ",
+    "description": "Button to copy field text."
+  },
+  "sidepanelActionCopied": {
+    "message": "Ti da kọ!",
+    "description": "Button state after copying field text."
+  },
+  "sidepanelActionCopyAll": {
+    "message": "Dákọ Gbogbo Rẹ̀",
+    "description": "Button to copy all fields in a form."
+  },
+  "sidepanelActionCopiedAll": {
+    "message": "Ti da gbogbo rẹ̀ kọ!",
+    "description": "Button state after copying all fields."
+  },
+  "sidepanelActionDelete": {
+    "message": "Pa rẹ́",
+    "description": "Button to delete a form draft."
+  },
+  "sidepanelRevBadge": {
+    "message": "Àtúnṣe $REV$",
+    "description": "Revision number badge text.",
+    "placeholders": {
+      "rev": {
+        "content": "$1"
+      }
+    }
+  },
+  "sidepanelSubmittedBadge": {
+    "message": " • Tí a fi ránṣẹ́",
+    "description": "Suffix for submitted revision badge."
+  },
+  "sidepanelUntitledForm": {
+    "message": "Fọ́ọ̀mù Láìní Àkọlé",
+    "description": "Fallback name for a form without a title."
+  },
+  "sidepanelDirectInput": {
+    "message": "Ìtẹ̀wé Tààrà",
+    "description": "Fallback domain name when domain is not detected."
+  },
+  "sidepanelNoVisibleFields": {
+    "message": "Kò sí pápá tí a le rí",
+    "description": "Placeholder when form draft has no extractable visible fields."
+  },
+  "sidepanelFooterClearAll": {
+    "message": "🗑️ Nu Gbogbo Rẹ̀ Nù",
+    "description": "Footer link to erase all drafts."
+  },
+  "sidepanelFooterSettings": {
+    "message": "⚙️ Àwọn Ètò",
+    "description": "Footer link to open settings page."
+  },
+  "sidepanelConfirmClearHistory": {
+    "message": "Ṣe o dá ọ lójú pé o fẹ́ pa gbogbo ìtàn fọ́ọ̀mù tí a gbàpadà rẹ́?",
+    "description": "Confirmation prompt before erasing all history."
+  },
+  "sidepanelConfirmPauseDomain": {
+    "message": "Dá ìgbàpadà fọ́ọ̀mù Lazarus dúró lórí $DOMAIN$?",
+    "description": "Confirmation prompt before pausing tracking on current domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsTitle": {
+    "message": "Ìgbàpadà Fọ́ọ̀mù Lazarus — Àwọn Ètò",
+    "description": "HTML page title for the Options page."
+  },
+  "optionsNavGeneral": {
+    "message": "🛡️ Àwọn Ìfẹ́ràn Gbígbòòrò",
+    "description": "Sidebar navigation item for general preferences."
+  },
+  "optionsNavSecurity": {
+    "message": "🔐 Ààbò & Àpótí Ìkọ̀kọ̀",
+    "description": "Sidebar navigation item for security settings."
+  },
+  "optionsNavDomains": {
+    "message": "🌐 Àwọn Dòménì Tí A Pa",
+    "description": "Sidebar navigation item for disabled domains."
+  },
+  "optionsNavStorage": {
+    "message": "💾 Ìpamọ́ & Dátà",
+    "description": "Sidebar navigation item for storage management."
+  },
+  "optionsNavAbout": {
+    "message": "ℹ️ Nípa & Ìwádìí",
+    "description": "Sidebar navigation item for about and diagnostics."
+  },
+  "optionsGeneralTitle": {
+    "message": "Àwọn Ìfẹ́ràn Gbígbòòrò",
+    "description": "Header for general preferences tab."
+  },
+  "optionsGeneralDesc": {
+    "message": "Ṣètò àwọn ìlànà ìkójọpọ̀ àti àkókò ìtọ́jú.",
+    "description": "Description for general preferences tab."
+  },
+  "optionsSavePasswordsTitle": {
+    "message": "Fi Àwọn Pápá Ọ̀rọ̀-ìgbaniwọlé Pamọ́",
+    "description": "Setting title for password field recording."
+  },
+  "optionsSavePasswordsSubtitle": {
+    "message": "Gbà kí o sì tún kọ àwọn ohun tí a tẹ̀ sínú pápá ọ̀rọ̀-ìgbaniwọlé padà.",
+    "description": "Setting description for password field recording."
+  },
+  "optionsSavePasswordsNoticeHeading": {
+    "message": "Àkíyèsí Ààbò:",
+    "description": "Bold heading for password storage security notice."
+  },
+  "optionsSavePasswordsWarning": {
+    "message": "Fífi àwọn ọ̀rọ̀-ìgbaniwọlé pamọ́ sórí disk ń fi àwọn ẹ̀rí pàtàkì hàn fún ẹnikẹ́ni tó bá lo ẹ̀rọ rẹ. Jẹ́ kí ipò Ọ̀rọ̀-ìgbaniwọlé Àgbà wà ní títàn.",
+    "description": "Warning banner text when password recording is toggled on."
+  },
+  "optionsCreditCardsTitle": {
+    "message": "Ìṣàtúnṣe PII / Káàdì Gbèsè Aládàáṣe",
+    "description": "Setting title for credit card redaction."
+  },
+  "optionsCreditCardsSubtitle": {
+    "message": "Ṣàwárí káàdì gbèsè oni-nọ́mbà 13–19 pẹ̀lú Luhn algorithm kí o sì dènà CVV láti wọlé sínú ìpamọ́ agbègbè.",
+    "description": "Setting description for credit card redaction."
+  },
+  "optionsRetentionTitle": {
+    "message": "Àkókò Ìpamọ́ Dátà",
+    "description": "Setting title for data retention slider."
+  },
+  "optionsRetentionSubtitle": {
+    "message": "Pa àwọn àkọsílẹ̀ fọ́ọ̀mù tí wọ́n ti pẹ́ ju àkókò tí a sọ lọ rẹ́ fúnra rẹ̀.",
+    "description": "Setting description for data retention."
+  },
+  "optionsRetentionDaysChip": {
+    "message": "Ọjọ́ $DAYS$",
+    "description": "Chip label showing the selected retention period in days.",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsSecurityTitle": {
+    "message": "Ààbò & Àpótí Ìkọ̀kọ̀ Ààbò",
+    "description": "Header for security tab."
+  },
+  "optionsSecurityDesc": {
+    "message": "Ṣàkóso ìpamọ́ ààbò àti ààbò ọ̀rọ̀-ìgbaniwọlé àgbà.",
+    "description": "Description for security tab."
+  },
+  "optionsEncryptionModeTitle": {
+    "message": "Ipò Ààbò Ìkọ̀kọ̀",
+    "description": "Card header for encryption mode selection."
+  },
+  "optionsModeStandardTitle": {
+    "message": "Ipò Ìwọ̀ntúnwọ̀nsì (Agbègbè Nìkan)",
+    "description": "Title for unencrypted/standard local storage mode."
+  },
+  "optionsModeStandardDesc": {
+    "message": "Kò nílò ètò kankan. Fọ́ọ̀mù wà ní IndexedDB agbègbè tí a yà sọ́tọ̀ sí àkọọ́lẹ̀ aṣàwákiri rẹ.",
+    "description": "Description for standard mode."
+  },
+  "optionsModeVaultTitle": {
+    "message": "Àpótí Ọ̀rọ̀-ìgbaniwọlé Àgbà (AES-GCM-256)",
+    "description": "Title for encrypted vault mode."
+  },
+  "optionsModeVaultDesc": {
+    "message": "Ààbò ológun AES-256 nípa lílo ìyọrísí kọ́kọ́rọ́ PBKDF2. A nílò ọ̀rọ̀-ìgbaniwọlé láti ka àwọn àkọsílẹ̀.",
+    "description": "Description for encrypted vault mode."
+  },
+  "optionsVaultStatusTitle": {
+    "message": "Ipò Àpótí",
+    "description": "Setting title for master password vault status."
+  },
+  "optionsVaultStatusUnconfigured": {
+    "message": "A kò tíì ṣètò Ọ̀rọ̀-ìgbaniwọlé Àgbà.",
+    "description": "Vault status when master password has not been set."
+  },
+  "optionsVaultStatusUnlocked": {
+    "message": "Àpótí wà ní ṣíṣí sílẹ̀ nínú ìrántí lọ́wọ́lọ́wọ́.",
+    "description": "Vault status when master password key is cached in memory."
+  },
+  "optionsVaultStatusLocked": {
+    "message": "A ti ṣètò àpótí tí a sì tì pa.",
+    "description": "Vault status when master password is set and key is locked."
+  },
+  "optionsBtnSetPassword": {
+    "message": "Ṣètò Ọ̀rọ̀-ìgbaniwọlé Àgbà",
+    "description": "Button to set master password for first time."
+  },
+  "optionsBtnChangePassword": {
+    "message": "Yí Ọ̀rọ̀-ìgbaniwọlé Àgbà Padà",
+    "description": "Button to modify existing master password."
+  },
+  "optionsAutolockTitle": {
+    "message": "Títì Pa Fúnra Rẹ̀ Lẹ́yìn Àìṣiṣẹ́",
+    "description": "Setting title for vault inactivity lock timeout."
+  },
+  "optionsAutolockSubtitle": {
+    "message": "Pa àwọn kọ́kọ́rọ́ ìṣípayá rẹ́ fúnra rẹ̀ lẹ́yìn àkókò àìṣiṣẹ́.",
+    "description": "Setting description for auto-lock timeout."
+  },
+  "optionsAutolock5Min": {
+    "message": "ìṣẹ́jú 5",
+    "description": "Auto-lock option for 5 minutes."
+  },
+  "optionsAutolock15Min": {
+    "message": "ìṣẹ́jú 15",
+    "description": "Auto-lock option for 15 minutes."
+  },
+  "optionsAutolock30Min": {
+    "message": "ìṣẹ́jú 30",
+    "description": "Auto-lock option for 30 minutes."
+  },
+  "optionsAutolock1Hour": {
+    "message": "wákàtí 1",
+    "description": "Auto-lock option for 1 hour."
+  },
+  "optionsAutolockNever": {
+    "message": "Kò ní tì pa lákòókò ìjókòó",
+    "description": "Auto-lock option to stay unlocked for current session."
+  },
+  "optionsDomainsTitle": {
+    "message": "Àwọn Dòménì Tí A Pa",
+    "description": "Header for disabled domains tab."
+  },
+  "optionsDomainsDesc": {
+    "message": "Yọ àwọn ojúlé pàtó kúrò nínú gbígba fọ́ọ̀mù.",
+    "description": "Description for disabled domains tab."
+  },
+  "optionsAddDomainTitle": {
+    "message": "Fi Dòménì Tí A Yọ Kún",
+    "description": "Card title for adding a domain to the blocklist."
+  },
+  "optionsInputDomainPlaceholder": {
+    "message": "àpẹẹrẹ: *.bank.com tàbí localhost:*",
+    "description": "Placeholder for domain input field."
+  },
+  "optionsBtnAddDomain": {
+    "message": "Dènà Dòménì",
+    "description": "Button to add domain to blocklist."
+  },
+  "optionsDomainsListTitle": {
+    "message": "Àkójọ Dòménì Tí A Yọ Kúrò",
+    "description": "Card title for disabled domains table."
+  },
+  "optionsThDomainPattern": {
+    "message": "Àpẹẹrẹ Dòménì",
+    "description": "Table header for domain pattern."
+  },
+  "optionsThAction": {
+    "message": "Ìgbésẹ̀",
+    "description": "Table header for action column."
+  },
+  "optionsNoDisabledDomains": {
+    "message": "Kò sí dòménì tí a pa níbàyí.",
+    "description": "Notice when domain blocklist is empty."
+  },
+  "optionsBtnUnblock": {
+    "message": "Ṣí Ìdènà",
+    "description": "Button to remove domain from blocklist."
+  },
+  "optionsStorageTitle": {
+    "message": "Ìpamọ́ & Ìtọ́jú",
+    "description": "Header for storage and maintenance tab."
+  },
+  "optionsStorageDesc": {
+    "message": "Ṣàyẹ̀wò ìlò ìpamọ́, kó àwọn àpamọ́ tí a dábò bò jáde, tàbí nu gbogbo àkọsílẹ̀ nù.",
+    "description": "Description for storage tab."
+  },
+  "optionsCapacityTitle": {
+    "message": "Agbára Ìpamọ́ IndexedDB",
+    "description": "Card title for storage usage progress."
+  },
+  "optionsStorageCalculating": {
+    "message": "Ń ṣírò àyè ìpamọ́...",
+    "description": "Label while calculating storage utilisation."
+  },
+  "optionsStorageEstimate": {
+    "message": "Ń lo nǹkan bí ~$USAGE$ MB nínú MB $QUOTA$ ti àyè tó wà.",
+    "description": "Storage quota usage summary text.",
+    "placeholders": {
+      "usage": {
+        "content": "$1"
+      },
+      "quota": {
+        "content": "$2"
+      }
+    }
+  },
+  "optionsStorageUnavailable": {
+    "message": "Ìṣírò ìpamọ́ kò sí.",
+    "description": "Fallback label when browser storage API is unavailable."
+  },
+  "optionsExportTitle": {
+    "message": "Kó Ìtàn Fọ́ọ̀mù Jáde",
+    "description": "Card title for exporting recovery history."
+  },
+  "optionsExportSubtitle": {
+    "message": "Gba gbogbo ìtàn fọ́ọ̀mù sílẹ̀ gẹ́gẹ́ bí fáìlì àpamọ́ JSON.",
+    "description": "Card subtitle for export action."
+  },
+  "optionsBtnExport": {
+    "message": "Kó JSON Jáde",
+    "description": "Button to download JSON backup."
+  },
+  "optionsDangerZoneTitle": {
+    "message": "Agbègbè Ewu: Pípa Rẹ́ Pátápátá",
+    "description": "Card title for erasing all extension data."
+  },
+  "optionsDangerZoneSubtitle": {
+    "message": "Pa gbogbo àwọn dòménì, fọ́ọ̀mù, àti àkọsílẹ̀ tí a gbà rẹ́ títí láé.",
+    "description": "Card subtitle for wipe action."
+  },
+  "optionsBtnWipeHistory": {
+    "message": "Pa Gbogbo Ìtàn Rẹ́",
+    "description": "Button to open nuclear wipe confirmation modal."
+  },
+  "optionsAboutTitle": {
+    "message": "Nípa & Ìwádìí",
+    "description": "Header for about and diagnostics tab."
+  },
+  "optionsAboutDesc": {
+    "message": "Àtúnṣe ìfàsíwájú àti àwọn ìwádìí òṣìṣẹ́ ìsàlẹ̀.",
+    "description": "Description for about tab."
+  },
+  "optionsDiagnosticsVersion": {
+    "message": "Àtúnṣe Ìfàsíwájú",
+    "description": "Label for extension version table row."
+  },
+  "optionsDiagnosticsEngine": {
+    "message": "Ẹ́ńjìnnì Tí A Fojúsùn",
+    "description": "Label for browser engine support table row."
+  },
+  "optionsDiagnosticsEngineValue": {
+    "message": "Chromium & Firefox Gecko",
+    "description": "Value for target engine table row."
+  },
+  "optionsDiagnosticsCrypto": {
+    "message": "Ẹ́ńjìnnì Ààbò Ìkọ̀kọ̀",
+    "description": "Label for cryptography engine table row."
+  },
+  "optionsDiagnosticsCryptoValue": {
+    "message": "W3C Web Crypto API (AES-GCM-256 + PBKDF2)",
+    "description": "Value for cryptography engine table row."
+  },
+  "optionsDiagnosticsDatabase": {
+    "message": "Ẹ́ńjìnnì Ibùdó Dátà",
+    "description": "Label for database engine table row."
+  },
+  "optionsDiagnosticsDatabaseValue": {
+    "message": "Dexie.js IndexedDB",
+    "description": "Value for database engine table row."
+  },
+  "optionsDiagnosticsStatus": {
+    "message": "Ipò Ìsàlẹ̀",
+    "description": "Label for service worker status table row."
+  },
+  "optionsDiagnosticsStatusActive": {
+    "message": "● Ń ṣiṣẹ́",
+    "description": "Value for active service worker."
+  },
+  "optionsModalSetPasswordTitle": {
+    "message": "Ṣètò Ọ̀rọ̀-ìgbaniwọlé Àgbà",
+    "description": "Modal title when setting master password."
+  },
+  "optionsModalChangePasswordTitle": {
+    "message": "Yí Ọ̀rọ̀-ìgbaniwọlé Àgbà Padà",
+    "description": "Modal title when changing master password."
+  },
+  "optionsLabelNewPassword": {
+    "message": "Ọ̀rọ̀-ìgbaniwọlé Àgbà Tuntun",
+    "description": "Label for new master password input."
+  },
+  "optionsPlaceholderNewPassword": {
+    "message": "Tẹ ọ̀rọ̀-ìgbaniwọlé tó lágbára...",
+    "description": "Placeholder for master password input."
+  },
+  "optionsLabelConfirmPassword": {
+    "message": "Tẹ Ọ̀rọ̀-ìgbaniwọlé Lẹ́ẹ̀kan Sí",
+    "description": "Label for confirm password input."
+  },
+  "optionsPlaceholderConfirmPassword": {
+    "message": "Tún ọ̀rọ̀-ìgbaniwọlé tẹ̀...",
+    "description": "Placeholder for confirm password input."
+  },
+  "optionsPasswordStrengthEmpty": {
+    "message": "Agbára ọ̀rọ̀-ìgbaniwọlé: Ó ṣófo",
+    "description": "Strength indicator when password input is empty."
+  },
+  "optionsPasswordStrengthWeak": {
+    "message": "Agbára ọ̀rọ̀-ìgbaniwọlé: Kò lágbára",
+    "description": "Strength indicator when password is weak."
+  },
+  "optionsPasswordStrengthModerate": {
+    "message": "Agbára ọ̀rọ̀-ìgbaniwọlé: Ó bọ́ sí i",
+    "description": "Strength indicator when password is moderate."
+  },
+  "optionsPasswordStrengthStrong": {
+    "message": "Agbára ọ̀rọ̀-ìgbaniwọlé: Ó lágbára gan-an (PBKDF2-SHA256, 100k ìtúnkọ)",
+    "description": "Strength indicator when password is strong."
+  },
+  "optionsBtnCancel": {
+    "message": "Fagilé",
+    "description": "Cancel button for modals."
+  },
+  "optionsBtnSaveMasterPass": {
+    "message": "Fi Ọ̀rọ̀-ìgbaniwọlé Àgbà Pamọ́",
+    "description": "Submit button for master password modal."
+  },
+  "optionsModalWipeTitle": {
+    "message": "Fọwọ́sí Pípa Gbogbo Ìtàn Rẹ́",
+    "description": "Title for data wipe confirmation modal."
+  },
+  "optionsModalWipeSubtitle": {
+    "message": "Ìgbésẹ̀ yìí kò ṣeé yípadà. Gbogbo ìtàn fọ́ọ̀mù, àwọn àkọsílẹ̀, àti àwọn àkọsílẹ̀ ìtọ́jú ni a ó pa rẹ́ títí láé.",
+    "description": "Subtitle warning for data wipe modal."
+  },
+  "optionsWipeConfirmKeyword": {
+    "message": "PAARẸ",
+    "description": "Confirmation keyword token required to confirm permanent history erasure."
+  },
+  "optionsLabelTypeDelete": {
+    "message": "Tẹ $KEYWORD$ láti fọwọ́sí:",
+    "description": "Label instructing user to type confirmation token.",
+    "placeholders": {
+      "keyword": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsBtnConfirmWipe": {
+    "message": "Pa Rẹ́ Títí Láé",
+    "description": "Submit button to confirm data wipe."
+  },
+  "optionsAlertEnterPassword": {
+    "message": "Jọ̀wọ́ tẹ ọ̀rọ̀-ìgbaniwọlé.",
+    "description": "Validation alert when password is omitted."
+  },
+  "optionsAlertPasswordsNoMatch": {
+    "message": "Àwọn ọ̀rọ̀-ìgbaniwọlé kò bára mu.",
+    "description": "Validation alert when confirmation password does not match."
+  },
+  "optionsAlertPasswordMinLength": {
+    "message": "Ọ̀rọ̀-ìgbaniwọlé gbọ́dọ̀ jẹ́ ó kéré tán lẹ́tà 6.",
+    "description": "Validation alert when password is under 6 characters."
+  },
+  "optionsAlertPasswordSuccess": {
+    "message": "A ti ṣètò Ọ̀rọ̀-ìgbaniwọlé Àgbà ní àṣeyọrí.",
+    "description": "Alert upon successful master password configuration."
+  },
+  "optionsAlertPasswordFailed": {
+    "message": "Kùn láti ṣètò ọ̀rọ̀-ìgbaniwọlé: $ERROR$",
+    "description": "Alert upon master password configuration failure.",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsAlertIncorrectPassword": {
+    "message": "Ọ̀rọ̀-ìgbaniwọlé Àgbà kò tọ̀nà.",
+    "description": "Alert when entered master password is incorrect."
+  },
+  "optionsAlertWipeSuccess": {
+    "message": "A ti pa gbogbo ìtàn àti àkọsílẹ̀ tí a gbà rẹ́.",
+    "description": "Alert upon successful data wipe."
+  },
+  "optionsConfirmSwitchStandard": {
+    "message": "Yíyí padà sí Ipò Ìwọ̀ntúnwọ̀nsì yóò yọ ààbò Ọ̀rọ̀-ìgbaniwọlé Àgbà kúrò. Ṣe o fẹ́ tẹ̀síwájú?",
+    "description": "Confirmation prompt before disabling encryption."
+  },
+  "optionsPromptCurrentPassword": {
+    "message": "Tẹ Ọ̀rọ̀-ìgbaniwọlé Àgbà rẹ lọ́wọ́lọ́wọ́ láti fọwọ́sí:",
+    "description": "Prompt requesting current master password before removal."
+  },
+  "shadowTriggerAriaLabel": {
+    "message": "Ìgbàpadà Fọ́ọ̀mù Lazarus",
+    "description": "Aria label for floating in-page recovery button."
+  },
+  "shadowTriggerTitle": {
+    "message": "Gba àwọn àkọsílẹ̀ fọ́ọ̀mù padà (Lazarus)",
+    "description": "Title tooltip for floating in-page recovery button."
+  },
+  "shadowMenuTitle": {
+    "message": "Ìgbàpadà Lazarus",
+    "description": "Title header in floating recovery menu card."
+  },
+  "shadowMenuCounter_one": {
+    "message": "àkọsílẹ̀ 1",
+    "description": "Singular count for menu card header."
+  },
+  "shadowMenuCounter_other": {
+    "message": "àkọsílẹ̀ $COUNT$",
+    "description": "Plural count for menu card header.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSearchPlaceholder": {
+    "message": "Ṣàwárí ìtàn pápá...",
+    "description": "Placeholder for search input in recovery menu."
+  },
+  "shadowRestoreEntireFormTitle": {
+    "message": "Gba gbogbo fọ́ọ̀mù padà",
+    "description": "Tooltip for restore entire form footer button."
+  },
+  "shadowRestoreFormBtn": {
+    "message": "Fọ́ọ̀mù",
+    "description": "Button label to restore entire form."
+  },
+  "shadowSettingsTitle": {
+    "message": "Àwọn Ètò Lazarus",
+    "description": "Tooltip for settings footer button in recovery menu."
+  },
+  "shadowButtonAriaLabel": {
+    "message": "Ṣí Ìgbàpadà Lazarus",
+    "description": "Aria label for the recovery trigger button."
+  },
+  "shadowButtonTitle": {
+    "message": "Gba Dátà Fọ́ọ̀mù Padà",
+    "description": "Tooltip for the recovery trigger button."
+  },
+  "shadowMenuSearchPlaceholder": {
+    "message": "Ṣàwárí...",
+    "description": "Placeholder for the search input in the recovery menu."
+  },
+  "shadowMenuRestoreFormTitle": {
+    "message": "Gba Fọ́ọ̀mù Padà",
+    "description": "Title for restoring a full form."
+  },
+  "shadowMenuRestoreFormLabel": {
+    "message": "Gba fọ́ọ̀mù padà",
+    "description": "Label for restoring a full form."
+  },
+  "shadowMenuSettingsTitle": {
+    "message": "Àwọn Ètò",
+    "description": "Tooltip for settings button in recovery menu."
+  },
+  "shadowMenuDisableTitle": {
+    "message": "Pa rẹ́ lórí ojúlé yìí",
+    "description": "Tooltip for disable site button in recovery menu."
+  },
+  "shadowMenuDisableConfirm": {
+    "message": "Pa Lazarus rẹ́ lórí $DOMAIN$?",
+    "description": "Confirmation prompt before disabling Lazarus on a domain.",
+    "placeholders": {
+      "domain": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowMenuEmptyTitle": {
+    "message": "Kò sí àkọsílẹ̀ tí a rí",
+    "description": "Empty state title in recovery menu."
+  },
+  "shadowMenuEmptySubtitle": {
+    "message": "Dán wò láti tẹ̀wé kí o le fi pamọ́",
+    "description": "Empty state subtitle in recovery menu."
+  },
+  "shadowMenuDraftCount_one": {
+    "message": "àkọsílẹ̀ 1",
+    "description": "Singular menu draft count badge."
+  },
+  "shadowMenuDraftCount_other": {
+    "message": "àkọsílẹ̀ $COUNT$",
+    "description": "Plural menu draft count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetWordCount_one": {
+    "message": "ọ̀rọ̀ 1",
+    "description": "Singular word count badge."
+  },
+  "shadowSnippetWordCount_other": {
+    "message": "ọ̀rọ̀ $COUNT$",
+    "description": "Plural word count badge.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "shadowSnippetEmpty": {
+    "message": "(ṣófo)",
+    "description": "Placeholder text for an empty snippet."
+  }
+}

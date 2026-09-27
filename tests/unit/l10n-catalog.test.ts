@@ -75,6 +75,16 @@ describe('L10n Catalog Integrity', () => {
       'et',
       'ca',
       'tr',
+      'he',
+      'fa',
+      'sw',
+      'am',
+      'af',
+      'zu',
+      'ha',
+      'yo',
+      'ig',
+      'so',
     ];
     const localesDir = path.resolve(__dirname, '../../public/_locales');
     for (const locale of requiredLocales) {
@@ -92,7 +102,7 @@ describe('L10n Catalog Integrity', () => {
     }
   });
 
-  it('contains all canonical en keys in all complete European and Americas catalogs', () => {
+  it('contains all canonical en keys in all complete European, Americas, Middle Eastern and African catalogs', () => {
     const fullLocales = [
       'de',
       'zh_CN',
@@ -126,6 +136,16 @@ describe('L10n Catalog Integrity', () => {
       'et',
       'ca',
       'tr',
+      'he',
+      'fa',
+      'sw',
+      'am',
+      'af',
+      'zu',
+      'ha',
+      'yo',
+      'ig',
+      'so',
     ];
     const enKeys = Object.keys(enCatalog);
     const localesDir = path.resolve(__dirname, '../../public/_locales');
@@ -135,6 +155,18 @@ describe('L10n Catalog Integrity', () => {
       const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
       const missingKeys = enKeys.filter((k) => !catalog[k]);
       expect(missingKeys, `Missing keys in ${locale}`).toEqual([]);
+    }
+  });
+
+  it('contains the required Hebrew plural forms (including _two) in the he catalog', () => {
+    const heCatalogPath = path.resolve(__dirname, '../../public/_locales/he/messages.json');
+    expect(fs.existsSync(heCatalogPath)).toBe(true);
+    const heCatalog = JSON.parse(fs.readFileSync(heCatalogPath, 'utf-8'));
+    const pluralBases = ['sidepanelDraftCount', 'shadowMenuDraftCount', 'shadowSnippetWordCount'];
+    for (const base of pluralBases) {
+      expect(heCatalog[`${base}_one`], `Hebrew catalog must contain ${base}_one`).toBeDefined();
+      expect(heCatalog[`${base}_two`], `Hebrew catalog must contain ${base}_two`).toBeDefined();
+      expect(heCatalog[`${base}_other`], `Hebrew catalog must contain ${base}_other`).toBeDefined();
     }
   });
 
