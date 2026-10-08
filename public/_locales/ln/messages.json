@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(pamba)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kofre ekangami",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Kotisa mot de passe ya liboso mpo na kofungola lisolo ya baformilɛrɛ.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Mot de passe ya liboso",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Fungola",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Mot de passe ya liboso ezali ya solo te. Meka lisusu.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kanga kofre",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

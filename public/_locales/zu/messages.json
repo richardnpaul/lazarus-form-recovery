@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(akunalutho)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Isisefo sikhiyiwe",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Faka iphasiwedi eyinhloko ukuze uvule umlando wefomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Iphasiwedi Eyinhloko",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Vula",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Iphasiwedi Eyinhloko ayilungile. Sicela uzame futhi.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Khiya isisefo",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

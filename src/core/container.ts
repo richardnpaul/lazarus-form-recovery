@@ -72,6 +72,10 @@ export class ServiceContainer {
     this.vaultSecurityUseCase = new VaultSecurityUseCase(this.vault, this.broadcaster);
     this.domainPolicyUseCase = new DomainPolicyUseCase(this.repository, this.broadcaster);
     this.retentionCleanupUseCase = new RetentionCleanupUseCase(this.repository);
+
+    this.vault.setOnLockCallback(() => {
+      this.broadcaster.broadcastRefresh();
+    });
   }
 }
 

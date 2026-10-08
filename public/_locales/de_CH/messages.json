@@ -6,5 +6,29 @@
   "optionsWipeConfirmKeyword": {
     "message": "LÖSCHEN",
     "description": "Swiss German confirmation keyword token"
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Tresor gesperrt",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Geben Sie das Hauptpasswort ein, um den Formularverlauf zu entsperren.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Hauptpasswort",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Entsperren",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Falsches Hauptpasswort. Bitte versuchen Sie es erneut.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Tresor sperren",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

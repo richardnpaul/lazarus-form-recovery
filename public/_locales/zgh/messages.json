@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ilem)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Asenduq yeqqen",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Sekcem awal uffir aɣella akken ad tsellked amazray n tifermin.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Awal Uffir Aɣella",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Sellked",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Awal uffir aɣella ur d-yelli d amagday. Ttxil-k ʿreḍ tikelt nniḍen.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Qqen asenduq",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -43,6 +43,10 @@ export class WebCryptoVaultAdapter implements IVaultCryptoPort {
   public setAutoLockTimeout(minutes: number): void {
     this.vaultManager.setAutoLockMinutes(minutes);
   }
+
+  public setOnLockCallback(cb: () => void): void {
+    this.vaultManager.setOnLockCallback(cb);
+  }
 }
 
 export const defaultVaultAdapter = new WebCryptoVaultAdapter();

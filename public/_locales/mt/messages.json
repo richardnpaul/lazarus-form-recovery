@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(vojt)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Vault Imblukkat",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Daħħal il-password ewlenija biex tiftaħ l-istorja tal-formola.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Password Ewlenija",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Iftaħ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Password Ewlenija mhux korretta. Jekk jogħġbok erġa' pprova.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Sakkar il-Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

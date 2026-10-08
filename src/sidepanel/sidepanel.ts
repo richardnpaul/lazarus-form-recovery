@@ -126,10 +126,66 @@ export async function resolveActiveTab(): Promise<void> {
   }
 }
 
+export async function checkVaultStatus(): Promise<{
+  hasMasterPassword: boolean;
+  isUnlocked: boolean;
+}> {
+  const api = getBrowserApi();
+  try {
+    const res: RuntimeResponse = await api.runtime.sendMessage({ type: 'CHECK_VAULT_STATUS' });
+    if (res && res.success && res.data) {
+      return {
+        hasMasterPassword: Boolean(res.data.hasMasterPassword),
+        isUnlocked: Boolean(res.data.isUnlocked),
+      };
+    }
+  } catch {
+    // Extension worker may be unavailable
+  }
+  return { hasMasterPassword: false, isUnlocked: true };
+}
+
+export function renderLockedState() {
+  const historyList = document.getElementById('history-list') as HTMLElement;
+  const historyCount = document.getElementById('history-count') as HTMLElement;
+  if (!historyList || !historyCount) return;
+
+  historyCount.textContent = formatPluralMessage('sidepanelDraftCount', 0);
+  const title = getMessage('sidepanelVaultLockedTitle');
+  const desc = getMessage('sidepanelVaultLockedDesc');
+  safeSetHtml(
+    historyList,
+    `
+    <div class="empty-history">
+      <p style="margin-bottom: 6px; font-weight: 600;">🔒 ${escapeHtml(title)}</p>
+      <p style="color: var(--lz-text-muted);">${escapeHtml(desc)}</p>
+    </div>
+  `
+  );
+}
+
 export async function loadHistory(query = '') {
   const historyList = document.getElementById('history-list') as HTMLElement;
   const historyCount = document.getElementById('history-count') as HTMLElement;
   if (!historyList || !historyCount) return;
+
+  const unlockContainer = document.getElementById('vault-unlock-container');
+  const lockVaultBtn = document.getElementById('lock-vault-btn');
+
+  if (unlockContainer || lockVaultBtn) {
+    const vaultStatus = await checkVaultStatus();
+    if (vaultStatus.hasMasterPassword && !vaultStatus.isUnlocked) {
+      if (unlockContainer) unlockContainer.style.display = 'block';
+      if (lockVaultBtn) lockVaultBtn.style.display = 'none';
+      renderLockedState();
+      return;
+    }
+
+    if (unlockContainer) unlockContainer.style.display = 'none';
+    if (lockVaultBtn) {
+      lockVaultBtn.style.display = vaultStatus.hasMasterPassword ? 'inline-block' : 'none';
+    }
+  }
 
   const trimmed = query.trim();
   const message: RuntimeMessage =
@@ -431,6 +487,52 @@ export function initSidepanel() {
         });
       }
       await resolveActiveTab();
+    };
+  }
+
+  const unlockForm = document.getElementById('vault-unlock-form') as HTMLFormElement | null;
+  async function performUnlock() {
+    const passInput = document.getElementById('vault-password-input') as HTMLInputElement | null;
+    const pwd = passInput?.value;
+    if (!pwd) return;
+
+    const api = getBrowserApi();
+    const res: RuntimeResponse = await api.runtime.sendMessage({
+      type: 'UNLOCK_VAULT',
+      payload: { password: pwd },
+    });
+
+    const errorEl = document.getElementById('vault-unlock-error');
+    if (res && res.success) {
+      passInput.value = '';
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+      await loadHistory(getSearchQuery());
+    } else {
+      if (errorEl) {
+        errorEl.textContent =
+          res && res.error ? res.error : getMessage('sidepanelVaultUnlockError');
+        errorEl.style.display = 'block';
+      }
+    }
+  }
+
+  if (unlockForm) {
+    unlockForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      performUnlock();
+    });
+  }
+
+  const lockVaultBtn = document.getElementById('lock-vault-btn') as HTMLAnchorElement | null;
+  if (lockVaultBtn) {
+    lockVaultBtn.onclick = async (e: MouseEvent) => {
+      e.preventDefault();
+      const api = getBrowserApi();
+      await api.runtime.sendMessage({ type: 'LOCK_VAULT' });
+      await loadHistory(getSearchQuery());
     };
   }
 

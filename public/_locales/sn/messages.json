@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(hapana)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kadhi yakakiiwa",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Isa pasiwedhi huru kuti uvhure nhoroondo yefomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Pasiwedhi Huru",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Vhura",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Pasiwedhi huru haisi iyo. Ndapota edza zvakare.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kiya kadhi",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

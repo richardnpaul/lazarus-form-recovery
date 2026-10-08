@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ఖాళీ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "వాల్ట్ లాక్ చేయబడింది",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ఫారమ్ చరిత్రను అన్‌లాక్ చేయడానికి మాస్టర్ పాస్‌వర్డ్‌ను నమోదు చేయండి.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "మాస్టర్ పాస్‌వర్డ్",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "అన్‌లాక్ చేయండి",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "తప్పు మాస్టర్ పాస్‌వర్డ్. దయచేసి మళ్లీ ప్రయత్నించండి.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 వాల్ట్‌ను లాక్ చేయండి",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

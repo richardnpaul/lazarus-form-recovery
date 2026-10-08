@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ಖಾಲಿ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ವಾಲ್ಟ್ ಲಾಕ್ ಆಗಿದೆ",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ಫಾರ್ಮ್ ಇತಿಹಾಸವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಮಾಸ್ಟರ್ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ಮಾಸ್ಟರ್ ಪಾಸ್‌ವರ್ಡ್",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ಅನ್‌ಲಾಕ್ ಮಾಡಿ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ತಪ್ಪಾದ ಮಾಸ್ಟರ್ ಪಾಸ್‌ವರ್ಡ್. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ವಾಲ್ಟ್ ಲಾಕ್ ಮಾಡಿ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

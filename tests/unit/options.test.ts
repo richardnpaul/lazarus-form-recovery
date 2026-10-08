@@ -398,6 +398,10 @@ describe('Options Page Controller (src/options/options.ts)', () => {
           m.type === 'REMOVE_MASTER_PASSWORD' && m.payload?.currentPassword === 'CorrectPassword123'
       );
       expect(removeMsg).toBeDefined();
+      const updateMsg = sentMessages.find(
+        (m) => m.type === 'UPDATE_SETTINGS' && m.payload?.settings?.encryptionMode === 'none'
+      );
+      expect(updateMsg).toBeDefined();
       expect(modeStandard.classList.contains('is-selected')).toBe(true);
       expect(modeVault.classList.contains('is-selected')).toBe(false);
     });
@@ -621,6 +625,11 @@ describe('Options Page Controller (src/options/options.ts)', () => {
         (m) => m.type === 'SET_MASTER_PASSWORD' && m.payload?.password === 'ValidPass123!'
       );
       expect(setMsg).toBeDefined();
+      const updateMsg = sentMessages.find(
+        (m) =>
+          m.type === 'UPDATE_SETTINGS' && m.payload?.settings?.encryptionMode === 'hybrid-aes-gcm'
+      );
+      expect(updateMsg).toBeDefined();
       expect(modal.classList.contains('is-visible')).toBe(false);
       expect(globalThis.alert).toHaveBeenCalledWith(
         'Master Password has been configured successfully.'

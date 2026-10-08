@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(nandi)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Vault oñemboty",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Emoinge ñe'ẽñemi guasu eavri hag̃ua formulario rembiasakue.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Ñe'ẽñemi Guasu",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Avri",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Ñe'ẽñemi guasu hendape'ỹ. Eha'ãjey.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Emboty Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

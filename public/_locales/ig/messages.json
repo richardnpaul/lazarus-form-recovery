@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(efu)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Ebe nchekwa akpọchiri",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Ftinye nna-ukwu okwuntughe iji kpọghee akụkọ fọm.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Nna-ukwu Okwuntughe",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Kpọghee",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Nna-ukwu Okwuntughe ezighi ezi. Biko nwaa ọzọ.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kpọchie Ebe Nchekwa",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

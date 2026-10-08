@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(خالی)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "والٹ مقفل ہے",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "فارم کی تاریخ کو غیر مقفل کرنے کے لیے ماسٹر پاس ورڈ درج کریں۔",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ماسٹر پاس ورڈ",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "غیر مقفل کریں",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "غلط ماسٹر پاس ورڈ۔ براہ کرم دوبارہ کوشش کریں۔",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 والٹ مقفل کریں",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

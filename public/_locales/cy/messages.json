@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(gwag)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Dromen ar glo",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Rhowch y prif gyfrinair i ddatgloi hanes ffurflenni.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Prif Gyfrinair",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Datgloi",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Prif Gyfrinair anghywir. Rhowch gynnig arall arni os gwelwch yn dda.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Cloi'r dromen",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

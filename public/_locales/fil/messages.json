@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(walang laman)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Naka-lock ang Vault",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Ilagay ang master password upang i-unlock ang kasaysayan ng form.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Pangunahing Password",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "I-unlock",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Maling master password. Pakisubukan muli.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 I-lock ang Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

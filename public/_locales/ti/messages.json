@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ባዶ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ካዝና ተዓጽዩ ኣሎ",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ታሪኽ ቅጥዒ ንምኽፋት ዋና መሕለፊ ቃል ኣእቱ።",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ዋና መሕለፊ ቃል",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ክፈት",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ጌጋ ዋና መሕለፊ ቃል። በጃኹም ደጊምኩም ፈትኑ።",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ካዝና ዕጾ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

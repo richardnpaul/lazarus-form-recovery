@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(hwee nni mu)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Wɔatoto kɔba no mu",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Hyɛ panyin paswɛde no de bue fɔɔm abakɔsɛm no.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Panyin Paswɛde",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Bue",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Panyin paswɛde no nteɛ. Yɛsrɛ wo bɔ mmɔden bio.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Toto kɔba no mu",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

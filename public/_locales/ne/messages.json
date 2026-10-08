@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(खाली)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "भल्ट लक छ",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "फारम इतिहास अनलक गर्न मास्टर पासवर्ड प्रविष्ट गर्नुहोस्।",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "मास्टर पासवर्ड",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "अनलक गर्नुहोस्",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "गलत मास्टर पासवर्ड। कृपया पुनः प्रयास गर्नुहोस्।",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 भल्ट लक गर्नुहोस्",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

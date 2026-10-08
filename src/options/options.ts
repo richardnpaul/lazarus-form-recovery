@@ -152,8 +152,10 @@ async function checkVault() {
 }
 
 function updateModeCards(mode: string) {
-  modeVault.classList.toggle('is-selected', mode === 'hybrid-aes-gcm');
-  modeStandard.classList.toggle('is-selected', mode === 'none');
+  const elVault = document.getElementById('mode-vault');
+  const elStandard = document.getElementById('mode-standard');
+  elVault?.classList.toggle('is-selected', mode === 'hybrid-aes-gcm');
+  elStandard?.classList.toggle('is-selected', mode === 'none');
 }
 
 // General Tab Event Handlers
@@ -185,6 +187,7 @@ modeStandard.addEventListener('click', async () => {
         });
         if (removeRes.success) {
           updateModeCards('none');
+          await saveSettings({ encryptionMode: 'none' });
           await checkVault();
         } else {
           alert(getMessage('optionsAlertIncorrectPassword'));
@@ -267,6 +270,7 @@ btnSaveMasterPass.addEventListener('click', async () => {
   if (res?.success) {
     passwordModal.classList.remove('is-visible');
     updateModeCards('hybrid-aes-gcm');
+    await saveSettings({ encryptionMode: 'hybrid-aes-gcm' });
     await checkVault();
     alert(getMessage('optionsAlertPasswordSuccess'));
   } else {

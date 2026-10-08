@@ -808,5 +808,29 @@
   "shadowSnippetWordCount_two": {
     "message": "2 מילים",
     "description": "Plural two"
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "הכספת נעולה",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "הזן סיסמת מאסטר כדי לבטל את נעילת היסטוריית הטפסים.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "סיסמת מאסטר",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "בטל נעילה",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "סיסמת מאסטר שגויה. אנא נסה שוב.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 נעל כספת",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

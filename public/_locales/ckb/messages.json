@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(بەتاڵ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "سەندووق قفڵ کراوە",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "وشەی نهێنی سەرەکی تێبنووسە بۆ کردنەوەی مێژووی فۆرم.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "وشەی نهێنی سەرەکی",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "کردنەوەی قفڵ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "وشەی نهێنی سەرەکی هەڵەیە. تکایە دووبارە هەوڵبدەرەوە.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 قفڵکردنی سەندووق",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

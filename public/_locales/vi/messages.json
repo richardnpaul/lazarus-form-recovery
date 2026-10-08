@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(trống)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Két sắt đã bị khóa",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Nhập mật khẩu chính để mở khóa lịch sử biểu mẫu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Mật khẩu chính",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Mở khóa",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Mật khẩu chính không chính xác. Vui lòng thử lại.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Khóa két sắt",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

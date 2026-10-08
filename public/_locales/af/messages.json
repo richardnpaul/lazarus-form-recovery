@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(leeg)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kluis gesluit",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Voer meesterwagwoord in om vormgeskiedenis te ontsluit.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Meesterwagwoord",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Ontsluit",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Verkeerde meesterwagwoord. Probeer asseblief weer.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Sluit kluis",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

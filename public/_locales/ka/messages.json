@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ცარიელი)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "სეიფი დაბლოკილია",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "შეიყვანეთ ძირითადი პაროლი ფორმის ისტორიის განსაბლოკად.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ძირითადი პაროლი",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "განბლოკვა",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "არასწორი ძირითადი პაროლი. გთხოვთ, სცადოთ თავიდან.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 სეიფის დაბლოკვა",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

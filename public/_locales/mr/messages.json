@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(रिक्त)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "तिजोरी लॉक आहे",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "फॉर्म इतिहास अनलॉक करण्यासाठी मास्टर पासवर्ड प्रविष्ट करा.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "मास्टर पासवर्ड",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "अनलॉक करा",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "चुकीचा मास्टर पासवर्ड. कृपया पुन्हा प्रयत्न करा.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 तिजोरी लॉक करा",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

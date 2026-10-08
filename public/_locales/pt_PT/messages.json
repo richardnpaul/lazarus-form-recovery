@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(vazio)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Cofre bloqueado",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Introduza a palavra-passe-mestra para desbloquear o histórico de formulários.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Palavra-passe-mestra",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Desbloquear",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Palavra-passe-mestra incorreta. Tente novamente.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Bloquear cofre",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

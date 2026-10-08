@@ -56,6 +56,7 @@ describe('Infrastructure Adapters', () => {
         lock: vi.fn(),
         isUnlocked: vi.fn().mockReturnValue(true),
         setAutoLockMinutes: vi.fn(),
+        setOnLockCallback: vi.fn(),
       };
 
       const adapter = new WebCryptoVaultAdapter(mockVaultManager);
@@ -92,6 +93,10 @@ describe('Infrastructure Adapters', () => {
 
       adapter.setAutoLockTimeout(15);
       expect(mockVaultManager.setAutoLockMinutes).toHaveBeenCalledWith(15);
+
+      const testLockCb = vi.fn();
+      adapter.setOnLockCallback(testLockCb);
+      expect(mockVaultManager.setOnLockCallback).toHaveBeenCalledWith(testLockCb);
     });
 
     it('exposes defaultVaultAdapter with default vault instance', async () => {

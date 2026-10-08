@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(خالي)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "والټ قلف دی",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "د فورمې تاریخ خلاصولو لپاره ماسټر پټنوم دننه کړئ.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ماسټر پټنوم",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "قلف خلاص کړئ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ناسم ماسټر پټنوم. مهرباني وکړئ بیا هڅه وکړئ.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 والټ قلف کړئ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

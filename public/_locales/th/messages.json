@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ว่างเปล่า)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ตู้นิรภัยถูกล็อก",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ป้อนรหัสผ่านหลักเพื่อปลดล็อกประวัติแบบฟอร์ม",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "รหัสผ่านหลัก",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ปลดล็อก",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "รหัสผ่านหลักไม่ถูกต้อง โปรดลองอีกครั้ง",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ล็อกตู้นิรภัย",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

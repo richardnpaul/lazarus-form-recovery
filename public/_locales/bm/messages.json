@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(gansan)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Gundoso datugulen don",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Gundoda ba don ka foromu tariku dayɛlɛ.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Gundoda ba",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Dayɛlɛ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Gundoda ba tɛ tiɲɛ ye. Sabali i k'a laregɛ tugun.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Gundoso datugu",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

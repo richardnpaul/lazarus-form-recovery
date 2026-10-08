@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(duwwaa)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Saanduqni cufameera",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Seenaa unkaa banuuf jecha icciitii ijoo galchaa.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Jecha Icciitii Ijoo",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Bani",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Jecha icciitii dogoggora. Maaloo irra deebi'aa yaalaa.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Saanduqa cufaa",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

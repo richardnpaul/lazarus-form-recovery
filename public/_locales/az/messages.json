@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(boş)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kassa kilidlənib",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Forma tarixçəsini açmaq üçün əsas şifrəni daxil edin.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Əsas Şifrə",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Kilidi aç",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Yanlış əsas şifrə. Zəhmət olmasa yenidən cəhd edin.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kassayı kilidlə",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

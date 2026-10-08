@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(vide)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Coffre verrouillé",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Saisissez le mot de passe principal pour déverrouiller l'historique des formulaires.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Mot de passe principal",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Déverrouiller",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Mot de passe principal incorrect. Veuillez réessayer.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Verrouiller le coffre",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

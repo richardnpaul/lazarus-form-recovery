@@ -808,5 +808,29 @@
   "shadowSnippetWordCount_zero": {
     "message": "0 vārdu",
     "description": "Plural form for shadowSnippetWordCount_zero"
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Sefs bloķēts",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Ievadiet galveno paroli, lai atbloķētu veidlapu vēsturi.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Galvenā parole",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Atbloķēt",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Nepareiza galvenā parole. Lūdzu, mēģiniet vēlreiz.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Bloķēt sefu",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

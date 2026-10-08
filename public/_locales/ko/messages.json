@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(비어 있음)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "금고 잠김",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "양식 기록의 잠금을 해제하려면 마스터 비밀번호를 입력하세요.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "마스터 비밀번호",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "잠금 해제",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "잘못된 마스터 비밀번호입니다. 다시 시도해 주세요.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 금고 잠그기",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

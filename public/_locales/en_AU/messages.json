@@ -2,5 +2,29 @@
   "optionsWipeConfirmKeyword": {
     "message": "DELETE",
     "description": "Australian English confirmation keyword token"
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Vault Locked",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Enter master password to unlock form history.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Master Password",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Unlock",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Incorrect master password. Please try again.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Lock Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(空)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "保管庫がロックされています",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "フォーム履歴のロックを解除するにはマスターパスワードを入力してください。",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "マスターパスワード",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ロック解除",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "マスターパスワードが正しくありません。もう一度お試しください。",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 保管庫をロック",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

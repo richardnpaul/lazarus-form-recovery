@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(chopanda kanthu)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Malo obisika atsekedwa",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Lowetsani mawu achinsinsi akuluakulu kuti mutsegule mbiri ya fomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Mawu achinsinsi akuluakulu",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Tsegulani",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Mawu achinsinsi akuluakulu si olondola. Chonde yesaninso.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Tsekani malo obisika",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

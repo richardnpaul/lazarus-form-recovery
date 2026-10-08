@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ṣófo)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Àpótí ti tì pa",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Tẹ ọ̀rọ̀-ìgbaniwọlé àgbà láti ṣí ìtàn fọ́ọ̀mù sílẹ̀.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Ọ̀rọ̀-ìgbaniwọlé Àgbà",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Ṣí sílẹ̀",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Ọ̀rọ̀-ìgbaniwọlé Àgbà kò tọ̀nà. Jọ̀wọ́ gbìyànjú lẹ́ẹ̀kan sí i.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Tì Àpótí Pa",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

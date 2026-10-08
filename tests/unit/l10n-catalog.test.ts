@@ -495,4 +495,36 @@ describe('L10n Catalog Integrity', () => {
     }
     expect(Array.from(missingPlaceholders)).toEqual([]);
   });
+
+  it('ensures all sidepanel vault unlock strings are translated into native languages and not left in English across non-English catalogs', () => {
+    const vaultSidepanelKeys = [
+      'sidepanelVaultLockedTitle',
+      'sidepanelVaultLockedDesc',
+      'sidepanelVaultPasswordPlaceholder',
+      'sidepanelBtnUnlock',
+      'sidepanelVaultUnlockError',
+      'sidepanelFooterLockVault',
+    ];
+    const englishVariants = new Set(['en', 'en_US', 'en_GB', 'en_CA', 'en_AU']);
+    const localesDir = path.resolve(__dirname, '../../public/_locales');
+    const locales = fs
+      .readdirSync(localesDir)
+      .filter((f) => fs.statSync(path.join(localesDir, f)).isDirectory());
+
+    for (const locale of locales) {
+      if (englishVariants.has(locale)) continue;
+      const catalogPath = path.join(localesDir, locale, 'messages.json');
+      const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
+
+      for (const key of vaultSidepanelKeys) {
+        expect(catalog[key], `Key ${key} must exist in ${locale}`).toBeDefined();
+        const msg = catalog[key].message;
+        const enMsg = enCatalog[key].message;
+        expect(
+          msg !== enMsg,
+          `Key ${key} in ${locale} must be translated and not identical to English: "${enMsg}"`
+        ).toBe(true);
+      }
+    }
+  });
 });

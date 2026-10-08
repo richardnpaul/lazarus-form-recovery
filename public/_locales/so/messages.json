@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(faaruq)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Qasnadda waa xidhan tahay",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Geli furaha guud si aad u furto taariikhda foomka.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Furaha Guud",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Fur",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Furaha Guud waa qalad. Fadlan isku day markale.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Xidh qasnadda",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

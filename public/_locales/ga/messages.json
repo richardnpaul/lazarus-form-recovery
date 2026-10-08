@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(folamh)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Tearmann faoi ghlas",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Iontráil an príomhphasfhocal chun stair na bhfoirmeacha a dhíghlasáil.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Príomhphasfhocal",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Díghlasáil",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Príomhphasfhocal mícheart. Bain triail eile as le do thoil.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Cuir an tearmann faoi ghlas",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

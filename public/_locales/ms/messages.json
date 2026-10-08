@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(kosong)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Bilik kebal dikunci",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Masukkan kata laluan induk untuk membuka kunci sejarah borang.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Kata Laluan Induk",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Buka Kunci",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Kata laluan induk salah. Sila cuba lagi.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kunci Bilik Kebal",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

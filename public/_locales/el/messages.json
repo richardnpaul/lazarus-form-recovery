@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(κενό)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Θησαυροφυλάκιο κλειδωμένο",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Εισαγάγετε τον κύριο κωδικό πρόσβασης για να ξεκλειδώσετε το ιστορικό φορμών.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Κύριος κωδικός πρόσβασης",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Ξεκλείδωμα",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Λανθασμένος κύριος κωδικός πρόσβασης. Παρακαλώ δοκιμάστε ξανά.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Κλείδωμα θησαυροφυλακίου",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }
