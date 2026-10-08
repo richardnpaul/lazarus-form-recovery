@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(kosong)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Brankas Terkunci",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Masukkan kata sandi utama untuk membuka kunci riwayat formulir.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Kata Sandi Utama",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Buka Kunci",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Kata sandi utama salah. Silakan coba lagi.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kunci Brankas",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

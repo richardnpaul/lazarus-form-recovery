@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(খালি)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ভল্ট লক করা আছে",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ফর্মের ইতিহাস আনলক করতে মাস্টার পাসওয়ার্ড লিখুন।",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "মাস্টার পাসওয়ার্ড",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "আনলক করুন",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ভুল মাস্টার পাসওয়ার্ড। দয়া করে আবার চেষ্টা করুন।",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ভল্ট লক করুন",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

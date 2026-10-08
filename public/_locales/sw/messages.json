@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(tupu)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Chumba salama kimefungwa",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Weka nenosiri kuu ili kufungua historia ya fomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Nenosiri Kuu",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Fungua",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Nenosiri Kuu si sahihi. Tafadhali jaribu tena.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Funga chumba salama",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

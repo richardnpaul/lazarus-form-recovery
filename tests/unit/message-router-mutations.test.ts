@@ -243,4 +243,68 @@ describe('MessageRouter Mutation Resistance Tests (src/background/message-router
     (chrome as any).runtime = origRuntime;
     (chrome.runtime as any).openOptionsPage = openOptionsPage;
   });
+
+  it('handles SET_MASTER_PASSWORD and REMOVE_MASTER_PASSWORD failures and UPDATE_SETTINGS autoLockMinutes', async () => {
+    const updateSpy = vi.spyOn(repository, 'updateSettings').mockResolvedValue({} as any);
+    const setPassSpy = vi
+      .spyOn(container.vaultSecurityUseCase, 'setupMasterPassword')
+      .mockResolvedValue({ success: false, error: 'ShortPass' });
+
+    // 1. SET_MASTER_PASSWORD failure: does not update encryptionMode
+    const setRes = await handleRuntimeMessage(
+      { type: 'SET_MASTER_PASSWORD', payload: { password: 'short' } },
+      {} as any
+    );
+    expect(setRes).toEqual({ success: false, error: 'ShortPass' });
+    expect(updateSpy).not.toHaveBeenCalled();
+
+    // 1b. SET_MASTER_PASSWORD success: updates encryptionMode to hybrid-aes-gcm
+    setPassSpy.mockResolvedValueOnce({ success: true });
+    const setOkRes = await handleRuntimeMessage(
+      { type: 'SET_MASTER_PASSWORD', payload: { password: 'strongPassword123' } },
+      {} as any
+    );
+    expect(setOkRes).toEqual({ success: true, error: undefined });
+    expect(updateSpy).toHaveBeenCalledWith({ encryptionMode: 'hybrid-aes-gcm' });
+    updateSpy.mockClear();
+
+    // 2. REMOVE_MASTER_PASSWORD failure: does not update encryptionMode
+    const remPassSpy = vi
+      .spyOn(container.vaultSecurityUseCase, 'removeMasterPassword')
+      .mockResolvedValue({
+        success: false,
+        error: 'Failed',
+      });
+    const remRes = await handleRuntimeMessage(
+      { type: 'REMOVE_MASTER_PASSWORD', payload: {} },
+      {} as any
+    );
+    expect(remRes).toEqual({ success: false, error: 'Failed' });
+    expect(updateSpy).not.toHaveBeenCalled();
+
+    // 2b. REMOVE_MASTER_PASSWORD success: updates encryptionMode to none
+    remPassSpy.mockResolvedValueOnce({ success: true });
+    const remOkRes = await handleRuntimeMessage(
+      { type: 'REMOVE_MASTER_PASSWORD', payload: {} },
+      {} as any
+    );
+    expect(remOkRes).toEqual({ success: true, error: undefined });
+    expect(updateSpy).toHaveBeenCalledWith({ encryptionMode: 'none' });
+
+    // 3. UPDATE_SETTINGS with autoLockMinutes updates vault timeout
+    const vaultTimeoutSpy = vi.spyOn(container.vault, 'setAutoLockTimeout');
+    await handleRuntimeMessage(
+      { type: 'UPDATE_SETTINGS', payload: { settings: { autoLockMinutes: 10 } } },
+      {} as any
+    );
+    expect(vaultTimeoutSpy).toHaveBeenCalledWith(10);
+    vaultTimeoutSpy.mockClear();
+
+    // 4. UPDATE_SETTINGS without autoLockMinutes does not call setAutoLockTimeout
+    await handleRuntimeMessage(
+      { type: 'UPDATE_SETTINGS', payload: { settings: { autoLockMinutes: 'invalid' as any } } },
+      {} as any
+    );
+    expect(vaultTimeoutSpy).not.toHaveBeenCalled();
+  });
 });

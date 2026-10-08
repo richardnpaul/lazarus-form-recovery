@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ວ່າງ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ຕູ້ນິລະໄພຖືກລັອກ",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ປ້ອນລະຫັດຜ່ານຫຼັກເພື່ອປົດລັອກປະຫວັດແບບຟອມ.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ລະຫັດຜ່ານຫຼັກ",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ປົດລັອກ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ລະຫັດຜ່ານຫຼັກບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ລັອກຕູ້ນິລະໄພ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

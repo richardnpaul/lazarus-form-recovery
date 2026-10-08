@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(vuoto)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Cassaforte bloccata",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Inserisci la password principale per sbloccare la cronologia dei moduli.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Password principale",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Sblocca",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Password principale non corretta. Riprova.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Blocca cassaforte",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(hutsik)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kutxa blokeatuta",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Sartu pasahitz nagusia inprimakien historia desblokeatzeko.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Pasahitz Nagusia",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Desblokeatu",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Pasahitz Nagusi okerra. Saiatu berriro, mesedez.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Blokeatu kutxa",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

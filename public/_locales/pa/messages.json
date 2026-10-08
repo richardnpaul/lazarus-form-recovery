@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ਖ਼ਾਲੀ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "ਵਾਲਟ ਲੌਕ ਹੈ",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ਫ਼ਾਰਮ ਇਤਿਹਾਸ ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਮਾਸਟਰ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ।",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ਮਾਸਟਰ ਪਾਸਵਰਡ",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "ਅਨਲੌਕ ਕਰੋ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ਗ਼ਲਤ ਮਾਸਟਰ ਪਾਸਵਰਡ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 ਵਾਲਟ ਲੌਕ ਕਰੋ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

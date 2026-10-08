@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(காலியாக உள்ளது)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "பெட்டகம் பூட்டப்பட்டுள்ளது",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "படிவ வரலாற்றைத் திறக்க முதன்மை கடவுச்சொல்லை உள்ளிடவும்.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "முதன்மை கடவுச்சொல்",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "திறக்கவும்",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "தவறான முதன்மை கடவுச்சொல். மீண்டும் முயற்சிக்கவும்.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 பெட்டகத்தைப் பூட்டு",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -828,5 +828,29 @@
         "content": "$1"
       }
     }
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Сеф је закључан",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Унесите главну лозинку да бисте откључали историју образаца.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Главна лозинка",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Откључај",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Нетачна главна лозинка. Покушајте поново.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Закључај сеф",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

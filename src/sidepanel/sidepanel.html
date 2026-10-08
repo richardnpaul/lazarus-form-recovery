@@ -82,6 +82,38 @@
       </button>
     </div>
 
+    <!-- Vault Unlock Card -->
+    <section class="vault-unlock-card" id="vault-unlock-container" style="display: none">
+      <div class="vault-unlock-header">
+        <span class="vault-lock-icon">🔒</span>
+        <div class="vault-unlock-text">
+          <div class="vault-unlock-title" data-i18n="sidepanelVaultLockedTitle">Vault Locked</div>
+          <div class="vault-unlock-desc" data-i18n="sidepanelVaultLockedDesc">
+            Enter master password to unlock form history.
+          </div>
+        </div>
+      </div>
+      <form id="vault-unlock-form" class="vault-unlock-form">
+        <input
+          type="password"
+          id="vault-password-input"
+          class="vault-password-input"
+          data-i18n-placeholder="sidepanelVaultPasswordPlaceholder"
+          placeholder="Master Password"
+          autocomplete="current-password"
+        />
+        <button
+          type="submit"
+          id="btn-unlock-vault"
+          class="btn-unlock"
+          data-i18n="sidepanelBtnUnlock"
+        >
+          Unlock
+        </button>
+      </form>
+      <div id="vault-unlock-error" class="vault-unlock-error" style="display: none"></div>
+    </section>
+
     <!-- History Feed Header -->
     <div class="history-header">
       <span style="font-weight: 600; font-size: 12px" data-i18n="sidepanelSavedDrafts"
@@ -95,6 +127,9 @@
 
     <!-- Footer -->
     <footer class="sidepanel-footer">
+      <a id="lock-vault-btn" style="display: none" data-i18n="sidepanelFooterLockVault"
+        >🔒 Lock Vault</a
+      >
       <a id="clear-history-btn" data-i18n="sidepanelFooterClearAll">🗑️ Clear All</a>
       <a id="open-options-btn" data-i18n="sidepanelFooterSettings">⚙️ Settings</a>
     </footer>

@@ -864,5 +864,29 @@
         "content": "$1"
       }
     }
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Сховище заблоковано",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Введіть майстер-пароль, щоб розблокувати історію форм.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Майстер-пароль",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Розблокувати",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Невірний майстер-пароль. Спробуйте ще раз.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Заблокувати сховище",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

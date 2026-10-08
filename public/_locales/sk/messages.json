@@ -864,5 +864,29 @@
         "content": "$1"
       }
     }
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Trezor uzamknutý",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Zadajte hlavné heslo na odomknutie histórie formulárov.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Hlavné heslo",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Odomknúť",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Nesprávne hlavné heslo. Skúste to znova.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Uzamknúť trezor",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

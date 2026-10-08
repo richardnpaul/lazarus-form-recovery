@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(හිස්)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "සේප්පුව අගුළු දමා ඇත",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "පෝරම ඉතිහාසය අගුළු ඇරීමට ප්‍රධාන මුරපදය ඇතුළත් කරන්න.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ප්‍රධාන මුරපදය",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "අගුළු අරින්න",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "වැරදි ප්‍රධාන මුරපදයකි. කරුණාකර නැවත උත්සාහ කරන්න.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 සේප්පුව අගුළු දමන්න",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

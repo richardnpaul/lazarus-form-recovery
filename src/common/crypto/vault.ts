@@ -19,8 +19,24 @@ export class VaultManager {
   private unlockTimestamp: number = 0;
   private autoLockMinutes: number = 15;
 
+  private onLockCallback?: () => void;
+
   constructor() {
     this.initAutoLockDuration();
+  }
+
+  public setOnLockCallback(cb: () => void) {
+    this.onLockCallback = cb;
+  }
+
+  private checkAutoLockExpiry(): void {
+    if (
+      this.activeKey !== null &&
+      this.autoLockMinutes > 0 &&
+      Date.now() - this.unlockTimestamp >= this.autoLockMinutes * 60 * 1000
+    ) {
+      this.lock();
+    }
   }
 
   private async initAutoLockDuration() {
@@ -46,18 +62,23 @@ export class VaultManager {
   }
 
   public isUnlocked(): boolean {
+    this.checkAutoLockExpiry();
     return this.activeKey !== null;
   }
 
   public async getStatus(): Promise<VaultStatus> {
     const hasPassword = await this.hasMasterPassword();
-    const unlocked = this.isUnlocked();
+    let unlocked = this.activeKey !== null;
     let remainingUnlockTimeMs: number | undefined;
 
     if (unlocked && this.autoLockMinutes > 0) {
       const elapsed = Date.now() - this.unlockTimestamp;
       const total = this.autoLockMinutes * 60 * 1000;
       remainingUnlockTimeMs = Math.max(0, total - elapsed);
+      if (remainingUnlockTimeMs === 0) {
+        this.lock();
+        unlocked = false;
+      }
     }
 
     return {
@@ -125,10 +146,14 @@ export class VaultManager {
    * Manually locks the vault, purging the active in-memory CryptoKey.
    */
   public lock(): void {
+    const wasUnlocked = this.activeKey !== null;
     this.activeKey = null;
     this.unlockTimestamp = 0;
     clearTimeout(this.autoLockTimer);
     this.autoLockTimer = null;
+    if (wasUnlocked) {
+      this.onLockCallback?.();
+    }
   }
 
   /**
@@ -153,6 +178,7 @@ export class VaultManager {
     this.autoLockTimer = null;
 
     if (this.autoLockMinutes > 0 && this.activeKey) {
+      this.unlockTimestamp = Date.now();
       this.autoLockTimer = setTimeout(
         () => {
           this.lock();
@@ -168,6 +194,7 @@ export class VaultManager {
   public async encrypt(
     text: string
   ): Promise<{ ciphertext: string; mode: 'none' | 'hybrid-aes-gcm' }> {
+    this.checkAutoLockExpiry();
     if (this.activeKey) {
       this.resetAutoLockTimer();
       const ciphertext = await WebCryptoVault.encrypt(text, this.activeKey);
@@ -180,6 +207,7 @@ export class VaultManager {
    * Decrypts a string if it was encrypted.
    */
   public async decrypt(text: string, mode: string): Promise<string> {
+    this.checkAutoLockExpiry();
     if (mode === 'hybrid-aes-gcm') {
       if (!this.activeKey) {
         throw new Error('Vault is locked. Master Password required to decrypt.');

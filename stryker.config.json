@@ -5,7 +5,7 @@
   "testRunner": "vitest",
   "checkers": ["typescript"],
   "coverageAnalysis": "off",
-  "concurrency": 8,
+  "concurrency": 4,
   "timeoutMS": 10000,
   "incremental": true,
   "tsconfigFile": "tsconfig.json",

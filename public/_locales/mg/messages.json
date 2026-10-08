@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(foana)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Mihidy ny trano fiantoana",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Ampidiro ny tenimiafina fototra hanokafana ny tantaran'ny taratasy.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Tenimiafina fototra",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Sokafy",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Tsy marina ny tenimiafina fototra. Manandrama indray azafady.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Hidio ny trano fiantoana",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

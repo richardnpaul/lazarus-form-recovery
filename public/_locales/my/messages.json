@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ဗလာ)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "သိုလှောင်ခန်း ပိတ်ထားသည်",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ဖောင်မှတ်တမ်းကို ဖွင့်ရန် ပင်မစကားဝှက်ကို ထည့်ပါ။",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "ပင်မစကားဝှက်",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "လော့ခ်ဖွင့်ပါ",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ပင်မစကားဝှက် မှားယွင်းနေပါသည်။ ထပ်မံကြိုးစားပါ။",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 သိုလှောင်ခန်း ပိတ်ပါ",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

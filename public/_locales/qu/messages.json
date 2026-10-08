@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ch'usaq)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Vault wichq'asqa kachkan",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Hatun pakasqa simita churay formulariop wiñay kawsayninta kichanapaq.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Hatun Pakasqa Simi",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Kichay",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Pantay hatun pakasqa simi. Ama hina kaspa kaqmanta kallpachakuy.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Vault wichq'ay",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

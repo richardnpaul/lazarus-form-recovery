@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(bo'sh)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Seyf qulflangan",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Shakllar tarixini ochish uchun asosiy parolni kiriting.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Asosiy Parol",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Qulfni ochish",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Asosiy Parol noto'g'ri. Iltimos, qayta urinib ko'ring.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Seyfni qulflash",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

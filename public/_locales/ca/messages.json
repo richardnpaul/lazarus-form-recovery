@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(buit)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Caixa forta bloquejada",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Introduïu la contrasenya mestra per desbloquejar l'historial de formularis.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Contrasenya mestra",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Desbloqueja",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Contrasenya mestra incorrecta. Torneu-ho a provar.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Bloqueja la caixa forta",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

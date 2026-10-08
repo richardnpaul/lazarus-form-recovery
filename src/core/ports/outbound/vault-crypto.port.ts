@@ -16,4 +16,5 @@ export interface IVaultCryptoPort {
   isUnlocked(): boolean;
   hasKey(): boolean;
   setAutoLockTimeout(minutes: number): void;
+  setOnLockCallback(cb: () => void): void;
 }

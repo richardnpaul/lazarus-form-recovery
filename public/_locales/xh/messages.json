@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ayinalutho)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "I-Vault itshixiwe",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Faka i-master password ukuvula imbali yefomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "I-Master Password",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Vula",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "I-Master password ayichanekanga. Nceda uzame kwakhona.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Tshixa i-Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

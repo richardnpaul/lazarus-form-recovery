@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(vacío)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Bóveda bloqueada",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Introduce la contraseña maestra para desbloquear el historial de formularios.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Contraseña maestra",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Desbloquear",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Contraseña maestra incorrecta. Inténtalo de nuevo.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Bloquear bóveda",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

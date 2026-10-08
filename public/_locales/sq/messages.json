@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(bosh)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kasaforta e kyçur",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Futni fjalëkalimin kryesor për të shkyçur historinë e formularëve.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Fjalëkalimi Kryesor",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Shkyç",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Fjalëkalim Kryesor i pasaktë. Ju lutemi provoni përsëri.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kyç kasafortën",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

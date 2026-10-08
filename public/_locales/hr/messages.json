@@ -828,5 +828,29 @@
         "content": "$1"
       }
     }
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Trezor zaključan",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Unesite glavnu lozinku za otključavanje povijesti obrazaca.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Glavna lozinka",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Otključaj",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Netočna glavna lozinka. Pokušajte ponovno.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Zaključaj trezor",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

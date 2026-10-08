@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(leeg)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kluis vergrendeld",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Voer het hoofdwachtwoord in om de formuliergeschiedenis te ontgrendelen.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Hoofdwachtwoord",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Ontgrendelen",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Onjuist hoofdwachtwoord. Probeer het opnieuw.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kluis vergrendelen",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

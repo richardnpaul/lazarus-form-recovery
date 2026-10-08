@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(meh)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Suudu sirru ina uddii",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Naatnu helmere sirru mawnde ngam udditde taariika foomu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Helmere sirru mawnde",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Uddit",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Helmere sirru mawnde wonaa janngeteeɗo. Tiiɗno eta kadi.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Uddu suudu sirru",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

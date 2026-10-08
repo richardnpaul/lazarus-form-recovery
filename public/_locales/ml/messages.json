@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ശൂന്യം)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "വോൾട്ട് ലോക്ക് ചെയ്‌തിരിക്കുന്നു",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ഫോം ചരിത്രം അൺലോക്ക് ചെയ്യാൻ മാസ്റ്റർ പാസ്‌വേഡ് നൽകുക.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "മാസ്റ്റർ പാസ്‌വേഡ്",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "അൺലോക്ക് ചെയ്യുക",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "തെറ്റായ മാസ്റ്റർ പാസ്‌വേഡ്. വീണ്ടും ശ്രമിക്കുക.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 വോൾട്ട് ലോക്ക് ചെയ്യുക",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

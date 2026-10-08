@@ -936,5 +936,29 @@
         "content": "$1"
       }
     }
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "الخزنة مقفلة",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "أدخل كلمة المرور الرئيسية لإلغاء قفل سجل النماذج.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "كلمة المرور الرئيسية",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "إلغاء القفل",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "كلمة المرور الرئيسية غير صحيحة. يرجى المحاولة مرة أخرى.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 قفل الخزنة",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

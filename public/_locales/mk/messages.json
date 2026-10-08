@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(празно)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Сефот е заклучен",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Внесете ја главната лозинка за да ја отклучите историјата на формулари.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Главна лозинка",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Отклучи",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Неточна главна лозинка. Ве молиме обидете се повторно.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Заклучи сеф",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(üres)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Széf zárolva",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Adja meg a mesterjelszót az űrlapelőzmények feloldásához.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Mesterjelszó",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Feloldás",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Helytelen mesterjelszó. Kérjük, próbálja újra.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Széf zárolása",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(baleiro)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Caixaforte bloqueada",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Introduce o contrasinal mestre para desbloquear o historial de formularios.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Contrasinal Mestre",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Desbloquear",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Contrasinal Mestre incorrecto. Ténteo de novo.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Bloquear caixaforte",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

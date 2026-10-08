@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(tómt)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Hólf læst",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Sláðu inn aðallykilorð til að opna eyðublaðasögu.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Aðallykilorð",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Opna",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Rangt aðallykilorð. Vinsamlegast reyndu aftur.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Læsa hólfi",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

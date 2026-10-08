@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ga go sepe)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Vault e notletswe",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Tsenya phasewete e kgolo go notlolla hisitori ya diforomo.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Phasewete e kgolo",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Notlolla",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Phasewete e kgolo ga se yone. Tswee-tswee leka gape.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Notlela Vault",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

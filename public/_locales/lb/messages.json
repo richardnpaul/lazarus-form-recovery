@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(eidel)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Coffre-fort gespaart",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Gitt d'Haaptpasswuert an fir d'Formulargeschicht opzespaarten.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Haaptpasswuert",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Opspaarten",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Falscht Haaptpasswuert. Probéiert w.e.g. nach eng Kéier.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Coffre-fort spären",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

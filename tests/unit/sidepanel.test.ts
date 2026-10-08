@@ -1774,4 +1774,328 @@ describe('Sidepanel UI Controller (src/sidepanel/sidepanel.ts)', () => {
       window.setInterval = origSetInterval;
     });
   });
+
+  describe('Sidepanel Vault Unlock & Lockout Controls', () => {
+    it('handles checkVaultStatus across success, error, and throw states', async () => {
+      const sp = await import('../../src/sidepanel/sidepanel');
+
+      // 1. Success with data
+      (chrome.runtime.sendMessage as any).mockImplementationOnce(async () => ({
+        success: true,
+        data: { hasMasterPassword: true, isUnlocked: false },
+      }));
+      const res1 = await sp.checkVaultStatus();
+      expect(res1).toEqual({ hasMasterPassword: true, isUnlocked: false });
+
+      // 2. Failure/no data
+      (chrome.runtime.sendMessage as any).mockImplementationOnce(async () => ({ success: false }));
+      const res2 = await sp.checkVaultStatus();
+      expect(res2).toEqual({ hasMasterPassword: false, isUnlocked: true });
+
+      // 3. Exception
+      (chrome.runtime.sendMessage as any).mockImplementationOnce(async () => {
+        throw new Error('NetworkError');
+      });
+      const res3 = await sp.checkVaultStatus();
+      expect(res3).toEqual({ hasMasterPassword: false, isUnlocked: true });
+    });
+
+    it('renders locked state cleanly and handles missing elements', async () => {
+      const sp = await import('../../src/sidepanel/sidepanel');
+      const historyList = document.getElementById('history-list') as HTMLElement;
+      const historyCount = document.getElementById('history-count') as HTMLElement;
+
+      sp.renderLockedState();
+      expect(historyCount.textContent).toBe('0 drafts');
+      expect(historyList.innerHTML).toContain('Vault Locked');
+
+      // Missing elements guard
+      historyList.id = 'temp-list';
+      sp.renderLockedState();
+      historyList.id = 'history-list';
+    });
+
+    it('handles loadHistory vault locked vs unlocked branching with container in DOM', async () => {
+      const sp = await import('../../src/sidepanel/sidepanel');
+      const containerEl = document.createElement('div');
+      containerEl.id = 'vault-unlock-container';
+      containerEl.style.display = 'none';
+      document.body.appendChild(containerEl);
+
+      const lockBtn = document.createElement('a');
+      lockBtn.id = 'lock-vault-btn';
+      lockBtn.style.display = 'none';
+      document.body.appendChild(lockBtn);
+
+      // 1. Vault locked
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: false } };
+        }
+        return { success: true, data: [] };
+      });
+
+      await sp.loadHistory();
+      expect(containerEl.style.display).toBe('block');
+      expect(lockBtn.style.display).toBe('none');
+
+      // 2. Vault unlocked
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: true } };
+        }
+        return { success: true, data: [] };
+      });
+
+      await sp.loadHistory();
+      expect(containerEl.style.display).toBe('none');
+      expect(lockBtn.style.display).toBe('inline-block');
+
+      // 3. Vault locked with lockBtn missing
+      lockBtn.remove();
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: false } };
+        }
+        return { success: true, data: [] };
+      });
+      await sp.loadHistory();
+      expect(containerEl.style.display).toBe('block');
+
+      // 4. Vault unlocked with lockBtn missing
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: true } };
+        }
+        return { success: true, data: [] };
+      });
+      await sp.loadHistory();
+      expect(containerEl.style.display).toBe('none');
+
+      // 5. Container missing, lockBtn present, locked
+      containerEl.remove();
+      document.body.appendChild(lockBtn);
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: false } };
+        }
+        return { success: true, data: [] };
+      });
+      await sp.loadHistory();
+      expect(lockBtn.style.display).toBe('none');
+
+      // 6. Container missing, lockBtn present, unlocked
+      vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: true } };
+        }
+        return { success: true, data: [] };
+      });
+      await sp.loadHistory();
+      expect(lockBtn.style.display).toBe('inline-block');
+
+      lockBtn.remove();
+    });
+
+    it('handles performUnlock with empty, incorrect, and correct passwords via form and button', async () => {
+      const sp = await import('../../src/sidepanel/sidepanel');
+
+      const containerEl = document.createElement('div');
+      containerEl.id = 'vault-unlock-container';
+      containerEl.style.display = 'block';
+
+      const formEl = document.createElement('form');
+      formEl.id = 'vault-unlock-form';
+
+      const inputEl = document.createElement('input');
+      inputEl.type = 'password';
+      inputEl.id = 'vault-password-input';
+
+      const btnEl = document.createElement('button');
+      btnEl.id = 'btn-unlock-vault';
+
+      const errorEl = document.createElement('div');
+      errorEl.id = 'vault-unlock-error';
+      errorEl.style.display = 'none';
+
+      const lockBtn = document.createElement('a');
+      lockBtn.id = 'lock-vault-btn';
+
+      formEl.appendChild(inputEl);
+      formEl.appendChild(btnEl);
+      formEl.appendChild(errorEl);
+      containerEl.appendChild(formEl);
+      document.body.appendChild(containerEl);
+      document.body.appendChild(lockBtn);
+
+      sp.initSidepanel();
+
+      // 1. Empty password (does nothing)
+      const sendSpy = vi.spyOn(chrome.runtime, 'sendMessage');
+      inputEl.value = '';
+      const emptySubmitEvt = new Event('submit', { cancelable: true });
+      formEl.dispatchEvent(emptySubmitEvt);
+      expect(emptySubmitEvt.defaultPrevented).toBe(true);
+      expect(sendSpy).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'UNLOCK_VAULT' }));
+
+      // 2. Incorrect password via form submit
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') {
+          return { success: false, error: 'WrongPass' };
+        }
+        return { success: true, data: [] };
+      });
+
+      inputEl.value = 'BadPass';
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+      expect(errorEl.textContent).toBe('WrongPass');
+      expect(errorEl.style.display).toBe('block');
+      expect(containerEl.style.display).toBe('block');
+
+      // 3. Incorrect password with fallback error string (res has no error property)
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') {
+          return { success: false };
+        }
+        return { success: true, data: [] };
+      });
+      inputEl.value = 'BadPass2';
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+      expect(errorEl.textContent).toBe('Incorrect master password. Please try again.');
+
+      // 3b. Incorrect password with undefined response
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') {
+          return undefined as any;
+        }
+        return { success: true, data: [] };
+      });
+      inputEl.value = 'BadPass3';
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+      expect(errorEl.textContent).toBe('Incorrect master password. Please try again.');
+
+      // 4. Correct password via form submit
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') {
+          return { success: true };
+        }
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: true, isUnlocked: true } };
+        }
+        return { success: true, data: [] };
+      });
+
+      inputEl.value = 'CorrectPass123!';
+      const validSubmitEvt = new Event('submit', { cancelable: true });
+      formEl.dispatchEvent(validSubmitEvt);
+      expect(validSubmitEvt.defaultPrevented).toBe(true);
+      await vi.advanceTimersByTimeAsync(50);
+
+      expect(inputEl.value).toBe('');
+      expect(errorEl.textContent).toBe('');
+      expect(errorEl.style.display).toBe('none');
+      expect(containerEl.style.display).toBe('none');
+      expect(lockBtn.style.display).toBe('inline-block');
+
+      // 5. Lock button click with preventDefault verification
+      const lockEvt = new MouseEvent('click', { cancelable: true });
+      lockBtn.dispatchEvent(lockEvt);
+      expect(lockEvt.defaultPrevented).toBe(true);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(sendSpy).toHaveBeenCalledWith({ type: 'LOCK_VAULT' });
+
+      // 6. Null DOM element branches on failure and success
+      inputEl.value = 'Pass';
+      errorEl.remove();
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') return { success: false };
+        return { success: true, data: [] };
+      });
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+
+      // Null DOM element branches on success (with inputEl still containing password)
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'UNLOCK_VAULT') return { success: true };
+        return { success: true, data: [] };
+      });
+      document.body.appendChild(inputEl);
+      containerEl.remove();
+      lockBtn.remove();
+      inputEl.value = 'ValidPass';
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Missing input element branch
+      inputEl.remove();
+      formEl.dispatchEvent(new Event('submit', { cancelable: true }));
+      await Promise.resolve();
+
+      // 7. loadHistory with hasMasterPassword: false and container present
+      const containerEl2 = document.createElement('div');
+      containerEl2.id = 'vault-unlock-container';
+      document.body.appendChild(containerEl2);
+
+      const lockBtn2 = document.createElement('a');
+      lockBtn2.id = 'lock-vault-btn';
+      lockBtn2.style.display = 'inline-block';
+      document.body.appendChild(lockBtn2);
+
+      sendSpy.mockImplementation(async (msg: any) => {
+        if (msg.type === 'CHECK_VAULT_STATUS') {
+          return { success: true, data: { hasMasterPassword: false, isUnlocked: true } };
+        }
+        return { success: true, data: [] };
+      });
+      await sp.loadHistory();
+      expect(containerEl2.style.display).toBe('none');
+      expect(lockBtn2.style.display).toBe('none');
+      containerEl2.remove();
+      lockBtn2.remove();
+
+      // 8. checkVaultStatus variations
+      sendSpy.mockResolvedValueOnce(undefined as any);
+      expect(await sp.checkVaultStatus()).toEqual({ hasMasterPassword: false, isUnlocked: true });
+
+      sendSpy.mockResolvedValueOnce({ success: false } as any);
+      expect(await sp.checkVaultStatus()).toEqual({ hasMasterPassword: false, isUnlocked: true });
+
+      sendSpy.mockResolvedValueOnce({
+        success: false,
+        data: { hasMasterPassword: true, isUnlocked: false },
+      } as any);
+      expect(await sp.checkVaultStatus()).toEqual({ hasMasterPassword: false, isUnlocked: true });
+
+      sendSpy.mockResolvedValueOnce({ success: true, data: undefined } as any);
+      expect(await sp.checkVaultStatus()).toEqual({ hasMasterPassword: false, isUnlocked: true });
+
+      sendSpy.mockResolvedValueOnce({
+        success: true,
+        data: { hasMasterPassword: true, isUnlocked: false },
+      } as any);
+      expect(await sp.checkVaultStatus()).toEqual({ hasMasterPassword: true, isUnlocked: false });
+
+      // 9. renderLockedState branch coverage
+      const existingList = document.getElementById('history-list') as HTMLElement;
+      const existingCount = document.getElementById('history-count') as HTMLElement;
+
+      sp.renderLockedState();
+      expect(existingList.innerHTML).toContain('Vault Locked');
+      expect(existingList.innerHTML).toContain('Enter master password to unlock form history.');
+
+      // Test missing elements
+      existingList.remove();
+      sp.renderLockedState(); // historyList missing -> returns
+      document.body.appendChild(existingList);
+
+      existingCount.remove();
+      sp.renderLockedState(); // historyCount missing -> returns
+      document.body.appendChild(existingCount);
+    });
+  });
 });

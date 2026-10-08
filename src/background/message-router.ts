@@ -143,6 +143,9 @@ export async function handleRuntimeMessage(
       case 'SET_MASTER_PASSWORD': {
         const { password } = message.payload;
         const result = await container.vaultSecurityUseCase.setupMasterPassword(password);
+        if (result.success) {
+          await repository.updateSettings({ encryptionMode: 'hybrid-aes-gcm' });
+        }
         return { success: result.success, error: result.error };
       }
 
@@ -155,6 +158,9 @@ export async function handleRuntimeMessage(
           }
         }
         const result = await container.vaultSecurityUseCase.removeMasterPassword();
+        if (result.success) {
+          await repository.updateSettings({ encryptionMode: 'none' });
+        }
         return { success: result.success, error: result.error };
       }
 
@@ -262,7 +268,11 @@ export async function handleRuntimeMessage(
       }
 
       case 'UPDATE_SETTINGS': {
-        const updated = await repository.updateSettings(message.payload.settings);
+        const { settings } = message.payload;
+        const updated = await repository.updateSettings(settings);
+        if (typeof settings.autoLockMinutes === 'number') {
+          container.vault.setAutoLockTimeout(settings.autoLockMinutes);
+        }
         return { success: true, data: updated };
       }
 

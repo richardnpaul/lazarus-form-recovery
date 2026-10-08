@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ખાલી)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "વૉલ્ટ લૉક છે",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "ફોર્મ ઇતિહાસ અનલૉક કરવા માટે માસ્ટર પાસવર્ડ દાખલ કરો.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "માસ્ટર પાસવર્ડ",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "અનલૉક કરો",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "ખોટો માસ્ટર પાસવર્ડ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 વૉલ્ટ લૉક કરો",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(koom)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Kàggu bi tëju na",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Dugalal baatu kaaraange bu mag bi ngir ubbi jaariinu foom yi.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Baatu kaaraange bu mag",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Ubbi",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Baatu kaaraange bu mag bi baaxul. Jëmaatal.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Tëj kàggu bi",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

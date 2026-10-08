@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(ba komai)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "An kulle taska",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Shigar da babban kalmar sirri don buɗe tarihin fom.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Babban Kalmar Sirri",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Buɗe",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Babban Kalmar Sirri ba daidai ba ce. Da fatan za a sake gwadawa.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Kulle Taska",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

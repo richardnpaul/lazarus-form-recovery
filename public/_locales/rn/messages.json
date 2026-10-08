@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(nta kirimo)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Ububiko burafunze",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Injiza ijambobanga rikuru kugira ngo ufungure amateka y'ifishi.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Ijambobanga Rikuru",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Fungura",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Ijambobanga rikuru siryo. Nyamuneka gerageza kandi.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Funga ububiko",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

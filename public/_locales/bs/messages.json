@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(prazno)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Sef je zaključan",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Unesite glavnu lozinku da biste otključali historiju obrazaca.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Glavna lozinka",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Otključaj",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Netačna glavna lozinka. Molimo pokušajte ponovo.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Zaključaj sef",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

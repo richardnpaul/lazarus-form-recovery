@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(خالی)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "گاوصندوق قفل است",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "برای باز کردن قفل تاریخچه فرم، رمز عبور اصلی را وارد کنید.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "رمز عبور اصلی",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "باز کردن قفل",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "رمز عبور اصلی نادرست است. لطفاً دوباره امتحان کنید.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 قفل کردن گاوصندوق",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

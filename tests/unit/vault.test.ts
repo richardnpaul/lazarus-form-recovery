@@ -187,6 +187,8 @@ describe('VaultManager Unit Tests', () => {
     vi.advanceTimersByTime(11 * 60 * 1000);
     status = await vault.getStatus();
     expect(status.remainingUnlockTimeMs).toBe(0);
+    expect(status.isUnlocked).toBe(false);
+    expect(vault.isUnlocked()).toBe(false);
 
     // Disabled autoLockMinutes (0)
     vault.setAutoLockMinutes(0);
@@ -344,5 +346,157 @@ describe('VaultManager Unit Tests', () => {
     vi.spyOn(WebCryptoVault, 'decrypt').mockResolvedValueOnce('WRONG_SENTINEL');
     const unlocked = await vault.unlock('CorrectPass');
     expect(unlocked).toBe(false);
+  });
+
+  describe('onLockCallback and checkAutoLockExpiry Mutation Killers', () => {
+    it('invokes onLockCallback only when locking from an unlocked state', async () => {
+      const lockCb = vi.fn();
+      vault.setOnLockCallback(lockCb);
+
+      // Calling lock() when already locked should NOT invoke callback
+      vault.lock();
+      expect(lockCb).not.toHaveBeenCalled();
+
+      // Set password (unlocked)
+      await vault.setMasterPassword('LockCbPass123!');
+      expect(vault.isUnlocked()).toBe(true);
+
+      // Calling lock() when unlocked MUST invoke callback exactly once
+      vault.lock();
+      expect(lockCb).toHaveBeenCalledTimes(1);
+
+      // Calling lock() again while locked should not trigger it again
+      vault.lock();
+      expect(lockCb).toHaveBeenCalledTimes(1);
+    });
+
+    it('locks at the exact autoLockMinutes boundary (killing >= vs >)', async () => {
+      const startTime = 1000000000000;
+      vi.spyOn(Date, 'now').mockReturnValue(startTime);
+
+      await vault.setMasterPassword('BoundaryPass123!');
+      vault.setAutoLockMinutes(5); // 5 * 60 * 1000 = 300,000 ms
+
+      // 1 ms before boundary: should remain unlocked
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 300000 - 1);
+      expect(vault.isUnlocked()).toBe(true);
+
+      // Exactly at the boundary: MUST lock (proves >= vs >)
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 300000);
+      expect(vault.isUnlocked()).toBe(false);
+
+      // Status check reports locked and remainingUnlockTimeMs undefined
+      const status = await vault.getStatus();
+      expect(status.isUnlocked).toBe(false);
+      expect(status.remainingUnlockTimeMs).toBeUndefined();
+    });
+
+    it('does not auto-lock when autoLockMinutes is 0', async () => {
+      const startTime = 1000000000000;
+      vi.spyOn(Date, 'now').mockReturnValue(startTime);
+
+      await vault.setMasterPassword('ZeroTimeoutPass!');
+      vault.setAutoLockMinutes(0);
+
+      // Simulate a long time passing
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 999999999);
+      expect(vault.isUnlocked()).toBe(true);
+    });
+
+    it('encrypt auto-locks and falls back to mode none when expired', async () => {
+      const startTime = 1000000000000;
+      vi.spyOn(Date, 'now').mockReturnValue(startTime);
+
+      await vault.setMasterPassword('EncryptExpiryPass!');
+      vault.setAutoLockMinutes(1);
+
+      // Advance past timeout
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 60000);
+
+      const res = await vault.encrypt('secretData');
+      expect(res.mode).toBe('none');
+      expect(res.ciphertext).toBe('secretData');
+      expect(vault.isUnlocked()).toBe(false);
+    });
+
+    it('decrypt auto-locks and throws when expired', async () => {
+      const startTime = 1000000000000;
+      vi.spyOn(Date, 'now').mockReturnValue(startTime);
+
+      await vault.setMasterPassword('DecryptExpiryPass!');
+      vault.setAutoLockMinutes(1);
+
+      // Encrypt while still valid
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 10000);
+      const enc = await vault.encrypt('secretData');
+      expect(enc.mode).toBe('hybrid-aes-gcm');
+
+      // Advance past timeout (timer was reset at startTime + 10000)
+      vi.spyOn(Date, 'now').mockReturnValue(startTime + 71000);
+
+      await expect(vault.decrypt(enc.ciphertext, 'hybrid-aes-gcm')).rejects.toThrow(
+        'Vault is locked. Master Password required to decrypt.'
+      );
+      expect(vault.isUnlocked()).toBe(false);
+    });
+
+    it('returns isUnlocked true and remainingUnlockTimeMs undefined when unlocked and autoLockMinutes is 0', async () => {
+      await vault.setMasterPassword('ZeroPass123!');
+      vault.setAutoLockMinutes(0);
+      const status = await vault.getStatus();
+      expect(status.isUnlocked).toBe(true);
+      expect(status.remainingUnlockTimeMs).toBeUndefined();
+    });
+
+    it('invokes lock and lock callback when getStatus finds timeout reached 0', async () => {
+      const lockCb = vi.fn();
+      vault.setOnLockCallback(lockCb);
+      await vault.setMasterPassword('StatusLockPass!');
+      vault.setAutoLockMinutes(5);
+
+      vi.useFakeTimers({ toFake: ['Date'] });
+      const now = Date.now();
+      vi.spyOn(Date, 'now').mockReturnValue(now + 5 * 60 * 1000);
+
+      const status = await vault.getStatus();
+      expect(status.remainingUnlockTimeMs).toBe(0);
+      expect(status.isUnlocked).toBe(false);
+      expect(lockCb).toHaveBeenCalledTimes(1);
+      expect((vault as any).activeKey).toBeNull();
+      vi.useRealTimers();
+    });
+
+    it('schedules autoLock timer on setMasterPassword and unlock that fires lock without accessing vault', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+      const lockCb = vi.fn();
+      vault.setOnLockCallback(lockCb);
+
+      // 1. setMasterPassword schedules timer
+      await vault.setMasterPassword('TimerPass123!');
+      expect((vault as any).activeKey).not.toBeNull();
+      vi.advanceTimersByTime(15 * 60 * 1000);
+      expect(lockCb).toHaveBeenCalledTimes(1);
+      expect((vault as any).activeKey).toBeNull();
+
+      // 2. unlock schedules timer
+      lockCb.mockClear();
+      const unlocked = await vault.unlock('TimerPass123!');
+      expect(unlocked).toBe(true);
+      expect((vault as any).activeKey).not.toBeNull();
+      vi.advanceTimersByTime(15 * 60 * 1000);
+      expect(lockCb).toHaveBeenCalledTimes(1);
+      expect((vault as any).activeKey).toBeNull();
+
+      vi.useRealTimers();
+    });
+
+    it('does not invoke lock when checkAutoLockExpiry runs while vault is already locked', async () => {
+      expect(vault.isUnlocked()).toBe(false);
+      const lockSpy = vi.spyOn(vault, 'lock');
+      vault.isUnlocked();
+      await vault.encrypt('data');
+      await vault.decrypt('data', 'none');
+      expect(lockSpy).not.toHaveBeenCalled();
+    });
   });
 });

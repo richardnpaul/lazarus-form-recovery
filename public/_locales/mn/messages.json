@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(хоосон)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Сейф түгжигдсэн",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Маягтын түүхийг нээхийн тулд мастер нууц үгээ оруулна уу.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Мастер нууц үг",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Түгжээ тайлах",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Мастер нууц үг буруу байна. Дахин оролдоно уу.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Сейф түгжих",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }

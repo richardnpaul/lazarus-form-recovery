@@ -792,5 +792,29 @@
   "shadowSnippetEmpty": {
     "message": "(бос)",
     "description": "Placeholder text for an empty snippet."
+  },
+  "sidepanelVaultLockedTitle": {
+    "message": "Сейф құлыпталған",
+    "description": "Title of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultLockedDesc": {
+    "message": "Пішін тарихын ашу үшін негізгі құпия сөзді енгізіңіз.",
+    "description": "Description of vault unlock card in sidepanel."
+  },
+  "sidepanelVaultPasswordPlaceholder": {
+    "message": "Негізгі құпия сөз",
+    "description": "Placeholder for master password input in sidepanel."
+  },
+  "sidepanelBtnUnlock": {
+    "message": "Құлыпты ашу",
+    "description": "Button to unlock the vault in sidepanel."
+  },
+  "sidepanelVaultUnlockError": {
+    "message": "Негізгі құпия сөз қате. Қайталап көріңіз.",
+    "description": "Error message when entering invalid password in sidepanel."
+  },
+  "sidepanelFooterLockVault": {
+    "message": "🔒 Сейфті құлыптау",
+    "description": "Footer link to lock vault in sidepanel."
   }
 }
